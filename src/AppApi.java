@@ -43,11 +43,11 @@ public class AppApi {
 	private String url = "{'url':'" + link + "'}";
 
 	private HttpDescribe httpQueryDescribe = new HttpDescribe();
-	private TokenCache tokenCache = new TokenCache();
+	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
 	private GsonProcessor jsonProcessor = new GsonProcessor();
-	private SearchToken searchToken = new SearchToken();
-	private Search newSearch = new Search();
+	private ImageSearchToken searchToken = new ImageSearchToken();
+	private HttpSearch newSearch = new HttpSearch();
 	private String searchTokenApi = searchToken.getApiToken();
 	String[] tags;
 	String text;

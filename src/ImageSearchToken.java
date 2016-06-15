@@ -3,9 +3,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class TokenCache {
+public class ImageSearchToken {
 
-	private final String filename = "APIToken.txt";
+	private final String filename = "SearchApiToken.txt";
 	private String token = null;
 
 	public String getApiToken() {
