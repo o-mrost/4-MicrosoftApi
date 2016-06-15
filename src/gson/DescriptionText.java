@@ -1,3 +1,4 @@
+package gson;
 import java.util.ArrayList;
 
 public class DescriptionText {

@@ -23,6 +23,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import gson.Captions;
+import gson.GsonProcessor;
+import gson.JsonRoot;
+
 public class AppApi {
 
 	private JFileChooser fc;
