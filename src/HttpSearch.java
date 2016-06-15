@@ -8,7 +8,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class Search {
+public class HttpSearch {
 
 	public String GetUrlContentAsString(String searchToken) {
 

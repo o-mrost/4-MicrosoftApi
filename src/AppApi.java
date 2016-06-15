@@ -23,6 +23,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import gson.Captions;
+import gson.GsonProcessor;
+import gson.JsonRoot;
+
 public class AppApi {
 
 	private JFileChooser fc;
@@ -39,11 +43,11 @@ public class AppApi {
 	private String url = "{'url':'" + link + "'}";
 
 	private HttpDescribe httpQueryDescribe = new HttpDescribe();
-	private TokenCache tokenCache = new TokenCache();
+	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
 	private GsonProcessor jsonProcessor = new GsonProcessor();
-	private SearchToken searchToken = new SearchToken();
-	private Search newSearch = new Search();
+	private ImageSearchToken searchToken = new ImageSearchToken();
+	private HttpSearch newSearch = new HttpSearch();
 	private String searchTokenApi = searchToken.getApiToken();
 	String[] tags;
 	String text;
