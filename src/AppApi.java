@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import gson.Captions;
-import gson.GsonProcessor;
 import gson.JsonRoot;
 
 public class AppApi {
@@ -35,20 +34,29 @@ public class AppApi {
 	private JFrame frame;
 	private JTextArea tagsField;
 	private JTextArea descriptionField;
-	private BufferedImage imgFromCam = null;
-	private String descriptionString = null;
-	private String analysisString = null;
+	private JTextField textField;
+	private JLabel imageLabel;
+	private JButton btnTakePicture;
+	private JButton btnBrowse;
+	private JButton btnSaveFile;
+	private JButton btnHelp;
+	private JLabel lblTags;
+	private JLabel lblDescription;
+	private JLabel foundImagesLabel;
+	private JLabel lblImageFromWebcam;
 
-	private String link = "http://lorempixel.com/image_output/business-q-c-640-480-2.jpg";
+	private BufferedImage imgFromCam = null;
+
+	private String link = "https://i.kinja-img.com/gawker-media/image/upload/s--iIUOalRV--/c_scale,fl_progressive,q_80,w_800/qmehyq7rssourraj0au1.png";
 	private String url = "{'url':'" + link + "'}";
 
 	private HttpDescribe httpQueryDescribe = new HttpDescribe();
 	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
-	private GsonProcessor jsonProcessor = new GsonProcessor();
 	private ImageSearchToken searchToken = new ImageSearchToken();
 	private HttpSearch newSearch = new HttpSearch();
 	private String searchTokenApi = searchToken.getApiToken();
+
 	String[] tags;
 	String text;
 
@@ -83,7 +91,6 @@ public class AppApi {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		
 		// set size of frame to 3/4 of screen size
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
 		frame.setSize((3 * screenSize.width / 4), (3 * screenSize.height / 4));
@@ -96,133 +103,149 @@ public class AppApi {
 		fc.setFileFilter(filter);
 		frame.getContentPane().add(fc);
 
-		JLabel imageLabel = new JLabel();
-		imageLabel.setBounds(6, 79, 305, 372);
+		imageLabel = new JLabel();
+		imageLabel.setBounds(23, 109, 305, 342);
 		frame.getContentPane().add(imageLabel);
 
-		JButton btnBrowse = new JButton("Browse");
-		btnBrowse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					file = fc.getSelectedFile();
-					BufferedImage image = null;
+		btnTakePicture = new JButton("Take a picture with webcam");
+		btnTakePicture.setBounds(30, 46, 212, 29);
+		frame.getContentPane().add(btnTakePicture);
 
-					try {
-						image = (BufferedImage) ImageIO.read(file);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					icon = scaleImage(file.getAbsolutePath(), imageLabel);
-					imageLabel.setIcon(icon);
-				}
-			}
-		});
+		btnBrowse = new JButton("Browse");
 		btnBrowse.setBounds(79, 18, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
 		JButton btnAnalyse = new JButton("Analyse image");
-		btnAnalyse.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String response = analyseImage();
-
-				GsonBuilder newGsonBuilder = new GsonBuilder();
-				Gson newGson = newGsonBuilder.create();
-
-				JsonRoot newRoot = newGson.fromJson(response, JsonRoot.class);
-				String[] newTags = newRoot.getDescription().getTags();
-				System.out.println("=============");
-				System.out.println("tags " + Arrays.toString(newTags));
-
-				for(String element: newTags){
-					tagsField.append(element + "\n");
-				}
-
-				for (Captions currentCaption : newRoot.getDescription().getCaptions()) {
-					text = currentCaption.getText();
-					System.out.println("caption: " + text);
-					System.out.println("=============");
-					descriptionField.setText(text);
-				}
-				searchForSimilarImages(searchTokenApi);
-			}
-		});
-		btnAnalyse.setBounds(342, 30, 196, 29);
+		btnAnalyse.setBounds(361, 30, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
-		JButton btnSaveFile = new JButton("Save file");
-		btnSaveFile.setBounds(699, 30, 117, 29);
+		tagsField = new JTextArea();
+		tagsField.setBounds(352, 107, 205, 116);
+		frame.getContentPane().add(tagsField);
+		tagsField.setColumns(10);
+
+		textField = new JTextField("Paste URL: ");
+		textField.setBounds(22, 79, 220, 26);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+
+		btnSaveFile = new JButton("Save file");
+		btnSaveFile.setBounds(828, 499, 117, 29);
 		frame.getContentPane().add(btnSaveFile);
 
-		JButton btnHelp = new JButton("Help");
-		btnHelp.setBounds(885, 6, 60, 29);
+		btnHelp = new JButton("Help");
+		btnHelp.setBounds(894, 0, 60, 29);
 		frame.getContentPane().add(btnHelp);
 
-		JLabel lblTags = new JLabel("Tags:");
-		lblTags.setBounds(352, 99, 61, 16);
+		lblTags = new JLabel("Tags:");
+		lblTags.setBounds(352, 79, 61, 16);
 		frame.getContentPane().add(lblTags);
 
-		// textField for description
 		descriptionField = new JTextArea();
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
-		descriptionField.setBounds(360, 307, 178, 99);
+		descriptionField.setBounds(352, 263, 205, 43);
 		frame.getContentPane().add(descriptionField);
 		descriptionField.setColumns(10);
 
-		JLabel lblDescription = new JLabel("Description:");
-		lblDescription.setBounds(352, 279, 77, 16);
+		lblDescription = new JLabel("Description:");
+		lblDescription.setBounds(352, 235, 77, 16);
 		frame.getContentPane().add(lblDescription);
 
 		// place for images from internet
-		JLabel foundImagesLabel = new JLabel();
+		foundImagesLabel = new JLabel();
 		foundImagesLabel.setBounds(569, 71, 352, 379);
 		frame.getContentPane().add(foundImagesLabel);
 
-		JLabel lblImageFromWebcam = new JLabel();
+		lblImageFromWebcam = new JLabel();
 		lblImageFromWebcam.setBounds(297, 79, -286, 384);
 		frame.getContentPane().add(lblImageFromWebcam);
-
-		JButton btnTakePicture = new JButton("Take a picture with webcam");
-		btnTakePicture.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WebcamAPI cam = new WebcamAPI();
-				try {
-					imgFromCam = cam.getPicture();
-					System.out.println("taken image");
-					// here null pointer exception
-					icon = scaleImage(imgFromCam, lblImageFromWebcam);
-					System.out.println("icon set");
-					// doesn't work yet
-
-					// return bufferedImage
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnTakePicture.setBounds(30, 46, 212, 29);
 
 		lblImageFromWebcam.setIcon(icon);
 		// create Label display returned BufferedImage, create Buttons (Use
 		// Image / take new image)
-		frame.getContentPane().add(btnTakePicture);
 
-		// textField for tags
-		tagsField = new JTextArea();
-		tagsField.setBounds(352, 148, 186, 75);
-		frame.getContentPane().add(tagsField);
-		tagsField.setColumns(10);
+		btnBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				openFilechooser();
+			}
+		});
+
+		btnTakePicture.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				takePicture();
+			}
+		});
+
+		btnAnalyse.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				analyse();
+			}
+
+		});
+
 	}
 
-	protected String analyseImage() {
+	protected void analyse() {
+		
+		String response = httpQueryDescribe.describeImageFromLink(url, token);
 
-		String descriptionString = httpQueryDescribe.describeImageFromLink(url, token);
-		System.out.println("description is: " + descriptionString);
-		return descriptionString;
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		Gson gson = gsonBuilder.create();
 
+		JsonRoot root = gson.fromJson(response, JsonRoot.class);
+		String[] tags = root.getDescription().getTags();
+		System.out.println("=============");
+		System.out.println("tags " + Arrays.toString(tags));
+
+		for (String element : tags) {
+			tagsField.append(element + "\n");
+		}
+
+		for (Captions currentCaption : root.getDescription().getCaptions()) {
+			text = currentCaption.getText();
+			System.out.println("caption: " + text);
+			System.out.println("=============");
+			descriptionField.setText(text);
+		}
+		searchForSimilarImages(searchTokenApi);
 	}
+	
+	protected void takePicture() {
+
+		WebcamAPI cam = new WebcamAPI();
+		try {
+			imgFromCam = cam.getPicture();
+			System.out.println("taken image");
+			// here null pointer exception
+			icon = scaleImage(imgFromCam, lblImageFromWebcam);
+			System.out.println("icon set");
+			// doesn't work yet
+
+			// return bufferedImage
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	protected void openFilechooser() {
+
+		if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			file = fc.getSelectedFile();
+			BufferedImage image = null;
+
+			try {
+				image = (BufferedImage) ImageIO.read(file);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			icon = scaleImage(file.getAbsolutePath(), imageLabel);
+			imageLabel.setIcon(icon);
+		}
+	}
+
+	
 
 	protected void searchForSimilarImages(String searchToken) {
 
