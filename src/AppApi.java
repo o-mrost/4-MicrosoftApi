@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -25,6 +24,8 @@ import com.google.gson.GsonBuilder;
 
 import gson.Captions;
 import gson.JsonRoot;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class AppApi {
 
@@ -34,7 +35,7 @@ public class AppApi {
 	private JFrame frame;
 	private JTextArea tagsField;
 	private JTextArea descriptionField;
-	private JTextField textField;
+	private JTextField urlField;
 	private JLabel imageLabel;
 	private JButton btnTakePicture;
 	private JButton btnBrowse;
@@ -47,8 +48,8 @@ public class AppApi {
 
 	private BufferedImage imgFromCam = null;
 
-	private String link = "https://i.kinja-img.com/gawker-media/image/upload/s--iIUOalRV--/c_scale,fl_progressive,q_80,w_800/qmehyq7rssourraj0au1.png";
-	private String url = "{'url':'" + link + "'}";
+	private String link;
+	private String url;
 
 	private HttpDescribe httpQueryDescribe = new HttpDescribe();
 	private TagsToken tokenCache = new TagsToken();
@@ -124,10 +125,17 @@ public class AppApi {
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
 
-		textField = new JTextField("Paste URL: ");
-		textField.setBounds(22, 79, 220, 26);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		urlField = new JTextField("Paste URL: ");
+		urlField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				link = urlField.getText();
+				url = "{'url':'" + link + "'}";
+			}
+		});
+		urlField.setBounds(22, 79, 220, 26);
+		frame.getContentPane().add(urlField);
+		urlField.setColumns(10);
 
 		btnSaveFile = new JButton("Save file");
 		btnSaveFile.setBounds(828, 499, 117, 29);
@@ -182,9 +190,7 @@ public class AppApi {
 			public void actionPerformed(ActionEvent e) {
 				analyse();
 			}
-
 		});
-
 	}
 
 	protected void analyse() {
@@ -209,7 +215,7 @@ public class AppApi {
 			System.out.println("=============");
 			descriptionField.setText(text);
 		}
-		searchForSimilarImages(searchTokenApi);
+		//searchForSimilarImages(searchTokenApi);
 	}
 	
 	protected void takePicture() {
@@ -244,8 +250,6 @@ public class AppApi {
 			imageLabel.setIcon(icon);
 		}
 	}
-
-	
 
 	protected void searchForSimilarImages(String searchToken) {
 
