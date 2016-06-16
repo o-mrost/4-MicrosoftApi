@@ -8,9 +8,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class HttpSearch {
+public class SimilarImagesSearch {
 
-	public String GetUrlContentAsString(String searchToken) {
+	public static void main(String[] args) {
 
 		try {
 
@@ -31,14 +31,13 @@ public class HttpSearch {
 			System.out.println("searching");
 			System.out.println(body);
 			System.out.println("end of body");
-			return body.toString();
+			System.out.println(body.toString());
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block e.printStackTrace();
 		}
 
-		return null;
-
 	}
+
 }
