@@ -1,4 +1,4 @@
-# 4-MicrosoftApi
+# MicrosoftApi
 OOP II project with Microsoft Cognitive Services APIs
 
 Here will be our team project in which we use two of Microsoft Cognitive Services API: Computer vision and Bing image search.
