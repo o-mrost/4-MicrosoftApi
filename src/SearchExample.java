@@ -28,7 +28,7 @@ public class SearchExample
             HttpGet request = new HttpGet(uri);
             request.setHeader("Ocp-Apim-Subscription-Key", "08b669df660c40ed8135ac6403d859be");
 
-            // what is body here
+            // what is body here?
             // and why it wants to cast setEntity?
             // Request body
 //            StringEntity reqEntity = new StringEntity("{body}");

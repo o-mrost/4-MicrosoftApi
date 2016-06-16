@@ -41,11 +41,11 @@ public class AppApi {
 	private JFileChooser fc;
 	private File file;
 	private ImageIcon icon;
-	private JFrame frame;
+	private JFrame frame, helpFrame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
 	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp;
-	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam;
+	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
 
@@ -114,7 +114,9 @@ public class AppApi {
 		btnBrowse.setBounds(79, 18, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
-		JButton btnAnalyse = new JButton("Analyse image");
+		JButton btnAnalyse = new JButton("    Analyse image");
+		ImageIcon analyseIcon = new ImageIcon("img/cloud-icon.png");
+		btnAnalyse.setIcon(analyseIcon);
 		btnAnalyse.setBounds(361, 30, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
@@ -127,8 +129,17 @@ public class AppApi {
 		btnSaveFile.setBounds(828, 499, 117, 29);
 		frame.getContentPane().add(btnSaveFile);
 
-		btnHelp = new JButton("Help");
-		btnHelp.setBounds(894, 0, 60, 29);
+		btnHelp = new JButton("");
+		btnHelp.setBorderPainted(false);
+		ImageIcon btnIcon = new ImageIcon("img/help-icon.png");
+		btnHelp.setIcon(btnIcon);
+		
+		btnHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				HelpFrame help = new HelpFrame();
+			}
+		});
+		btnHelp.setBounds(895, 10, 50, 49);
 		frame.getContentPane().add(btnHelp);
 
 		lblTags = new JLabel("Tags:");
@@ -180,7 +191,14 @@ public class AppApi {
 		btnAnalyse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				analyse();
+				
+				try {
+					analyse();
+				} catch (NullPointerException e1) {
+					// TODO Auto-generated catch block
+					tagsField.setText("Please insert url first");
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -191,6 +209,7 @@ public class AppApi {
 			}
 		});
 	}
+
 
 	protected void setImageFromUrlAsImageIcon() {
 		URL link2 = null;
@@ -232,6 +251,8 @@ public class AppApi {
 			numberOfTags = tags.length;
 		}
 
+		tagsField.setText("");
+		
 		for (int i = 0; i < numberOfTags; i++) {
 			tagsField.append(tags[i] + "\n");
 		}
