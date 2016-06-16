@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
@@ -48,9 +50,6 @@ public class AppApi {
 
 	private BufferedImage imgFromCam = null;
 
-	private String link;
-	private String url;
-
 	private HttpDescribe httpQueryDescribe = new HttpDescribe();
 	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
@@ -58,8 +57,8 @@ public class AppApi {
 	private HttpSearch newSearch = new HttpSearch();
 	private String searchTokenApi = searchToken.getApiToken();
 
+	String link, url, text;
 	String[] tags;
-	String text;
 
 	/**
 	 * Launch the application.
@@ -125,18 +124,6 @@ public class AppApi {
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
 
-		urlField = new JTextField("Paste URL: ");
-		urlField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				link = urlField.getText();
-				url = "{'url':'" + link + "'}";
-			}
-		});
-		urlField.setBounds(22, 79, 220, 26);
-		frame.getContentPane().add(urlField);
-		urlField.setColumns(10);
-
 		btnSaveFile = new JButton("Save file");
 		btnSaveFile.setBounds(828, 499, 117, 29);
 		frame.getContentPane().add(btnSaveFile);
@@ -165,10 +152,16 @@ public class AppApi {
 		foundImagesLabel.setBounds(569, 71, 352, 379);
 		frame.getContentPane().add(foundImagesLabel);
 
+		urlField = new JTextField("Paste URL: ");
+		urlField.setBounds(22, 79, 220, 26);
+		frame.getContentPane().add(urlField);
+		urlField.setColumns(10);
+
 		lblImageFromWebcam = new JLabel();
 		lblImageFromWebcam.setBounds(297, 79, -286, 384);
 		frame.getContentPane().add(lblImageFromWebcam);
 
+		// buffer image first
 		lblImageFromWebcam.setIcon(icon);
 		// create Label display returned BufferedImage, create Buttons (Use
 		// Image / take new image)
@@ -191,10 +184,35 @@ public class AppApi {
 				analyse();
 			}
 		});
+
+		urlField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				setImageFromUrlAsImageIcon();
+
+			}
+		});
+	}
+
+	protected void setImageFromUrlAsImageIcon() {
+		URL link2 = null;
+		link = urlField.getText();
+		url = "{'url':'" + link + "'}";
+
+		try {
+			link2 = new URL(link);
+			BufferedImage image2 = ImageIO.read(link2);
+			icon = scaleBufferedImage(image2, imageLabel);
+			imageLabel.setIcon(icon);
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	protected void analyse() {
-		
+
 		String response = httpQueryDescribe.describeImageFromLink(url, token);
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -215,9 +233,9 @@ public class AppApi {
 			System.out.println("=============");
 			descriptionField.setText(text);
 		}
-		//searchForSimilarImages(searchTokenApi);
+		// searchForSimilarImages(searchTokenApi);
 	}
-	
+
 	protected void takePicture() {
 
 		WebcamAPI cam = new WebcamAPI();
@@ -225,7 +243,7 @@ public class AppApi {
 			imgFromCam = cam.getPicture();
 			System.out.println("taken image");
 			// here null pointer exception
-			icon = scaleImage(imgFromCam, lblImageFromWebcam);
+			icon = scaleBufferedImage(imgFromCam, lblImageFromWebcam);
 			System.out.println("icon set");
 			// doesn't work yet
 
@@ -253,6 +271,7 @@ public class AppApi {
 
 	protected void searchForSimilarImages(String searchToken) {
 
+		// TODO problem with subscription key
 		System.out.println("search token =" + searchTokenApi + "=");
 		String url222 = "https://bingapis.azure-api.net/api/v5/images/search?q=cats&count=4&offset=0&mkt=en-us&safeSearch=Moderate";
 
@@ -262,8 +281,11 @@ public class AppApi {
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {
 
+		// this method displays image from filechooser
 		/** get height and width, if h > w set hScaledInstance = -1 usw. **/
+		// TODO understand how it works!
 		ImageIcon icon;
+
 		int h = label.getHeight();
 		int w = label.getWidth();
 		if (h > w) {
@@ -280,12 +302,14 @@ public class AppApi {
 		return icon;
 	}
 
-	protected ImageIcon scaleImage(BufferedImage img, JLabel label) {
+	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
 
+		// TODO understand it too
 		/** get height and width, if h > w set hScaledInstance = -1 usw. **/
 		ImageIcon icon;
 		int h = label.getHeight();
 		int w = label.getWidth();
+
 		if (h > w) {
 			icon = new ImageIcon(
 					new ImageIcon(img).getImage().getScaledInstance(label.getWidth(), -1, Image.SCALE_FAST));
