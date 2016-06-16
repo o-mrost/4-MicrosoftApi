@@ -4,8 +4,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,13 +24,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.logging.Log;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import gson.Captions;
 import gson.JsonRoot;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class AppApi {
 
@@ -35,18 +42,10 @@ public class AppApi {
 	private File file;
 	private ImageIcon icon;
 	private JFrame frame;
-	private JTextArea tagsField;
-	private JTextArea descriptionField;
+	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JLabel imageLabel;
-	private JButton btnTakePicture;
-	private JButton btnBrowse;
-	private JButton btnSaveFile;
-	private JButton btnHelp;
-	private JLabel lblTags;
-	private JLabel lblDescription;
-	private JLabel foundImagesLabel;
-	private JLabel lblImageFromWebcam;
+	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp;
+	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam;
 
 	private BufferedImage imgFromCam = null;
 
@@ -189,7 +188,6 @@ public class AppApi {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				setImageFromUrlAsImageIcon();
-
 			}
 		});
 	}
@@ -223,8 +221,19 @@ public class AppApi {
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
 
-		for (String element : tags) {
-			tagsField.append(element + "\n");
+		// for (String element : tags) {
+		// tagsField.append(element + "\n");
+		// }
+
+		int numberOfTags;
+		if (tags.length >= 6) {
+			numberOfTags = 6;
+		} else {
+			numberOfTags = tags.length;
+		}
+
+		for (int i = 0; i < numberOfTags; i++) {
+			tagsField.append(tags[i] + "\n");
 		}
 
 		for (Captions currentCaption : root.getDescription().getCaptions()) {
@@ -266,7 +275,19 @@ public class AppApi {
 			}
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
+
+			// pass this BufferedImage image for the analysis
+
+			// how to make analyse button response differently when either
+			// uploading
+			// file or using url? switch case thing?
+			analyseImage(image);
 		}
+	}
+
+	private void analyseImage(BufferedImage image) {
+		// TODO multipart file upload
+
 	}
 
 	protected void searchForSimilarImages(String searchToken) {
