@@ -1,14 +1,16 @@
+// // This sample uses the Apache HTTP client from HTTP Components (http://hc.apache.org/httpcomponents-client-ga/)
 import java.net.URI;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-public class SearchExample 
+public class UploadImage 
 {
     public static void main(String[] args) 
     {
@@ -16,21 +18,18 @@ public class SearchExample
 
         try
         {
-            URIBuilder builder = new URIBuilder("https://bingapis.azure-api.net/api/v5/images/search");
+            URIBuilder builder = new URIBuilder("https://api.projectoxford.ai/vision/v1.0/analyze");
 
-            builder.setParameter("q", "cats");
-            builder.setParameter("count", "10");
-            builder.setParameter("offset", "0");
-            builder.setParameter("mkt", "en-us");
-            builder.setParameter("safeSearch", "Moderate");
+            builder.setParameter("visualFeatures", "Categories");
+            builder.setParameter("details", "{string}");
 
             URI uri = builder.build();
-            HttpGet request = new HttpGet(uri);
-            request.setHeader("Ocp-Apim-Subscription-Key", "08b669df660c40ed8135ac6403d859be");
+            HttpPost request = new HttpPost(uri);
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("Ocp-Apim-Subscription-Key", "{subscription key}");
 
-            // what is body here?
-            // and why it wants to cast setEntity?
-            
+
+            // Request body
             StringEntity reqEntity = new StringEntity("{body}");
             request.setEntity(reqEntity);
 

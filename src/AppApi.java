@@ -37,6 +37,8 @@ import gson.Captions;
 import gson.JsonRoot;
 
 public class AppApi {
+	
+	// bla
 
 	private JFileChooser fc;
 	private File file;
@@ -87,6 +89,11 @@ public class AppApi {
 	 */
 	private void initialize() {
 
+		
+		// commentar
+		
+		
+		
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
