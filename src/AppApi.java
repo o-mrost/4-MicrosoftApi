@@ -36,7 +36,7 @@ import com.google.gson.GsonBuilder;
 import gson.Captions;
 import gson.JsonRoot;
 
-// Hallo 
+// Hallo irgendetwas
 
 public class AppApi {
 
