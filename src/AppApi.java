@@ -8,7 +8,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,31 +23,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import gson.Captions;
 import gson.JsonRoot;
-
-// Hallo irgendetwas
+import net.coobird.thumbnailator.Thumbnails;
 
 public class AppApi {
 
-	// Hallo Hallo Hallo Hallo
-
-
-	
-	
-	// Hallo Hallo Hallo Hallo
-
-	//	Hallo
-	
 	private JFileChooser fc;
 	private File file;
 	private ImageIcon icon;
@@ -59,8 +42,11 @@ public class AppApi {
 	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
+	private BufferedImage image = null;
 
-	private HttpDescribe httpQueryDescribe = new HttpDescribe();
+	private HttpDescribeUrl httpQueryDescribe = new HttpDescribeUrl();
+	private HttpDescribeLocal httpLocal = new HttpDescribeLocal();
+	
 	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
 	private ImageSearchToken searchToken = new ImageSearchToken();
@@ -190,6 +176,7 @@ public class AppApi {
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openFilechooser();
+				
 			}
 		});
 
@@ -213,14 +200,29 @@ public class AppApi {
 			}
 		});
 
-		urlField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				setImageFromUrlAsImageIcon();
-			}
-		});
+//		urlField.addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//				setImageFromUrlAsImageIcon();
+//				
+//				
+//			}
+//		});
 	}
 
+
+	protected void getThumbnail() {
+		// TODO Auto-generated method stub
+		try {
+			
+			Thumbnails.of(file)
+			.size(400, 00)
+			.toFile(new File("thumbnail.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	protected void setImageFromUrlAsImageIcon() {
 		URL link2 = null;
@@ -240,9 +242,14 @@ public class AppApi {
 	}
 
 	protected void analyse() {
+		
+		// in case url is given
+//		String response = httpQueryDescribe.describeImageFromLink(url, token);
 
-		String response = httpQueryDescribe.describeImageFromLink(url, token);
-
+		// in case user uploads image from hard drive
+		String response = httpLocal.describeImageFromFilechooser(image, token);
+		
+		
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 
@@ -298,13 +305,19 @@ public class AppApi {
 
 		if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
-			BufferedImage image = null;
+			image = null;
 
 			try {
 				image = (BufferedImage) ImageIO.read(file);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			
+			// getThumbnail();
+			
+			// added to try with thumbnailator
+			//icon = new ImageIcon("thumbnail.jpg");
+			
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
 

@@ -13,7 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-public class HttpDescribe {
+public class HttpDescribeUrl {
 
 	public String describeImageFromLink(String url, String token) {
 
@@ -50,12 +50,7 @@ public class HttpDescribe {
 				body.append(line);
 			}
 
-			// it was in the original code from Microsoft, if I let it, then I
-			// receive attempted read from closed stream message
-			// if (entity != null) {
-			// System.out.println(EntityUtils.toString(entity));
-			//
-			// }
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}

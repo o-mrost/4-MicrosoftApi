@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="httpcore-4.4.4.jar"/>
 	<classpathentry kind="lib" path="jars/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="thumbnailator-0.4.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
