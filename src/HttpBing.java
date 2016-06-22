@@ -8,36 +8,38 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class HttpSearch {
+public class HttpBing {
 
 	public String GetUrlContentAsString(String searchToken) {
 
+		StringBuffer body = null;
+
 		try {
 
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=sailing+dinghies&mkt=en-us";
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=cat&count=1&mkt=en-us";
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
-			request.setHeader("Ocp-Apim-Subscription-Key", "08b669df660c40ed8135ac6403d859be");
+			request.setHeader("Ocp-Apim-Subscription-Key", searchToken);
 
 			HttpResponse response = client.execute(request);
-			
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer body = new StringBuffer();
+			body = new StringBuffer();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				body.append(line);
 			}
-			
+
 			System.out.println(body);
-			
+
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block e.printStackTrace();
+			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block e.printStackTrace();
+			e.printStackTrace();
 		}
 
-		return null;
+		return body.toString();
 
 	}
 }

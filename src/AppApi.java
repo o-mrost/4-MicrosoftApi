@@ -26,6 +26,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import bing.Data;
+import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
 import net.coobird.thumbnailator.Thumbnails;
@@ -34,7 +36,7 @@ public class AppApi {
 
 	private JFileChooser fc;
 	private File file;
-	private ImageIcon icon;
+	private ImageIcon icon, iconFromInternet;
 	private JFrame frame, helpFrame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
@@ -46,15 +48,17 @@ public class AppApi {
 
 	private HttpDescribeUrl httpQueryDescribe = new HttpDescribeUrl();
 	private HttpDescribeLocal httpLocal = new HttpDescribeLocal();
-	
+	private HttpBing httpBingSearch = new HttpBing();
+
 	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
 	private ImageSearchToken searchToken = new ImageSearchToken();
-	private HttpSearch newSearch = new HttpSearch();
+	private HttpBing newSearch = new HttpBing();
 	private String searchTokenApi = searchToken.getApiToken();
 
-	String link, url, text;
+	String link, url, text, contentUrl;
 	String[] tags;
+	private JButton btnGetResponse;
 
 	/**
 	 * Launch the application.
@@ -130,7 +134,7 @@ public class AppApi {
 		btnHelp.setBorderPainted(false);
 		ImageIcon btnIcon = new ImageIcon("img/help-icon.png");
 		btnHelp.setIcon(btnIcon);
-		
+
 		btnHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				HelpFrame help = new HelpFrame();
@@ -154,12 +158,11 @@ public class AppApi {
 		lblDescription.setBounds(352, 235, 77, 16);
 		frame.getContentPane().add(lblDescription);
 
-		// place for images from internet
 		foundImagesLabel = new JLabel();
 		foundImagesLabel.setBounds(569, 71, 352, 379);
 		frame.getContentPane().add(foundImagesLabel);
 
-		urlField = new JTextField("Paste URL: ");
+		urlField = new JTextField();
 		urlField.setBounds(22, 79, 220, 26);
 		frame.getContentPane().add(urlField);
 		urlField.setColumns(10);
@@ -170,13 +173,21 @@ public class AppApi {
 
 		// buffer image first
 		lblImageFromWebcam.setIcon(icon);
+
+		btnGetResponse = new JButton("Get response");
+		btnGetResponse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				searchForSimilarImages();
+			}
+		});
+		btnGetResponse.setBounds(670, 30, 117, 29);
+		frame.getContentPane().add(btnGetResponse);
 		// create Label display returned BufferedImage, create Buttons (Use
 		// Image / take new image)
 
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openFilechooser();
-				
 			}
 		});
 
@@ -190,66 +201,35 @@ public class AppApi {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				// TODO switch case thing for url or picture from hard drive?
 				try {
 					analyse();
 				} catch (NullPointerException e1) {
-					// TODO Auto-generated catch block
-					tagsField.setText("Please insert url first");
+					tagsField.setText("Please insert url or choose image first");
 					e1.printStackTrace();
 				}
 			}
 		});
 
-//		urlField.addKeyListener(new KeyAdapter() {
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				setImageFromUrlAsImageIcon();
-//				
-//				
-//			}
-//		});
-	}
-
-
-	protected void getThumbnail() {
-		// TODO Auto-generated method stub
-		try {
-			
-			Thumbnails.of(file)
-			.size(400, 00)
-			.toFile(new File("thumbnail.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	protected void setImageFromUrlAsImageIcon() {
-		URL link2 = null;
-		link = urlField.getText();
-		url = "{'url':'" + link + "'}";
-
-		try {
-			link2 = new URL(link);
-			BufferedImage image2 = ImageIO.read(link2);
-			icon = scaleBufferedImage(image2, imageLabel);
-			imageLabel.setIcon(icon);
-		} catch (MalformedURLException e2) {
-			e2.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		urlField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (urlField.getText().length() > 0) {
+					setImageFromUrlAsImageIcon();
+				}
+			}
+		});
 	}
 
 	protected void analyse() {
-		
+
 		// in case url is given
-//		String response = httpQueryDescribe.describeImageFromLink(url, token);
+		// String response = httpQueryDescribe.describeImageFromLink(url,
+		// token);
 
 		// in case user uploads image from hard drive
 		String response = httpLocal.describeImageFromFilechooser(image, token);
-		
-		
+
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 
@@ -257,10 +237,6 @@ public class AppApi {
 		String[] tags = root.getDescription().getTags();
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
-
-		// for (String element : tags) {
-		// tagsField.append(element + "\n");
-		// }
 
 		int numberOfTags;
 		if (tags.length >= 6) {
@@ -270,7 +246,7 @@ public class AppApi {
 		}
 
 		tagsField.setText("");
-		
+
 		for (int i = 0; i < numberOfTags; i++) {
 			tagsField.append(tags[i] + "\n");
 		}
@@ -282,6 +258,40 @@ public class AppApi {
 			descriptionField.setText(text);
 		}
 		// searchForSimilarImages(searchTokenApi);
+	}
+
+	protected void searchForSimilarImages() {
+
+		String responseBing = httpBingSearch.GetUrlContentAsString(searchTokenApi);
+
+		GsonBuilder gsonBingBuilder = new GsonBuilder();
+		Gson gsonBing = gsonBingBuilder.create();
+
+		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
+
+		for (Data currentData : rootBing.getValue()) {
+			contentUrl = currentData.getContentUrl();
+			System.out.println("content url " + contentUrl);
+			
+			// TODO modify setImageAsImageIcon so that it accepts url, label name and scaling proportions
+			// and sets the image as label accordingly
+
+			// we can add one image
+			// TODO think how to insert several, loop through coordinates?
+			URL linkUrl = null;
+			url = "{'url':'" + contentUrl + "'}";
+
+			try {
+				linkUrl = new URL(contentUrl);
+				BufferedImage imgFromUrl = ImageIO.read(linkUrl);
+				iconFromInternet = scaleBufferedImage(imgFromUrl, foundImagesLabel);
+				foundImagesLabel.setIcon(iconFromInternet);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	protected void takePicture() {
@@ -312,27 +322,17 @@ public class AppApi {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			
-			// getThumbnail();
-			
 			// added to try with thumbnailator
-			//icon = new ImageIcon("thumbnail.jpg");
-			
+
+			// getThumbnail();
+			// icon = new ImageIcon("thumbnail.jpg");
+
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
 
-			// pass this BufferedImage image for the analysis
-
 			// how to make analyse button response differently when either
-			// uploading
-			// file or using url? switch case thing?
-			analyseImage(image);
+			// uploading file or using url? switch case thing?
 		}
-	}
-
-	private void analyseImage(BufferedImage image) {
-		// TODO multipart file upload
-
 	}
 
 	protected void searchForSimilarImages(String searchToken) {
@@ -343,6 +343,34 @@ public class AppApi {
 
 		newSearch.GetUrlContentAsString(searchToken);
 		System.out.println("searched");
+	}
+
+	protected void getThumbnail() {
+		// TODO Auto-generated method stub
+		try {
+
+			Thumbnails.of(file).size(400, 00).toFile(new File("thumbnail.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	protected void setImageFromUrlAsImageIcon() {
+		URL linkAsUrl = null;
+		link = urlField.getText();
+		url = "{'url':'" + link + "'}";
+
+		try {
+			linkAsUrl = new URL(link);
+			BufferedImage image2 = ImageIO.read(linkAsUrl);
+			icon = scaleBufferedImage(image2, imageLabel);
+			imageLabel.setIcon(icon);
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {
