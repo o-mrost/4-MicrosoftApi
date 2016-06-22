@@ -34,6 +34,7 @@ import net.coobird.thumbnailator.Thumbnails;
 
 public class AppApi {
 
+	// added bing api
 	private JFileChooser fc;
 	private File file;
 	private ImageIcon icon, iconFromInternet;
