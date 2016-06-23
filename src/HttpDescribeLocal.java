@@ -1,9 +1,11 @@
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 import javax.imageio.ImageIO;
@@ -61,15 +63,25 @@ public class HttpDescribeLocal {
             //**** END HTTP Body form BufferedImage
             
             HttpResponse response = httpclient.execute(request);
-             entity = response.getEntity();
+            entity = response.getEntity();
              
-             answer = EntityUtils.toString(entity);
-
-            System.out.println("image uploaded");
-            if (entity != null) 
-            {
-                System.out.println(EntityUtils.toString(entity));
-            }
+            answer = EntityUtils.toString(entity);
+			System.out.println("image uploaded");
+            
+			
+//			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//
+//			body = new StringBuffer();
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				body.append(line);
+//			}
+			
+			
+//			if (entity != null) 
+//            {
+//                System.out.println(EntityUtils.toString(entity));
+//            }
         }
         catch (Exception e)
         {

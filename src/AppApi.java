@@ -40,13 +40,12 @@ public class AppApi {
 	private JFrame frame, helpFrame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp;
+	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp, btnSearchForSimilar;
 	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
 	private BufferedImage image = null;
 
-	private HttpDescribeUrl httpQueryDescribe = new HttpDescribeUrl();
 	private HttpDescribeLocal httpLocal = new HttpDescribeLocal();
 	private HttpBing httpBingSearch = new HttpBing();
 
@@ -55,9 +54,10 @@ public class AppApi {
 	private ImageSearchToken searchToken = new ImageSearchToken();
 	private String searchTokenApi = searchToken.getApiToken();
 
-	String link, url, text, contentUrl;
+	String link, url, text, contentUrl, tagsString = "", searchParameters;
 	String[] tags;
-	private JButton btnSearchForSimilar;
+
+	int numberOfTags;
 
 	/**
 	 * Launch the application.
@@ -177,7 +177,25 @@ public class AppApi {
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				searchForSimilarImages();
+
+				// TODO empty tags and description from previous search
+
+				// change description to actual text
+				text = descriptionField.getText();
+				System.out.println("new description " + text);
+
+				// TODO tags get and change to string
+
+				System.out.println("old tags string " + tagsString);
+				
+				System.out.println("tags field " + tagsField.getText());
+				String newTags = tagsField.getText().replace("\n", "%20");
+				
+				System.out.println("new tags " + newTags);
+
+				searchParameters = newTags + text.replace(" ", "%20");
+				System.out.println(" search params " + searchParameters);
+				searchForSimilarImages(searchParameters);
 			}
 		});
 		btnSearchForSimilar.setBounds(628, 30, 189, 29);
@@ -220,11 +238,10 @@ public class AppApi {
 			}
 		});
 	}
-	
 
-	protected void searchForSimilarImages() {
+	protected void searchForSimilarImages(String text) {
 
-		String responseBing = httpBingSearch.GetUrlContentAsString(searchTokenApi);
+		String responseBing = httpBingSearch.GetUrlContentAsString(searchTokenApi, text);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
@@ -275,8 +292,9 @@ public class AppApi {
 
 		try {
 			link2 = new URL(link);
-			BufferedImage image2 = ImageIO.read(link2);
-			icon = scaleBufferedImage(image2, imageLabel);
+			// set image as Buffered image
+			image = ImageIO.read(link2);
+			icon = scaleBufferedImage(image, imageLabel);
 			imageLabel.setIcon(icon);
 		} catch (MalformedURLException e2) {
 			e2.printStackTrace();
@@ -285,14 +303,7 @@ public class AppApi {
 		}
 	}
 
-	protected void analyse() {
-
-		
-		// TODO return string 
-		
-		// in case url is given
-		// String response = httpQueryDescribe.describeImageFromLink(url,
-		// token);
+	protected String analyse() {
 
 		// in case user uploads image from hard drive
 		String response = httpLocal.describeImageFromFilechooser(image, token);
@@ -309,7 +320,6 @@ public class AppApi {
 		// tagsField.append(element + "\n");
 		// }
 
-		int numberOfTags;
 		if (tags.length >= 6) {
 			numberOfTags = 6;
 		} else {
@@ -320,15 +330,23 @@ public class AppApi {
 
 		for (int i = 0; i < numberOfTags; i++) {
 			tagsField.append(tags[i] + "\n");
+			// get tags from string array to a string variable
+			tagsString = tagsString + tags[i] + "%20";
 		}
 
 		for (Captions currentCaption : root.getDescription().getCaptions()) {
 			text = currentCaption.getText();
-			System.out.println("caption: " + text);
+			System.out.println("old description: " + text);
 			System.out.println("=============");
 			descriptionField.setText(text);
 		}
+		String textString = text.replace(" ", "%20");
+
+		System.out.println("text with replaced spaces " + textString);
 		// searchForSimilarImages(searchTokenApi);
+
+		System.out.println("complete text " + tagsString + textString);
+		return tagsString + textString;
 	}
 
 	protected void takePicture() {
@@ -375,8 +393,6 @@ public class AppApi {
 			// file or using url? switch case thing?
 		}
 	}
-
-
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {
 

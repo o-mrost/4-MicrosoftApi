@@ -10,13 +10,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class HttpBing {
 
-	public String GetUrlContentAsString(String searchToken) {
+	public String GetUrlContentAsString(String searchToken, String tagsString) {
 
 		StringBuffer body = null;
 
 		try {
-
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=cat&count=1&mkt=en-us";
+//			String tagsString = "cat";
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=1&mkt=en-us";
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
