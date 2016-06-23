@@ -53,7 +53,6 @@ public class AppApi {
 	private TagsToken tokenCache = new TagsToken();
 	private String token = tokenCache.getApiToken();
 	private ImageSearchToken searchToken = new ImageSearchToken();
-	private HttpSearch newSearch = new HttpSearch();
 	private String searchTokenApi = searchToken.getApiToken();
 
 	String link, url, text, contentUrl;
@@ -221,6 +220,7 @@ public class AppApi {
 			}
 		});
 	}
+	
 
 	protected void searchForSimilarImages() {
 
@@ -287,6 +287,9 @@ public class AppApi {
 
 	protected void analyse() {
 
+		
+		// TODO return string 
+		
 		// in case url is given
 		// String response = httpQueryDescribe.describeImageFromLink(url,
 		// token);
@@ -370,24 +373,10 @@ public class AppApi {
 			// how to make analyse button response differently when either
 			// uploading
 			// file or using url? switch case thing?
-			analyseImage(image);
 		}
 	}
 
-	private void analyseImage(BufferedImage image) {
-		// TODO multipart file upload
 
-	}
-
-	protected void searchForSimilarImages(String searchToken) {
-
-		// TODO problem with subscription key
-		System.out.println("search token =" + searchTokenApi + "=");
-		String url222 = "https://bingapis.azure-api.net/api/v5/images/search?q=cats&count=4&offset=0&mkt=en-us&safeSearch=Moderate";
-
-		newSearch.GetUrlContentAsString(searchToken);
-		System.out.println("searched");
-	}
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {
 
