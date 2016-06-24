@@ -239,6 +239,7 @@ public class AppApi {
 			}
 		});
 	}
+	
 
 	protected void searchForSimilarImages(String text) {
 
@@ -304,6 +305,7 @@ public class AppApi {
 			e1.printStackTrace();
 		} 
 	}
+
 
 	protected String analyse() {
 
