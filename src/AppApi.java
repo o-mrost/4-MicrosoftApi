@@ -122,6 +122,8 @@ public class AppApi {
 
 		tagsField = new JTextArea();
 		tagsField.setBounds(352, 107, 205, 116);
+		tagsField.setLineWrap(true);
+		tagsField.setWrapStyleWord(true);
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
 
@@ -190,6 +192,7 @@ public class AppApi {
 				
 				System.out.println("tags field " + tagsField.getText());
 				String newTags = tagsField.getText().replace("\n", "%20");
+				newTags = newTags.replace(" ", "%20");
 				
 				System.out.println("new tags " + newTags);
 
@@ -222,8 +225,6 @@ public class AppApi {
 				try {
 					analyse();
 				} catch (NullPointerException e1) {
-					// TODO Auto-generated catch block
-					tagsField.setText("PPlease insert url or choose image first");
 					e1.printStackTrace();
 				}
 			}
@@ -297,10 +298,11 @@ public class AppApi {
 			icon = scaleBufferedImage(image, imageLabel);
 			imageLabel.setIcon(icon);
 		} catch (MalformedURLException e2) {
+			tagsField.setText("please enter a valid link or choose an image with button 'Browse' ");
 			e2.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		} 
 	}
 
 	protected String analyse() {
