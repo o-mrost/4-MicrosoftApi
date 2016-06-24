@@ -30,7 +30,6 @@ import bing.Data;
 import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
-import net.coobird.thumbnailator.Thumbnails;
 
 public class AppApi {
 
@@ -138,6 +137,7 @@ public class AppApi {
 
 		btnHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// TODO write help
 				HelpFrame help = new HelpFrame();
 			}
 		});
@@ -180,24 +180,17 @@ public class AppApi {
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// TODO empty tags and description from previous search
-
-				// change description to actual text
+				// in case user edited description, update it
 				text = descriptionField.getText();
-				System.out.println("new description " + text);
 
-				// TODO tags get and change to string
-
-				System.out.println("old tags string " + tagsString);
-				
-				System.out.println("tags field " + tagsField.getText());
+				// in case user edited tags, we get the new info here and make it suitable for url
+				// replace new line character with %20
 				String newTags = tagsField.getText().replace("\n", "%20");
+				// and replace spaces wiht %20
 				newTags = newTags.replace(" ", "%20");
 				
-				System.out.println("new tags " + newTags);
-
 				searchParameters = newTags + text.replace(" ", "%20");
-				System.out.println(" search params " + searchParameters);
+
 				searchForSimilarImages(searchParameters);
 			}
 		});
@@ -221,7 +214,6 @@ public class AppApi {
 		btnAnalyse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				try {
 					analyse();
 				} catch (NullPointerException e1) {
@@ -276,17 +268,6 @@ public class AppApi {
 		}
 	}
 
-	protected void getThumbnail() {
-		// TODO Auto-generated method stub
-		try {
-
-			Thumbnails.of(file).size(400, 00).toFile(new File("thumbnail.jpg"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	protected void setImageFromUrlAsImageIcon() {
 		URL link2 = null;
 		link = urlField.getText();
@@ -309,8 +290,7 @@ public class AppApi {
 
 	protected String analyse() {
 
-		// in case user uploads image from hard drive
-		String response = httpLocal.describeImageFromFilechooser(image, token);
+		String response = httpLocal.describeImage(image, token);
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
@@ -319,10 +299,6 @@ public class AppApi {
 		String[] tags = root.getDescription().getTags();
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
-
-		// for (String element : tags) {
-		// tagsField.append(element + "\n");
-		// }
 
 		if (tags.length >= 6) {
 			numberOfTags = 6;
@@ -340,16 +316,12 @@ public class AppApi {
 
 		for (Captions currentCaption : root.getDescription().getCaptions()) {
 			text = currentCaption.getText();
-			System.out.println("old description: " + text);
+			System.out.println("description: " + text);
 			System.out.println("=============");
 			descriptionField.setText(text);
 		}
 		String textString = text.replace(" ", "%20");
 
-		System.out.println("text with replaced spaces " + textString);
-		// searchForSimilarImages(searchTokenApi);
-
-		System.out.println("complete text " + tagsString + textString);
 		return tagsString + textString;
 	}
 
@@ -382,19 +354,8 @@ public class AppApi {
 				e1.printStackTrace();
 			}
 
-			// getThumbnail();
-
-			// added to try with thumbnailator
-			// icon = new ImageIcon("thumbnail.jpg");
-
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
-
-			// pass this BufferedImage image for the analysis
-
-			// how to make analyse button response differently when either
-			// uploading
-			// file or using url? switch case thing?
 		}
 	}
 
