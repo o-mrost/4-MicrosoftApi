@@ -48,15 +48,18 @@ public class AppApi {
 	private HttpDescribeLocal httpLocal = new HttpDescribeLocal();
 	private HttpBing httpBingSearch = new HttpBing();
 
-	private TagsToken tokenCache = new TagsToken();
-	private String token = tokenCache.getApiToken();
-	private ImageSearchToken searchToken = new ImageSearchToken();
-	private String searchTokenApi = searchToken.getApiToken();
+	private String analyseImageToken, bingToken;
+
+	private Token searchToken = new Token();
+	private Token tokenCache = new Token();
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters;
 	String[] tags;
 
 	int numberOfTags;
+
+	String tagsTokenFileName = "APIToken.txt";
+	String imageSearchTokenFileName = "SearchApiToken.txt";
 
 	/**
 	 * Launch the application.
@@ -179,16 +182,19 @@ public class AppApi {
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
 
 				// in case user edited description, update it
 				text = descriptionField.getText();
 
-				// in case user edited tags, we get the new info here and make it suitable for url
+				// in case user edited tags, we get the new info here and make
+				// it suitable for url
 				// replace new line character with %20
 				String newTags = tagsField.getText().replace("\n", "%20");
 				// and replace spaces wiht %20
 				newTags = newTags.replace(" ", "%20");
-				
+
 				searchParameters = newTags + text.replace(" ", "%20");
 
 				searchForSimilarImages(searchParameters);
@@ -215,6 +221,9 @@ public class AppApi {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					
+					analyseImageToken = searchToken.getApiToken(tagsTokenFileName);
+					
 					analyse();
 				} catch (NullPointerException e1) {
 					e1.printStackTrace();
@@ -231,11 +240,10 @@ public class AppApi {
 			}
 		});
 	}
-	
 
 	protected void searchForSimilarImages(String text) {
 
-		String responseBing = httpBingSearch.GetUrlContentAsString(searchTokenApi, text);
+		String responseBing = httpBingSearch.GetUrlContentAsString(bingToken, text);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
@@ -284,13 +292,12 @@ public class AppApi {
 			e2.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		} 
+		}
 	}
-
 
 	protected String analyse() {
 
-		String response = httpLocal.describeImage(image, token);
+		String response = httpLocal.describeImage(image, analyseImageToken);
 
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
