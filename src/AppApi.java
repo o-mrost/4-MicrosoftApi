@@ -45,8 +45,8 @@ public class AppApi {
 	private BufferedImage imgFromCam = null;
 	private BufferedImage image = null;
 
-	private HttpDescribeLocal httpLocal = new HttpDescribeLocal();
-	private HttpBing httpBingSearch = new HttpBing();
+	private HttpDescribeImage httpLocal = new HttpDescribeImage();
+	private HttpSimilarImagesSearch httpBingSearch = new HttpSimilarImagesSearch();
 
 	private String analyseImageToken, bingToken;
 
@@ -182,7 +182,7 @@ public class AppApi {
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
 
 				// in case user edited description, update it
@@ -221,9 +221,9 @@ public class AppApi {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					
+
 					analyseImageToken = searchToken.getApiToken(tagsTokenFileName);
-					
+
 					analyse();
 				} catch (NullPointerException e1) {
 					e1.printStackTrace();
