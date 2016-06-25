@@ -3,25 +3,29 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class ImageSearchToken {
+public class Token {
+	
+	public Token(){
+	}
 
-	private final String filename = "SearchApiToken.txt";
 	private String token = null;
 
-	public String getApiToken() {
+	public String getApiToken(String filename) {
 		if (token == null) {
-			token = loadFromFile();
+			System.out.println("loading from file " + filename);
+			token = loadFromFile(filename);
 		}
 		return token;
 	}
 
-	private String loadFromFile() {
+	private String loadFromFile(String nameOfFile) {
 
 		BufferedReader br = null;
 		String apiToken = null;
 		try {
-			br = new BufferedReader(new FileReader(filename));
+			br = new BufferedReader(new FileReader(nameOfFile));
 			apiToken = br.readLine();
+			System.out.println("token " + apiToken);
 
 		} catch (FileNotFoundException e) {
 			apiToken = null;
