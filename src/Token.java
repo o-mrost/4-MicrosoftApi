@@ -12,7 +12,6 @@ public class Token {
 
 	public String getApiToken(String filename) {
 		if (token == null) {
-			System.out.println("loading from file " + filename);
 			token = loadFromFile(filename);
 		}
 		return token;
@@ -25,7 +24,6 @@ public class Token {
 		try {
 			br = new BufferedReader(new FileReader(nameOfFile));
 			apiToken = br.readLine();
-			System.out.println("token " + apiToken);
 
 		} catch (FileNotFoundException e) {
 			apiToken = null;
