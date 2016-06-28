@@ -45,12 +45,10 @@ public class HttpDescribeImage {
 			entity = response.getEntity();
 
 			answer = EntityUtils.toString(entity);
-			System.out.println("image uploaded");
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-
 		return answer;
 	}
-
 }
