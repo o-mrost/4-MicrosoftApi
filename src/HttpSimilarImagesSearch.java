@@ -16,7 +16,7 @@ public class HttpSimilarImagesSearch {
 
 		try {
 //			String tagsString = "cat";
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=1&mkt=en-us";
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=4&mkt=en-us";
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
@@ -38,7 +38,6 @@ public class HttpSimilarImagesSearch {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return body.toString();
 
 	}
