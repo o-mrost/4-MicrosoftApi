@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +32,6 @@ import bing.Data;
 import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
-import javax.swing.JPanel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class AppApi {
 
@@ -100,11 +99,10 @@ public class AppApi {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// set size of frame to 3/4 of screen size
+		// set height of frame to 3/4 of screen height
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
 		frame.setSize(screenSize.width, (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
-		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(null);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
@@ -137,10 +135,6 @@ public class AppApi {
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
 
-		btnSaveFile = new JButton("Save file");
-		btnSaveFile.setBounds(830, 543, 117, 29);
-		frame.getContentPane().add(btnSaveFile);
-
 		btnHelp = new JButton("");
 		btnHelp.setBorderPainted(false);
 		ImageIcon btnIcon = new ImageIcon("img/help-icon.png");
@@ -152,7 +146,7 @@ public class AppApi {
 				HelpFrame help = new HelpFrame();
 			}
 		});
-		btnHelp.setBounds(895, 10, 50, 49);
+		btnHelp.setBounds(1195, 10, 50, 49);
 		frame.getContentPane().add(btnHelp);
 
 		lblTags = new JLabel("Tags:");
@@ -178,8 +172,6 @@ public class AppApi {
 		lblImageFromWebcam = new JLabel();
 		lblImageFromWebcam.setBounds(297, 79, -286, 384);
 		frame.getContentPane().add(lblImageFromWebcam);
-
-		// buffer image first
 		lblImageFromWebcam.setIcon(icon);
 
 		btnSearchForSimilar = new JButton("Search for similar images");
@@ -192,18 +184,16 @@ public class AppApi {
 				text = descriptionField.getText();
 
 				// in case user edited tags, we get the new info here and make
-				// it suitable for url
-				// replace new line character with %20
+				// it suitable for url, replace new line character with %20
 				String newTags = tagsField.getText().replace("\n", "%20");
-				// and replace spaces wiht %20
+				// and replace spaces with %20
 				newTags = newTags.replace(" ", "%20");
 
 				searchParameters = newTags + text.replace(" ", "%20");
-
 				searchForSimilarImages(searchParameters);
 			}
 		});
-		btnSearchForSimilar.setBounds(628, 30, 189, 29);
+		btnSearchForSimilar.setBounds(725, 30, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
 		// place for images from internet
@@ -214,11 +204,10 @@ public class AppApi {
 				saveFileChooser(tmp1);
 			}
 		});
-		foundImagesLabel1.setText("1");
 		foundImagesLabel1.setBounds(600, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel1);
 
-		foundImagesLabel2 = new JLabel("2");
+		foundImagesLabel2 = new JLabel();
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -228,7 +217,7 @@ public class AppApi {
 		foundImagesLabel2.setBounds(600, 327, 200, 200);
 		frame.getContentPane().add(foundImagesLabel2);
 
-		foundImagesLabel3 = new JLabel("3");
+		foundImagesLabel3 = new JLabel();
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -238,7 +227,7 @@ public class AppApi {
 		foundImagesLabel3.setBounds(820, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel3);
 
-		foundImagesLabel4 = new JLabel("4");
+		foundImagesLabel4 = new JLabel();
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
@@ -247,9 +236,6 @@ public class AppApi {
 		});
 		foundImagesLabel4.setBounds(820, 327, 200, 200);
 		frame.getContentPane().add(foundImagesLabel4);
-		
-		// create Label display returned BufferedImage, create Buttons (Use
-		// Image / take new image)
 
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -267,9 +253,7 @@ public class AppApi {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-
 					analyseImageToken = searchToken.getApiToken(tagsTokenFileName);
-
 					analyse();
 				} catch (NullPointerException e1) {
 					e1.printStackTrace();
@@ -298,11 +282,17 @@ public class AppApi {
 
 		int i = 0;
 
+		// clear labels in case there were results of previous search
+		foundImagesLabel1.setIcon(null);
+		foundImagesLabel2.setIcon(null);
+		foundImagesLabel3.setIcon(null);
+		foundImagesLabel4.setIcon(null);
+
 		for (Data currentData : rootBing.getValue()) {
 
 			try {
-
 				// loop through four labels and set a picture to each of them
+				// TODO or may be better use here switch case thing?
 				if (i == 0) {
 					tmp1 = currentData.getContentUrl();
 					System.out.println("first url " + tmp1);
@@ -310,24 +300,21 @@ public class AppApi {
 					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
 					iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
 					foundImagesLabel1.setIcon(iconFromInternet);
-				}
-				if (i == 1) {
+				} else if (i == 1) {
 					tmp2 = currentData.getContentUrl();
 					System.out.println("second url " + tmp2);
 					linkUrl2 = new URL(tmp2);
 					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
 					iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
 					foundImagesLabel2.setIcon(iconFromInternet);
-				}
-				if (i == 2) {
+				} else if (i == 2) {
 					tmp3 = currentData.getContentUrl();
 					System.out.println("third url " + tmp3);
 					linkUrl3 = new URL(tmp3);
 					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
 					iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
 					foundImagesLabel3.setIcon(iconFromInternet);
-				}
-				if (i == 3) {
+				} else if (i == 3) {
 					tmp4 = currentData.getContentUrl();
 					System.out.println("fourth url " + tmp4);
 					linkUrl4 = new URL(tmp4);
@@ -420,15 +407,27 @@ public class AppApi {
 
 	protected void saveFileChooser(String fileUrl) {
 
+		fc.setDialogTitle("Specify name of the file to save");
+
 		if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+
 			try {
+
 				file = fc.getSelectedFile();
-				File output = new File(file.toString());
+				
+				// get name of file without url things, but with extension
+				String fileName = fileUrl.substring(fileUrl.lastIndexOf('/')+1, fileUrl.length() );
+				System.out.println("filename " +  fileName);
+				
+				// how to let user choose which folder to save
+				// and suggest the filename
+				File output = new File("/Users/olgamrost/desktop/" + fileName);
 
 				URL fileNameAsUrl = new URL(fileUrl);
 				image = ImageIO.read(fileNameAsUrl);
 				ImageIO.write(toBufferedImage(image), "jpeg", output);
-				
+				System.out.println("image saved");
+
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -453,7 +452,6 @@ public class AppApi {
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
 		}
-
 	}
 
 	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
