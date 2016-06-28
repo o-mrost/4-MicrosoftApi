@@ -31,6 +31,8 @@ import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
 import javax.swing.JPanel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AppApi {
 
@@ -60,7 +62,7 @@ public class AppApi {
 
 	int numberOfTags;
 
-	String tagsTokenFileName = "APIToken.txt";
+	String tagsTokenFileName = "APIToken.txt", tmp1 = null;
 	String imageSearchTokenFileName = "SearchApiToken.txt";
 
 	/**
@@ -202,6 +204,12 @@ public class AppApi {
 
 		// place for images from internet
 		foundImagesLabel1 = new JLabel();
+		foundImagesLabel1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				saveFileChooser(tmp1);
+			}
+		});
 		foundImagesLabel1.setText("1");
 		foundImagesLabel1.setBounds(600, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel1);
@@ -265,18 +273,6 @@ public class AppApi {
 
 		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
-		// Data currentData2;
-		//
-		// String tmp1 = rootBing.getValue().get(0).toString();
-		//// tmp1 = rootBing.getValue().g
-		// currentData2.get(2);
-		//
-		// System.out.println("first url " + tmp1);
-		// // currentData.getContentUrl().get(3);
-		// String tmp2;
-		//
-		// tmp2 = rootBing.getValue().get(1).toString();
-		// System.out.println("second url " + tmp2);
 		String tmp1 = null;
 		String tmp2 = null;
 		String tmp3 = null;
@@ -327,20 +323,16 @@ public class AppApi {
 				iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
 				foundImagesLabel2.setIcon(iconFromInternet);
 
-				
 				linkUrl3 = new URL(tmp3);
 				BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
 				iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
 				foundImagesLabel3.setIcon(iconFromInternet);
-				
-				
+
 				linkUrl4 = new URL(tmp4);
 				BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
 				iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
 				foundImagesLabel4.setIcon(iconFromInternet);
-				
-				
-				
+
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -422,11 +414,36 @@ public class AppApi {
 		}
 	}
 
+	protected void saveFileChooser(String fileUrl){
+		
+		// TODO convert file from URL to buffered image
+		
+		
+		
+		
+		if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			try {
+				file = fc.getSelectedFile();
+				File output = new File(file.toString());
+				
+				URL fileNameAsUrl = new URL (fileUrl);
+				image = ImageIO.read(fileNameAsUrl);
+				ImageIO.write(toBufferedImage(image), "jpeg", output);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 	protected void openFilechooser() {
-
+		
+		image = null;
+		
 		if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
-			image = null;
 
 			try {
 				image = (BufferedImage) ImageIO.read(file);
@@ -437,6 +454,26 @@ public class AppApi {
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
 		}
+		
+	}
+
+	private BufferedImage toBufferedImage(Image image2) {
+
+		if (image2 instanceof BufferedImage) {
+			return (BufferedImage) image2;
+		}
+
+		// Create a buffered image with transparency
+		BufferedImage bimage = new BufferedImage(image2.getWidth(null), image2.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+		// Draw the image on to the buffered image
+//		Graphics2D bGr = bimage.createGraphics();
+//		bGr.drawImage(image, 0, 0, null);
+//		bGr.dispose();
+
+		// Return the buffered image
+		return bimage;
+		
 	}
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {
