@@ -59,11 +59,15 @@ public class AppApi {
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters;
 	String[] tags;
-
+	String tmp1 = null;
+	String tmp2 = null;
+	String tmp3 = null;
+	String tmp4 = null;
 	int numberOfTags;
 
-	String tagsTokenFileName = "APIToken.txt", tmp1 = null;
+	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
+	URL linkUrl1 = null, linkUrl2 = null, linkUrl3 = null, linkUrl4 = null;
 
 	/**
 	 * Launch the application.
@@ -215,16 +219,35 @@ public class AppApi {
 		frame.getContentPane().add(foundImagesLabel1);
 
 		foundImagesLabel2 = new JLabel("2");
+		foundImagesLabel2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				saveFileChooser(tmp2);
+			}
+		});
 		foundImagesLabel2.setBounds(600, 327, 200, 200);
 		frame.getContentPane().add(foundImagesLabel2);
 
 		foundImagesLabel3 = new JLabel("3");
+		foundImagesLabel3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				saveFileChooser(tmp3);
+			}
+		});
 		foundImagesLabel3.setBounds(820, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel3);
 
 		foundImagesLabel4 = new JLabel("4");
+		foundImagesLabel4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				saveFileChooser(tmp4);
+			}
+		});
 		foundImagesLabel4.setBounds(820, 327, 200, 200);
 		frame.getContentPane().add(foundImagesLabel4);
+		
 		// create Label display returned BufferedImage, create Buttons (Use
 		// Image / take new image)
 
@@ -273,65 +296,47 @@ public class AppApi {
 
 		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
-		String tmp1 = null;
-		String tmp2 = null;
-		String tmp3 = null;
-		String tmp4 = null;
-
 		int i = 0;
+
 		for (Data currentData : rootBing.getValue()) {
-			contentUrl = currentData.getContentUrl();
-			if (i == 0) {
-				System.out.println("something");
-				tmp1 = currentData.getContentUrl();
-				System.out.println("first url " + tmp1);
-			}
-			if (i == 1) {
-				System.out.println("something else");
-				tmp2 = currentData.getContentUrl();
-				System.out.println("second url " + tmp2);
-			}
-			if (i == 2) {
-				tmp3 = currentData.getContentUrl();
-				System.out.println(tmp3);
-			}
-			if (i == 3) {
-				tmp4 = currentData.getContentUrl();
-				System.out.println(tmp4);
-			}
-
-			i++;
-
-			System.out.println(i + "content url " + contentUrl);
-
-			URL linkUrl1 = null;
-			URL linkUrl2 = null;
-			URL linkUrl3 = null;
-			URL linkUrl4 = null;
-
-			url = "{'url':'" + contentUrl + "'}";
 
 			try {
 
-				linkUrl1 = new URL(tmp1);
-				BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
-				iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
-				foundImagesLabel1.setIcon(iconFromInternet);
+				// loop through four labels and set a picture to each of them
+				if (i == 0) {
+					tmp1 = currentData.getContentUrl();
+					System.out.println("first url " + tmp1);
+					linkUrl1 = new URL(tmp1);
+					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
+					iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
+					foundImagesLabel1.setIcon(iconFromInternet);
+				}
+				if (i == 1) {
+					tmp2 = currentData.getContentUrl();
+					System.out.println("second url " + tmp2);
+					linkUrl2 = new URL(tmp2);
+					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
+					iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
+					foundImagesLabel2.setIcon(iconFromInternet);
+				}
+				if (i == 2) {
+					tmp3 = currentData.getContentUrl();
+					System.out.println("third url " + tmp3);
+					linkUrl3 = new URL(tmp3);
+					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
+					iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
+					foundImagesLabel3.setIcon(iconFromInternet);
+				}
+				if (i == 3) {
+					tmp4 = currentData.getContentUrl();
+					System.out.println("fourth url " + tmp4);
+					linkUrl4 = new URL(tmp4);
+					BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
+					iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
+					foundImagesLabel4.setIcon(iconFromInternet);
+				}
 
-				linkUrl2 = new URL(tmp2);
-				BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
-				iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
-				foundImagesLabel2.setIcon(iconFromInternet);
-
-				linkUrl3 = new URL(tmp3);
-				BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
-				iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
-				foundImagesLabel3.setIcon(iconFromInternet);
-
-				linkUrl4 = new URL(tmp4);
-				BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
-				iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
-				foundImagesLabel4.setIcon(iconFromInternet);
+				i++;
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -344,7 +349,6 @@ public class AppApi {
 	protected void setImageFromUrlAsImageIcon() {
 		URL link2 = null;
 		link = urlField.getText();
-		url = "{'url':'" + link + "'}";
 
 		try {
 			link2 = new URL(link);
@@ -414,34 +418,29 @@ public class AppApi {
 		}
 	}
 
-	protected void saveFileChooser(String fileUrl){
-		
-		// TODO convert file from URL to buffered image
-		
-		
-		
-		
+	protected void saveFileChooser(String fileUrl) {
+
 		if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			try {
 				file = fc.getSelectedFile();
 				File output = new File(file.toString());
-				
-				URL fileNameAsUrl = new URL (fileUrl);
+
+				URL fileNameAsUrl = new URL(fileUrl);
 				image = ImageIO.read(fileNameAsUrl);
 				ImageIO.write(toBufferedImage(image), "jpeg", output);
+				
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
 	}
+
 	protected void openFilechooser() {
-		
+
 		image = null;
-		
+
 		if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
 
@@ -454,26 +453,21 @@ public class AppApi {
 			icon = scaleImage(file.getAbsolutePath(), imageLabel);
 			imageLabel.setIcon(icon);
 		}
-		
+
 	}
 
-	private BufferedImage toBufferedImage(Image image2) {
+	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
 
-		if (image2 instanceof BufferedImage) {
-			return (BufferedImage) image2;
+		if (imageToGetBuffered instanceof BufferedImage) {
+			return (BufferedImage) imageToGetBuffered;
 		}
 
 		// Create a buffered image with transparency
-		BufferedImage bimage = new BufferedImage(image2.getWidth(null), image2.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bimage = new BufferedImage(imageToGetBuffered.getWidth(null), imageToGetBuffered.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
 
-		// Draw the image on to the buffered image
-//		Graphics2D bGr = bimage.createGraphics();
-//		bGr.drawImage(image, 0, 0, null);
-//		bGr.dispose();
-
-		// Return the buffered image
 		return bimage;
-		
+
 	}
 
 	protected ImageIcon scaleImage(String string1, JLabel label) {

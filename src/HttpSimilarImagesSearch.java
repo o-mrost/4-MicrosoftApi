@@ -15,7 +15,6 @@ public class HttpSimilarImagesSearch {
 		StringBuffer body = null;
 
 		try {
-//			String tagsString = "cat";
 			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=4&mkt=en-us";
 
 			HttpClient client = HttpClientBuilder.create().build();
