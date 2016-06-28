@@ -30,6 +30,7 @@ import bing.Data;
 import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
+import javax.swing.JPanel;
 
 public class AppApi {
 
@@ -40,7 +41,8 @@ public class AppApi {
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
 	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp, btnSearchForSimilar;
-	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel, lblImageFromWebcam, helpLabel;
+	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
+			foundImagesLabel4, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
 	private BufferedImage image = null;
@@ -94,7 +96,7 @@ public class AppApi {
 
 		// set size of frame to 3/4 of screen size
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
-		frame.setSize((3 * screenSize.width / 4), (3 * screenSize.height / 4));
+		frame.setSize(screenSize.width, (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(null);
@@ -130,7 +132,7 @@ public class AppApi {
 		tagsField.setColumns(10);
 
 		btnSaveFile = new JButton("Save file");
-		btnSaveFile.setBounds(828, 499, 117, 29);
+		btnSaveFile.setBounds(830, 543, 117, 29);
 		frame.getContentPane().add(btnSaveFile);
 
 		btnHelp = new JButton("");
@@ -161,11 +163,6 @@ public class AppApi {
 		lblDescription = new JLabel("Description:");
 		lblDescription.setBounds(352, 235, 77, 16);
 		frame.getContentPane().add(lblDescription);
-
-		// place for images from internet
-		foundImagesLabel = new JLabel();
-		foundImagesLabel.setBounds(569, 71, 352, 379);
-		frame.getContentPane().add(foundImagesLabel);
 
 		urlField = new JTextField();
 		urlField.setBounds(22, 79, 220, 26);
@@ -202,6 +199,24 @@ public class AppApi {
 		});
 		btnSearchForSimilar.setBounds(628, 30, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
+
+		// place for images from internet
+		foundImagesLabel1 = new JLabel();
+		foundImagesLabel1.setText("1");
+		foundImagesLabel1.setBounds(600, 107, 200, 200);
+		frame.getContentPane().add(foundImagesLabel1);
+
+		foundImagesLabel2 = new JLabel("2");
+		foundImagesLabel2.setBounds(600, 327, 200, 200);
+		frame.getContentPane().add(foundImagesLabel2);
+
+		foundImagesLabel3 = new JLabel("3");
+		foundImagesLabel3.setBounds(820, 107, 200, 200);
+		frame.getContentPane().add(foundImagesLabel3);
+
+		foundImagesLabel4 = new JLabel("4");
+		foundImagesLabel4.setBounds(820, 327, 200, 200);
+		frame.getContentPane().add(foundImagesLabel4);
 		// create Label display returned BufferedImage, create Buttons (Use
 		// Image / take new image)
 
@@ -250,24 +265,82 @@ public class AppApi {
 
 		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
+		// Data currentData2;
+		//
+		// String tmp1 = rootBing.getValue().get(0).toString();
+		//// tmp1 = rootBing.getValue().g
+		// currentData2.get(2);
+		//
+		// System.out.println("first url " + tmp1);
+		// // currentData.getContentUrl().get(3);
+		// String tmp2;
+		//
+		// tmp2 = rootBing.getValue().get(1).toString();
+		// System.out.println("second url " + tmp2);
+		String tmp1 = null;
+		String tmp2 = null;
+		String tmp3 = null;
+		String tmp4 = null;
+
+		int i = 0;
 		for (Data currentData : rootBing.getValue()) {
 			contentUrl = currentData.getContentUrl();
-			System.out.println("content url " + contentUrl);
+			if (i == 0) {
+				System.out.println("something");
+				tmp1 = currentData.getContentUrl();
+				System.out.println("first url " + tmp1);
+			}
+			if (i == 1) {
+				System.out.println("something else");
+				tmp2 = currentData.getContentUrl();
+				System.out.println("second url " + tmp2);
+			}
+			if (i == 2) {
+				tmp3 = currentData.getContentUrl();
+				System.out.println(tmp3);
+			}
+			if (i == 3) {
+				tmp4 = currentData.getContentUrl();
+				System.out.println(tmp4);
+			}
 
-			// TODO modify setImageAsImageIcon so that it accepts url, label
-			// name and scaling proportions
-			// and sets the image as label accordingly
+			i++;
 
-			// we can add one image
-			// TODO think how to insert several, loop through coordinates?
-			URL linkUrl = null;
+			System.out.println(i + "content url " + contentUrl);
+
+			URL linkUrl1 = null;
+			URL linkUrl2 = null;
+			URL linkUrl3 = null;
+			URL linkUrl4 = null;
+
 			url = "{'url':'" + contentUrl + "'}";
 
 			try {
-				linkUrl = new URL(contentUrl);
-				BufferedImage imgFromUrl = ImageIO.read(linkUrl);
-				iconFromInternet = scaleBufferedImage(imgFromUrl, foundImagesLabel);
-				foundImagesLabel.setIcon(iconFromInternet);
+
+				linkUrl1 = new URL(tmp1);
+				BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
+				iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
+				foundImagesLabel1.setIcon(iconFromInternet);
+
+				linkUrl2 = new URL(tmp2);
+				BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
+				iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
+				foundImagesLabel2.setIcon(iconFromInternet);
+
+				
+				linkUrl3 = new URL(tmp3);
+				BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
+				iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
+				foundImagesLabel3.setIcon(iconFromInternet);
+				
+				
+				linkUrl4 = new URL(tmp4);
+				BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
+				iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
+				foundImagesLabel4.setIcon(iconFromInternet);
+				
+				
+				
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
