@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -10,10 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
@@ -23,16 +20,15 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 public class WebcamAPI {
 
-	BufferedImage image = null;
-	JButton btn = new JButton();
+	BufferedImage imageWebcam = null;
+	JButton btn = new JButton("Take a picture");
 	Webcam webcam = Webcam.getDefault();
 	JFrame window;
 
 	public WebcamAPI() {
-
 	}
 
-	public BufferedImage getPicture() throws InterruptedException {
+	public BufferedImage turnWebcamOn() throws InterruptedException {
 
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 
@@ -47,7 +43,7 @@ public class WebcamAPI {
 			@Override
 			public void webcamImageObtained(WebcamEvent arg0) {
 				imageNumber++;
-				System.out.println("Image " + imageNumber + " Captured!");
+				// System.out.println("Image " + imageNumber + " Captured!");
 			}
 
 			@Override
@@ -59,6 +55,7 @@ public class WebcamAPI {
 			}
 		});
 
+		System.out.println("1 camera is turned on");
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setFPSDisplayed(false);
 		panel.setDisplayDebugInfo(false);
@@ -72,54 +69,75 @@ public class WebcamAPI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				// created date stamp to add to every picture taken with a webcam
-				Date date = new Date();
-				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
-				String dateTime = dateFormat.format(date);
-				
-				// TODO make it more flexible, and not depending on the name of user
-				String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
-				
-				image = webcam.getImage();
-
-				try {
-					ImageIO.write(image, "PNG", new File(fileName));
-					System.out.println(fileName);
-				//	display(image);
-
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+				System.out.println("taking a picture");
+				imageWebcam = takePicture();
 			}
 		});
 		window.add(btn, BorderLayout.SOUTH);
 
 		window.setResizable(true);
+
+		// this closes all our app, how to close only webcam and turn it off?
 		// window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.pack();
 		window.setVisible(true);
 
+		if (imageWebcam == null) {
+			System.out.println("image is null, take a picture");
+			wait();
+		}
+
+		return imageWebcam;
+
+	}
+
+	protected BufferedImage takePicture() {
+
+		// created date stamp to add to every picture taken with a
+		// webcam
+		BufferedImage image;
+
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
+		String dateTime = dateFormat.format(date);
+
+		// TODO make it more flexible, and not depending on the name of
+		// user, may be create a folder on desktop
+		String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
+
+		image = webcam.getImage();
+
+		try {
+
+			ImageIO.write(image, "PNG", new File(fileName));
+			System.out.println("image stored at " + fileName);
+			// display(image);
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		return image;
+
 	}
 
-	public void display(BufferedImage img) {
-		JFrame frame = new JFrame();
-		JButton okbtn = new JButton("Use this image?");
-
-		okbtn.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				webcam.close();
-			}
-		});
-		frame.setLayout(new BorderLayout());
-
-		JLabel label = new JLabel(new ImageIcon(img));
-		frame.getContentPane().add(label, BorderLayout.CENTER);
-		frame.add(okbtn, BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
-	}
+	// // does not work yet
+	// public void display(BufferedImage img) {
+	// JFrame frame = new JFrame();
+	// JButton okbtn = new JButton("Use this image?");
+	//
+	// okbtn.addActionListener(new ActionListener() {
+	//
+	// @Override
+	// public void actionPerformed(ActionEvent e) {
+	// webcam.close();
+	// }
+	// });
+	// frame.setLayout(new BorderLayout());
+	//
+	// JLabel label = new JLabel(new ImageIcon(img));
+	// frame.getContentPane().add(label, BorderLayout.CENTER);
+	// frame.add(okbtn, BorderLayout.SOUTH);
+	// frame.pack();
+	// frame.setVisible(true);
+	// }
 }

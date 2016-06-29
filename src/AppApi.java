@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -25,6 +26,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -42,7 +46,7 @@ public class AppApi {
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
 	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp, btnSearchForSimilar;
-	private JLabel imageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
+	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
 			foundImagesLabel4, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
@@ -110,9 +114,9 @@ public class AppApi {
 		fc.setFileFilter(filter);
 		frame.getContentPane().add(fc);
 
-		imageLabel = new JLabel();
-		imageLabel.setBounds(23, 109, 305, 342);
-		frame.getContentPane().add(imageLabel);
+		originalImageLabel = new JLabel();
+		originalImageLabel.setBounds(23, 109, 305, 342);
+		frame.getContentPane().add(originalImageLabel);
 
 		btnTakePicture = new JButton("Take a picture with webcam");
 		btnTakePicture.setBounds(30, 46, 212, 29);
@@ -293,37 +297,37 @@ public class AppApi {
 			try {
 				// loop through four labels and set a picture to each of them
 				// TODO or may be better use here switch case thing?
-				
+
 				// TODO scale images correctly
 				if (i == 0) {
-					
+
 					imageFirstLabel = currentData.getContentUrl();
 					System.out.println("first url " + imageFirstLabel);
 					linkUrl1 = new URL(imageFirstLabel);
 					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
 					iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
 					foundImagesLabel1.setIcon(iconFromInternet);
-					
+
 				} else if (i == 1) {
-					
+
 					imageSecondLabel = currentData.getContentUrl();
 					System.out.println("second url " + imageSecondLabel);
 					linkUrl2 = new URL(imageSecondLabel);
 					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
 					iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
 					foundImagesLabel2.setIcon(iconFromInternet);
-					
+
 				} else if (i == 2) {
-					
+
 					imageThirdLabel = currentData.getContentUrl();
 					System.out.println("third url " + imageThirdLabel);
 					linkUrl3 = new URL(imageThirdLabel);
 					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
 					iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
 					foundImagesLabel3.setIcon(iconFromInternet);
-					
+
 				} else if (i == 3) {
-					
+
 					imageFourthLabel = currentData.getContentUrl();
 					System.out.println("fourth url " + imageFourthLabel);
 					linkUrl4 = new URL(imageFourthLabel);
@@ -350,8 +354,8 @@ public class AppApi {
 			link2 = new URL(link);
 			// set image as Buffered image
 			image = ImageIO.read(link2);
-			icon = scaleBufferedImage(image, imageLabel);
-			imageLabel.setIcon(icon);
+			icon = scaleBufferedImage(image, originalImageLabel);
+			originalImageLabel.setIcon(icon);
 		} catch (MalformedURLException e2) {
 			tagsField.setText("please enter a valid link or choose an image with button 'Browse' ");
 			e2.printStackTrace();
@@ -399,14 +403,17 @@ public class AppApi {
 
 	protected void takePicture() {
 
-		WebcamAPI cam = new WebcamAPI();
+		WebcamAPI camera = new WebcamAPI();
+
 		try {
-			imgFromCam = cam.getPicture();
-			System.out.println("taken image");
+
+			camera.turnWebcamOn();
+			System.out.println("camera works");
+
 			// here null pointer exception
-			icon = scaleBufferedImage(imgFromCam, lblImageFromWebcam);
-			System.out.println("icon set");
-			// doesn't work yet
+			
+			// imgFromCam is null, how to pass BufferedImage to it?
+			icon = scaleBufferedImage(imgFromCam, originalImageLabel);
 
 			// return bufferedImage
 		} catch (InterruptedException e1) {
@@ -422,24 +429,23 @@ public class AppApi {
 
 			try {
 
-//				file = fc.getSelectedFile();
-				
+				// file = fc.getSelectedFile();
+
 				// get name of file without url things, but with extension
-				String fileName = fileUrl.substring(fileUrl.lastIndexOf('/')+1, fileUrl.length() );
-				System.out.println("filename " +  fileName);
-				
+				String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
+				System.out.println("filename " + fileName);
+
 				// how to suggest the filename
-				
+
 				File output = new File(" " + fileName);
 				fc.setSelectedFile(output);
 
-				
 				// tino
-//				File outputfile = new File("GREY_" + fileName1);
-//				fileChooserS.setSelectedFile(outputfile);
-//				fileChooserS.setDialogTitle("Speichern unter...");
-//				int saveresult = fileChooserS.showSaveDialog(btnSpeichern);
-//				
+				// File outputfile = new File("GREY_" + fileName1);
+				// fileChooserS.setSelectedFile(outputfile);
+				// fileChooserS.setDialogTitle("Speichern unter...");
+				// int saveresult = fileChooserS.showSaveDialog(btnSpeichern);
+				//
 				URL fileNameAsUrl = new URL(fileUrl);
 				image = ImageIO.read(fileNameAsUrl);
 				ImageIO.write(toBufferedImage(image), "jpeg", output);
@@ -466,8 +472,8 @@ public class AppApi {
 				e1.printStackTrace();
 			}
 
-			icon = scaleImage(file.getAbsolutePath(), imageLabel);
-			imageLabel.setIcon(icon);
+			icon = scaleImage(file.getAbsolutePath(), originalImageLabel);
+			originalImageLabel.setIcon(icon);
 		}
 	}
 
