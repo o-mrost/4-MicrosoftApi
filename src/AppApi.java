@@ -26,9 +26,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
-import com.github.sarxos.webcam.WebcamResolution;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -60,13 +57,13 @@ public class AppApi {
 	private Token searchToken = new Token();
 	private Token tokenCache = new Token();
 
-	String link, url, text, contentUrl, tagsString = "", searchParameters;
+	String link, url, text, contentUrl, tagsString = "", searchParameters, labelInfo, labelTwoInfo;
 	String[] tags;
 	String imageFirstLabel = null;
 	String imageSecondLabel = null;
 	String imageThirdLabel = null;
 	String imageFourthLabel = null;
-	int numberOfTags;
+	int numberOfTags, widthImage, heightImage;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
@@ -202,12 +199,16 @@ public class AppApi {
 
 		// place for images from internet
 		foundImagesLabel1 = new JLabel();
+		
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				saveFileChooser(imageFirstLabel);
 			}
 		});
+		
+		// hover over information
+		
 		foundImagesLabel1.setBounds(600, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel1);
 
@@ -295,13 +296,22 @@ public class AppApi {
 		for (Data currentData : rootBing.getValue()) {
 
 			try {
-				// loop through four labels and set a picture to each of them
 				// TODO or may be better use here switch case thing?
 
 				// TODO scale images correctly
 				if (i == 0) {
 
 					imageFirstLabel = currentData.getContentUrl();
+					
+					// get information about width and height of image
+					widthImage = currentData.getWidth();
+					heightImage = currentData.getHeight();
+					
+					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+					
+					// display it when user hovers over image
+					foundImagesLabel1.setToolTipText(labelInfo);
+					
 					System.out.println("first url " + imageFirstLabel);
 					linkUrl1 = new URL(imageFirstLabel);
 					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
@@ -311,6 +321,12 @@ public class AppApi {
 				} else if (i == 1) {
 
 					imageSecondLabel = currentData.getContentUrl();
+					
+					widthImage = currentData.getWidth();
+					heightImage = currentData.getHeight();
+					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+					foundImagesLabel2.setToolTipText(labelInfo);
+					
 					System.out.println("second url " + imageSecondLabel);
 					linkUrl2 = new URL(imageSecondLabel);
 					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
@@ -320,6 +336,12 @@ public class AppApi {
 				} else if (i == 2) {
 
 					imageThirdLabel = currentData.getContentUrl();
+					
+					widthImage = currentData.getWidth();
+					heightImage = currentData.getHeight();
+					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+					foundImagesLabel3.setToolTipText(labelInfo);
+					
 					System.out.println("third url " + imageThirdLabel);
 					linkUrl3 = new URL(imageThirdLabel);
 					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
@@ -329,6 +351,12 @@ public class AppApi {
 				} else if (i == 3) {
 
 					imageFourthLabel = currentData.getContentUrl();
+					
+					widthImage = currentData.getWidth();
+					heightImage = currentData.getHeight();
+					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+					foundImagesLabel4.setToolTipText(labelInfo);
+					
 					System.out.println("fourth url " + imageFourthLabel);
 					linkUrl4 = new URL(imageFourthLabel);
 					BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
