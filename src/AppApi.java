@@ -58,10 +58,10 @@ public class AppApi {
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters;
 	String[] tags;
-	String tmp1 = null;
-	String tmp2 = null;
-	String tmp3 = null;
-	String tmp4 = null;
+	String imageFirstLabel = null;
+	String imageSecondLabel = null;
+	String imageThirdLabel = null;
+	String imageFourthLabel = null;
 	int numberOfTags;
 
 	String tagsTokenFileName = "APIToken.txt";
@@ -201,7 +201,7 @@ public class AppApi {
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(tmp1);
+				saveFileChooser(imageFirstLabel);
 			}
 		});
 		foundImagesLabel1.setBounds(600, 107, 200, 200);
@@ -211,7 +211,7 @@ public class AppApi {
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(tmp2);
+				saveFileChooser(imageSecondLabel);
 			}
 		});
 		foundImagesLabel2.setBounds(600, 327, 200, 200);
@@ -221,7 +221,7 @@ public class AppApi {
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(tmp3);
+				saveFileChooser(imageThirdLabel);
 			}
 		});
 		foundImagesLabel3.setBounds(820, 107, 200, 200);
@@ -231,7 +231,7 @@ public class AppApi {
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(tmp4);
+				saveFileChooser(imageFourthLabel);
 			}
 		});
 		foundImagesLabel4.setBounds(820, 327, 200, 200);
@@ -293,31 +293,40 @@ public class AppApi {
 			try {
 				// loop through four labels and set a picture to each of them
 				// TODO or may be better use here switch case thing?
+				
+				// TODO scale images correctly
 				if (i == 0) {
-					tmp1 = currentData.getContentUrl();
-					System.out.println("first url " + tmp1);
-					linkUrl1 = new URL(tmp1);
+					
+					imageFirstLabel = currentData.getContentUrl();
+					System.out.println("first url " + imageFirstLabel);
+					linkUrl1 = new URL(imageFirstLabel);
 					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
 					iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
 					foundImagesLabel1.setIcon(iconFromInternet);
+					
 				} else if (i == 1) {
-					tmp2 = currentData.getContentUrl();
-					System.out.println("second url " + tmp2);
-					linkUrl2 = new URL(tmp2);
+					
+					imageSecondLabel = currentData.getContentUrl();
+					System.out.println("second url " + imageSecondLabel);
+					linkUrl2 = new URL(imageSecondLabel);
 					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
 					iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
 					foundImagesLabel2.setIcon(iconFromInternet);
+					
 				} else if (i == 2) {
-					tmp3 = currentData.getContentUrl();
-					System.out.println("third url " + tmp3);
-					linkUrl3 = new URL(tmp3);
+					
+					imageThirdLabel = currentData.getContentUrl();
+					System.out.println("third url " + imageThirdLabel);
+					linkUrl3 = new URL(imageThirdLabel);
 					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
 					iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
 					foundImagesLabel3.setIcon(iconFromInternet);
+					
 				} else if (i == 3) {
-					tmp4 = currentData.getContentUrl();
-					System.out.println("fourth url " + tmp4);
-					linkUrl4 = new URL(tmp4);
+					
+					imageFourthLabel = currentData.getContentUrl();
+					System.out.println("fourth url " + imageFourthLabel);
+					linkUrl4 = new URL(imageFourthLabel);
 					BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
 					iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
 					foundImagesLabel4.setIcon(iconFromInternet);
