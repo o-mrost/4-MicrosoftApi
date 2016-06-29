@@ -413,16 +413,24 @@ public class AppApi {
 
 			try {
 
-				file = fc.getSelectedFile();
+//				file = fc.getSelectedFile();
 				
 				// get name of file without url things, but with extension
 				String fileName = fileUrl.substring(fileUrl.lastIndexOf('/')+1, fileUrl.length() );
 				System.out.println("filename " +  fileName);
 				
-				// how to let user choose which folder to save
-				// and suggest the filename
-				File output = new File("/Users/olgamrost/desktop/" + fileName);
+				// how to suggest the filename
+				
+				File output = new File(" " + fileName);
+				fc.setSelectedFile(output);
 
+				
+				// tino
+//				File outputfile = new File("GREY_" + fileName1);
+//				fileChooserS.setSelectedFile(outputfile);
+//				fileChooserS.setDialogTitle("Speichern unter...");
+//				int saveresult = fileChooserS.showSaveDialog(btnSpeichern);
+//				
 				URL fileNameAsUrl = new URL(fileUrl);
 				image = ImageIO.read(fileNameAsUrl);
 				ImageIO.write(toBufferedImage(image), "jpeg", output);
