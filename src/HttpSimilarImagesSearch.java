@@ -15,7 +15,19 @@ public class HttpSimilarImagesSearch {
 		StringBuffer body = null;
 
 		try {
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=4&mkt=en-us";
+
+			// here comes null pointer exception
+			// why the hell?
+
+			// String license = "&license=public";
+			String license = "";
+
+			// or we can leave the license and use just image size to filter
+
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=4&mkt=en-us"
+					+ license;
+
+			System.out.println("url to search: " + url);
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
@@ -30,7 +42,7 @@ public class HttpSimilarImagesSearch {
 				body.append(line);
 			}
 
-			System.out.println(body);
+//			System.out.println(body);
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

@@ -38,7 +38,7 @@ public class AppApi {
 
 	private JFileChooser fc;
 	private File file;
-	private ImageIcon icon, iconFromInternet;
+	private ImageIcon icon, iconOneFromInternet, iconTwoFromInternet, iconThreeFromInternet, iconFourFromInternet;
 	private JFrame frame, helpFrame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
@@ -59,15 +59,15 @@ public class AppApi {
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters, labelInfo, labelTwoInfo;
 	String[] tags;
-	String imageFirstLabel = null;
-	String imageSecondLabel = null;
-	String imageThirdLabel = null;
-	String imageFourthLabel = null;
+	String firstImageUrl = null;
+	String secondImageUrl = null;
+	String thirdImageUrl = null;
+	String fourthImageUrl = null;
 	int numberOfTags, widthImage, heightImage;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
-	URL linkUrl1 = null, linkUrl2 = null, linkUrl3 = null, linkUrl4 = null;
+	URL url1 = null, url2 = null, url3 = null, url4 = null;
 
 	/**
 	 * Launch the application.
@@ -199,15 +199,12 @@ public class AppApi {
 
 		// place for images from internet
 		foundImagesLabel1 = new JLabel();
-		
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(imageFirstLabel);
+				saveFileChooser(firstImageUrl);
 			}
 		});
-		
-		// hover over information
 		
 		foundImagesLabel1.setBounds(600, 107, 200, 200);
 		frame.getContentPane().add(foundImagesLabel1);
@@ -216,7 +213,7 @@ public class AppApi {
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(imageSecondLabel);
+				saveFileChooser(secondImageUrl);
 			}
 		});
 		foundImagesLabel2.setBounds(600, 327, 200, 200);
@@ -226,7 +223,7 @@ public class AppApi {
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(imageThirdLabel);
+				saveFileChooser(thirdImageUrl);
 			}
 		});
 		foundImagesLabel3.setBounds(820, 107, 200, 200);
@@ -236,7 +233,7 @@ public class AppApi {
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(imageFourthLabel);
+				saveFileChooser(fourthImageUrl);
 			}
 		});
 		foundImagesLabel4.setBounds(820, 327, 200, 200);
@@ -282,7 +279,6 @@ public class AppApi {
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
-
 		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
 		int i = 0;
@@ -297,71 +293,75 @@ public class AppApi {
 
 			try {
 				// TODO or may be better use here switch case thing?
-
+				// get one element of arrayList
+				
 				// TODO scale images correctly
 				if (i == 0) {
-
-					imageFirstLabel = currentData.getContentUrl();
+					firstImageUrl = currentData.getContentUrl();
 					
-					// get information about width and height of image
+					// get information about width and height of this image from Bing API
 					widthImage = currentData.getWidth();
 					heightImage = currentData.getHeight();
-					
 					labelInfo = " width: " + widthImage + ", height: " + heightImage;
 					
-					// display it when user hovers over image
+					// display info about width and height when user hovers over image
 					foundImagesLabel1.setToolTipText(labelInfo);
 					
-					System.out.println("first url " + imageFirstLabel);
-					linkUrl1 = new URL(imageFirstLabel);
-					BufferedImage imgFromUrl1 = ImageIO.read(linkUrl1);
-					iconFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
-					foundImagesLabel1.setIcon(iconFromInternet);
+					System.out.println("first url " + firstImageUrl);
+					
+					// set this image as icon on a JLabel
+					url1 = new URL(firstImageUrl);
+					BufferedImage imgFromUrl1 = ImageIO.read(url1);
+					iconOneFromInternet = scaleBufferedImage(imgFromUrl1, foundImagesLabel1);
+					foundImagesLabel1.setIcon(iconOneFromInternet);
 
 				} else if (i == 1) {
 
-					imageSecondLabel = currentData.getContentUrl();
+					secondImageUrl = currentData.getContentUrl();
 					
 					widthImage = currentData.getWidth();
 					heightImage = currentData.getHeight();
 					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+
 					foundImagesLabel2.setToolTipText(labelInfo);
 					
-					System.out.println("second url " + imageSecondLabel);
-					linkUrl2 = new URL(imageSecondLabel);
-					BufferedImage imgFromUrl2 = ImageIO.read(linkUrl2);
-					iconFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
-					foundImagesLabel2.setIcon(iconFromInternet);
+					System.out.println("second url " + secondImageUrl);
+					url2 = new URL(secondImageUrl);
+					BufferedImage imgFromUrl2 = ImageIO.read(url2);
+					iconTwoFromInternet = scaleBufferedImage(imgFromUrl2, foundImagesLabel2);
+					foundImagesLabel2.setIcon(iconTwoFromInternet);
 
 				} else if (i == 2) {
 
-					imageThirdLabel = currentData.getContentUrl();
+					thirdImageUrl = currentData.getContentUrl();
 					
 					widthImage = currentData.getWidth();
 					heightImage = currentData.getHeight();
 					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+
 					foundImagesLabel3.setToolTipText(labelInfo);
 					
-					System.out.println("third url " + imageThirdLabel);
-					linkUrl3 = new URL(imageThirdLabel);
-					BufferedImage imgFromUrl3 = ImageIO.read(linkUrl3);
-					iconFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
-					foundImagesLabel3.setIcon(iconFromInternet);
+					System.out.println("third url " + thirdImageUrl);
+					url3 = new URL(thirdImageUrl);
+					BufferedImage imgFromUrl3 = ImageIO.read(url3);
+					iconThreeFromInternet = scaleBufferedImage(imgFromUrl3, foundImagesLabel3);
+					foundImagesLabel3.setIcon(iconThreeFromInternet);
 
 				} else if (i == 3) {
 
-					imageFourthLabel = currentData.getContentUrl();
+					fourthImageUrl = currentData.getContentUrl();
 					
 					widthImage = currentData.getWidth();
 					heightImage = currentData.getHeight();
 					labelInfo = " width: " + widthImage + ", height: " + heightImage;
+
 					foundImagesLabel4.setToolTipText(labelInfo);
 					
-					System.out.println("fourth url " + imageFourthLabel);
-					linkUrl4 = new URL(imageFourthLabel);
-					BufferedImage imgFromUrl4 = ImageIO.read(linkUrl4);
-					iconFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
-					foundImagesLabel4.setIcon(iconFromInternet);
+					System.out.println("fourth url " + fourthImageUrl);
+					url4 = new URL(fourthImageUrl);
+					BufferedImage imgFromUrl4 = ImageIO.read(url4);
+					iconFourFromInternet = scaleBufferedImage(imgFromUrl4, foundImagesLabel4);
+					foundImagesLabel4.setIcon(iconFourFromInternet);
 				}
 
 				i++;
@@ -374,6 +374,7 @@ public class AppApi {
 		}
 	}
 
+	// TODO convert this method to accept String with url and name of label
 	protected void setImageFromUrlAsImageIcon() {
 		URL link2 = null;
 		link = urlField.getText();
