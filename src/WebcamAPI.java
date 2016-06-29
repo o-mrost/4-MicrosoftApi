@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -69,11 +72,20 @@ public class WebcamAPI {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				
+				// created date stamp to add to every picture taken with a webcam
+				Date date = new Date();
+				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
+				String dateTime = dateFormat.format(date);
+				
+				// TODO make it more flexible, and not depending on the name of user
+				String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
+				
 				image = webcam.getImage();
 
 				try {
-					ImageIO.write(image, "PNG", new File("test.png"));
+					ImageIO.write(image, "PNG", new File(fileName));
+					System.out.println(fileName);
 				//	display(image);
 
 				} catch (IOException e1) {
