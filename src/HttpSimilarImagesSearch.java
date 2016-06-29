@@ -30,7 +30,7 @@ public class HttpSimilarImagesSearch {
 				body.append(line);
 			}
 
-//			System.out.println(body);
+			System.out.println(body);
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
