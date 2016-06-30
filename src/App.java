@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -22,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -388,7 +388,7 @@ public class App {
 
 		JsonRoot root = gson.fromJson(response, JsonRoot.class);
 		String[] tags = root.getDescription().getTags();
-		
+
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
 
@@ -455,6 +455,17 @@ public class App {
 
 		String pathToFile = fc.getCurrentDirectory().toString();
 		File output = new File(pathToFile + "/" + fileName);
+
+		// check if file already exists, ask user if they wish to overwrite it
+		if (output.exists()) {
+			int response = JOptionPane.showConfirmDialog(null, //
+					"Do you want to replace the existing file?", //
+					"Confirm", JOptionPane.YES_NO_OPTION, //
+					JOptionPane.QUESTION_MESSAGE);
+			if (response != JOptionPane.YES_OPTION) {
+				return;
+			}
+		}
 
 		fc.setSelectedFile(output);
 
