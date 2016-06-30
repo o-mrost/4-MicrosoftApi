@@ -34,7 +34,7 @@ import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
 
-public class AppApi {
+public class App {
 
 	private JFileChooser fc;
 	private File file;
@@ -76,7 +76,7 @@ public class AppApi {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AppApi window = new AppApi();
+					App window = new App();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -88,7 +88,7 @@ public class AppApi {
 	/**
 	 * Create the application.
 	 */
-	public AppApi() {
+	public App() {
 		initialize();
 	}
 
@@ -202,7 +202,9 @@ public class AppApi {
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(firstImageUrl);
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(firstImageUrl);
+				}
 			}
 		});
 
@@ -213,7 +215,9 @@ public class AppApi {
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(secondImageUrl);
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(secondImageUrl);
+				}
 			}
 		});
 		foundImagesLabel2.setBounds(600, 310, 250, 250);
@@ -223,7 +227,9 @@ public class AppApi {
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(thirdImageUrl);
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(thirdImageUrl);
+				}
 			}
 		});
 		foundImagesLabel3.setBounds(920, 50, 250, 250);
@@ -233,7 +239,9 @@ public class AppApi {
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				saveFileChooser(fourthImageUrl);
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(fourthImageUrl);
+				}
 			}
 		});
 		foundImagesLabel4.setBounds(920, 310, 250, 250);
@@ -241,7 +249,9 @@ public class AppApi {
 
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				openFilechooser();
+				if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					openFilechooser();
+				}
 			}
 		});
 
@@ -373,15 +383,16 @@ public class AppApi {
 	protected String analyse() {
 
 		String response = httpLocal.describeImage(image, analyseImageToken);
-
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 
 		JsonRoot root = gson.fromJson(response, JsonRoot.class);
 		String[] tags = root.getDescription().getTags();
+		
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
 
+		// limit number of tags displayed to max first six
 		if (tags.length >= 6) {
 			numberOfTags = 6;
 		} else {
@@ -431,55 +442,51 @@ public class AppApi {
 
 		fc.setDialogTitle("Specify name of the file to save");
 
-		if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+		// get name of file without url things, but with extension
+		String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
 
-			try {
+		// some files have name like this: 1581_003.jpg?imgmax=512
+		// leave just the part up to .jpg
+		if (fileName.contains("?")) {
+			fileName = fileName.substring(0, fileName.lastIndexOf('?'));
+		}
 
-				// file = fc.getSelectedFile();
+		System.out.println("filename " + fileName);
 
-				// get name of file without url things, but with extension
-				String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
-				System.out.println("filename " + fileName);
+		String pathToFile = fc.getCurrentDirectory().toString();
+		File output = new File(pathToFile + "/" + fileName);
 
-				// how to suggest the filename
+		fc.setSelectedFile(output);
 
-				File output = new File(" " + fileName);
-				fc.setSelectedFile(output);
+		try {
 
-				// tino
-				// File outputfile = new File("GREY_" + fileName1);
-				// fileChooserS.setSelectedFile(outputfile);
-				// fileChooserS.setDialogTitle("Speichern unter...");
-				// int saveresult = fileChooserS.showSaveDialog(btnSpeichern);
-				//
-				URL fileNameAsUrl = new URL(fileUrl);
-				image = ImageIO.read(fileNameAsUrl);
-				ImageIO.write(toBufferedImage(image), "jpeg", output);
-				System.out.println("image saved");
+			URL fileNameAsUrl = new URL(fileUrl);
+			image = ImageIO.read(fileNameAsUrl);
+			ImageIO.write(toBufferedImage(image), "jpeg", output);
 
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			System.out.println("image saved, in the folder: " + output.getAbsolutePath());
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	protected void openFilechooser() {
 
 		image = null;
-		if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			file = fc.getSelectedFile();
+		file = fc.getSelectedFile();
 
-			try {
-				image = (BufferedImage) ImageIO.read(file);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-			icon = scaleBufferedImage(image, originalImageLabel);
-			originalImageLabel.setIcon(icon);
+		try {
+			image = (BufferedImage) ImageIO.read(file);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
+
+		icon = scaleBufferedImage(image, originalImageLabel);
+		originalImageLabel.setIcon(icon);
+		// }
 	}
 
 	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
@@ -493,7 +500,6 @@ public class AppApi {
 				BufferedImage.TYPE_INT_ARGB);
 
 		return bimage;
-
 	}
 
 	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
@@ -502,34 +508,25 @@ public class AppApi {
 
 		double width = icon.getIconWidth();
 		double height = icon.getIconHeight();
-		
+
 		System.out.println("image width = " + width);
-		System.out.println("image height = " +  height);
-		
+		System.out.println("image height = " + height);
+
 		double labelWidth = label.getWidth();
 		double labelHight = label.getHeight();
-		System.out.println("label width is constant = " + labelWidth);
-		System.out.println("label hight = " + labelHight);
 
 		double scaleWidth = width / labelWidth;
 		double scaleHeight = height / labelHight;
-		System.out.println("scale according to width = " + scaleWidth);
-		System.out.println("scale according to height = " + scaleHeight);
-
-		// for horizontal images
-		double newWidth = width / scaleWidth;
-		
-		// for vertical images
-		double newHeight = height / scaleHeight;
 
 		if (width >= height) {
 			// horisontal image
-			icon = new ImageIcon (icon.getImage().getScaledInstance((int) newWidth, -1, Image.SCALE_SMOOTH));
+			double newWidth = width / scaleWidth;
+			icon = new ImageIcon(icon.getImage().getScaledInstance((int) newWidth, -1, Image.SCALE_SMOOTH));
 		} else {
 			// vertical image
-			icon = new ImageIcon (icon.getImage().getScaledInstance(-1, (int) newHeight, Image.SCALE_SMOOTH));
+			double newHeight = height / scaleHeight;
+			icon = new ImageIcon(icon.getImage().getScaledInstance(-1, (int) newHeight, Image.SCALE_SMOOTH));
 		}
-		
 		return icon;
 	}
 }
