@@ -68,6 +68,8 @@ public class App {
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
 	URL url1 = null, url2 = null, url3 = null, url4 = null;
+	private JLabel stepTwo;
+	private JLabel stepThree;
 
 	/**
 	 * Launch the application.
@@ -126,8 +128,6 @@ public class App {
 		frame.getContentPane().add(btnBrowse);
 
 		JButton btnAnalyse = new JButton("    Analyse image");
-		ImageIcon analyseIcon = new ImageIcon("img/cloud-icon.png");
-		btnAnalyse.setIcon(analyseIcon);
 		btnAnalyse.setBounds(352, 18, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
@@ -140,7 +140,7 @@ public class App {
 
 		btnHelp = new JButton("");
 		btnHelp.setBorderPainted(false);
-		ImageIcon btnIcon = new ImageIcon("img/help-icon.png");
+		ImageIcon btnIcon = new ImageIcon("img/helpRed.png");
 		btnHelp.setIcon(btnIcon);
 
 		btnHelp.addActionListener(new ActionListener() {
@@ -149,7 +149,7 @@ public class App {
 				HelpFrame help = new HelpFrame();
 			}
 		});
-		btnHelp.setBounds(1195, 10, 50, 49);
+		btnHelp.setBounds(1197, 0, 77, 59);
 		frame.getContentPane().add(btnHelp);
 
 		lblTags = new JLabel("Tags:");
@@ -209,7 +209,7 @@ public class App {
 				}
 			}
 		});
-		
+
 		foundImagesLabel1.setBounds(600, 50, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
 
@@ -248,14 +248,24 @@ public class App {
 		});
 		foundImagesLabel4.setBounds(920, 310, 250, 250);
 		frame.getContentPane().add(foundImagesLabel4);
-		
+
 		JLabel stepOne = new JLabel("");
 		stepOne.setToolTipText("here comes something");
-		stepOne.setIcon(new ImageIcon("img/stepOnesm.png"));
-		stepOne.setBounds(22, 0, 67, 49);
+		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
+		stepOne.setBounds(22, 5, 67, 49);
 		frame.getContentPane().add(stepOne);
-		
-		
+
+		stepTwo = new JLabel("");
+		stepTwo.setToolTipText("here comes something else");
+		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
+		stepTwo.setBounds(313, 5, 67, 49);
+		frame.getContentPane().add(stepTwo);
+
+		stepThree = new JLabel("");
+		stepThree.setToolTipText("here comes something different");
+		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
+		stepThree.setBounds(678, 5, 67, 49);
+		frame.getContentPane().add(stepThree);
 
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -325,9 +335,7 @@ public class App {
 				heightImage = currentData.getHeight();
 				labelInfo = " width: " + widthImage + ", height: " + heightImage;
 
-				// display width and height when user hovers over image
-				foundImagesLabel1.setToolTipText(labelInfo);
-
+				foundImagesLabel1.setToolTipText("<html><img src=\"" + firstImageUrl + "\">");
 				System.out.println("first url " + firstImageUrl);
 
 				// set this image as icon on a JLabel
@@ -340,7 +348,8 @@ public class App {
 				widthImage = currentData.getWidth();
 				heightImage = currentData.getHeight();
 				labelInfo = " width: " + widthImage + ", height: " + heightImage;
-				foundImagesLabel2.setToolTipText(labelInfo);
+
+				foundImagesLabel2.setToolTipText("<html><img src=\"" + secondImageUrl + "\">");
 
 				System.out.println("second url " + secondImageUrl);
 				setImageAsImageIcon(secondImageUrl, foundImagesLabel2);
@@ -351,8 +360,7 @@ public class App {
 
 				widthImage = currentData.getWidth();
 				heightImage = currentData.getHeight();
-				labelInfo = " width: " + widthImage + ", height: " + heightImage;
-				foundImagesLabel3.setToolTipText(labelInfo);
+				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 
 				System.out.println("third url " + thirdImageUrl);
 				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
@@ -363,8 +371,7 @@ public class App {
 
 				widthImage = currentData.getWidth();
 				heightImage = currentData.getHeight();
-				labelInfo = " width: " + widthImage + ", height: " + heightImage;
-				foundImagesLabel4.setToolTipText(labelInfo);
+				foundImagesLabel3.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
 
 				System.out.println("fourth url " + fourthImageUrl);
 				setImageAsImageIcon(fourthImageUrl, foundImagesLabel4);
