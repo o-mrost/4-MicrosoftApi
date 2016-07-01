@@ -7,7 +7,7 @@ public class ImageInTooltip {
 
 		JFrame frame = new JFrame();
 		JLabel label = new JLabel("Label with image in Tooltip!");
-		label.setToolTipText("<html><img src=\"" + ImageInTooltip.class.getResource("1.jpg") + "\">");
+		label.setToolTipText("<html><img src=\"" + ImageInTooltip.class.getResource("2.jpg") + "\">");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		frame.setContentPane(label);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

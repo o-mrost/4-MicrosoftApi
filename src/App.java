@@ -105,6 +105,8 @@ public class App {
 		frame.setSize(screenSize.width, (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setLayout(null);
+		System.out.println("screen width " + screenSize.width);
+		System.out.println("screen height " + screenSize.height);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
 		fc = new JFileChooser();
@@ -112,7 +114,7 @@ public class App {
 		frame.getContentPane().add(fc);
 
 		originalImageLabel = new JLabel();
-		originalImageLabel.setBounds(23, 109, 300, 300);
+		originalImageLabel.setBounds(22, 107, 300, 300);
 		frame.getContentPane().add(originalImageLabel);
 
 		btnTakePicture = new JButton("Take a picture with webcam");
@@ -207,7 +209,7 @@ public class App {
 				}
 			}
 		});
-
+		
 		foundImagesLabel1.setBounds(600, 50, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
 
@@ -246,6 +248,14 @@ public class App {
 		});
 		foundImagesLabel4.setBounds(920, 310, 250, 250);
 		frame.getContentPane().add(foundImagesLabel4);
+		
+		JLabel stepOne = new JLabel("");
+		stepOne.setToolTipText("here comes something");
+		stepOne.setIcon(new ImageIcon("img/stepOnesm.png"));
+		stepOne.setBounds(22, 0, 67, 49);
+		frame.getContentPane().add(stepOne);
+		
+		
 
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
