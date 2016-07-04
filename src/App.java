@@ -107,8 +107,6 @@ public class App {
 		frame.setSize(screenSize.width, (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setLayout(null);
-		System.out.println("screen width " + screenSize.width);
-		System.out.println("screen height " + screenSize.height);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
 		fc = new JFileChooser();
@@ -180,7 +178,9 @@ public class App {
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				System.out.println("==========================================");
+				System.out.println("new search");
+				System.out.println("==========================================");
 				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
 
 				// in case user edited description, update it
@@ -193,6 +193,7 @@ public class App {
 				newTags = newTags.replace(" ", "%20");
 
 				searchParameters = newTags + text.replace(" ", "%20");
+				System.out.println("search parameters: " + searchParameters);
 				searchForSimilarImages(searchParameters);
 			}
 		});
@@ -209,7 +210,6 @@ public class App {
 				}
 			}
 		});
-
 		foundImagesLabel1.setBounds(600, 50, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
 
@@ -363,7 +363,9 @@ public class App {
 				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 
 				System.out.println("third url " + thirdImageUrl);
+				System.out.println("here comes exception with sea");
 				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
+				System.out.println("setting icon 3 rd");
 
 			} else if (i == 3) {
 
@@ -371,7 +373,7 @@ public class App {
 
 				widthImage = currentData.getWidth();
 				heightImage = currentData.getHeight();
-				foundImagesLabel3.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
+				foundImagesLabel4.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
 
 				System.out.println("fourth url " + fourthImageUrl);
 				setImageAsImageIcon(fourthImageUrl, foundImagesLabel4);

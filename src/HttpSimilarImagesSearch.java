@@ -19,7 +19,7 @@ public class HttpSimilarImagesSearch {
 			// here comes null pointer exception
 			// why the hell?
 
-//			String license = "&license=public";
+//			String license = "&license=share";
 			 String license = "";
 
 			// or we can leave the license and use just image size to filter
