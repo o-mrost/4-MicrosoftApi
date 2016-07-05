@@ -363,9 +363,7 @@ public class App {
 				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 
 				System.out.println("third url " + thirdImageUrl);
-				System.out.println("here comes exception with sea");
 				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
-				System.out.println("setting icon 3 rd");
 
 			} else if (i == 3) {
 
@@ -396,6 +394,19 @@ public class App {
 			e2.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			// added catch for null pointer exception, now app finds some more
+			// images
+		} catch (NullPointerException e) {
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			icon = scaleBufferedImage(image, label);
+			label.setIcon(icon);
+			
+			e.printStackTrace();
 		}
 	}
 

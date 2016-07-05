@@ -26,12 +26,15 @@ public class ImageException {
 	// problem links:
 
 	// java.lang.NullPointerException
-	String linkNull1 = "http://thenaiveobserver.files.wordpress.com/2011/04/ear.jpg";
+	String linkNull1 = "http://upload.wikimedia.org/wikipedia/commons/1/13/Green_Grass.JPG";
 	String linkNull2 = "http://upload.wikimedia.org/wikipedia/commons/7/7a/Caribbean_sea_-_Morrocoy_National_Park_-_Playa_escondida.jpg";
+	
 	String linkNull3 = "http://lghttp.21049.nexcesscdn.net/809F1B/mage/media/catalog/product/cache/1/image/1500x/9df78eab33525d08d6e5fb8d27136e95/3/1/314740mbb321990-17oz-oil-bottle-bormioli-rocco.jpg";
+	
 	String linkNull4 = "http://upload.wikimedia.org/wikipedia/commons/8/8f/2009-03-20_Red_car_NB_on_S_Lasalle_St_in_Durham.jpg";
+	
 	String linkNull5 = "http://benjamindeibertphotography.files.wordpress.com/2010/02/wine-glass-1.jpg";
-	String linkNull6 = "http://upload.wikimedia.org/wikipedia/commons/1/13/Green_Grass.JPG";
+	String linkNull6 = "http://thenaiveobserver.files.wordpress.com/2011/04/ear.jpg";
 	
 	// javax.imageio.IIOException: Can't get input stream from URL!
 	// Caused by: java.net.UnknownHostException: upmcrelocation.co.in
@@ -97,7 +100,7 @@ public class ImageException {
 
 		setImageAsImageIcon(link3, lbl1st);
 
-		setImageAsImageIcon(link2, lbl3rd);
+		setImageAsImageIcon(linkNull1, lbl3rd);
 	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {
