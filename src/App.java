@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.IIOException;
@@ -48,7 +49,7 @@ public class App {
 			foundImagesLabel4, lblImageFromWebcam, helpLabel;
 
 	private BufferedImage imgFromCam = null;
-	private BufferedImage image = null;
+	private BufferedImage image = null, imgLabels = null;
 
 	private HttpDescribeImage httpLocal = new HttpDescribeImage();
 	private HttpSimilarImagesSearch httpBingSearch = new HttpSimilarImagesSearch();
@@ -203,19 +204,11 @@ public class App {
 					searchForSimilarImages(searchParameters);
 
 				} else {
-					JOptionPane.showConfirmDialog(null, //
-							"Please choose first an image to analyse or insert tags", //
-							"Confirm", JOptionPane.YES_OPTION, //
-							JOptionPane.QUESTION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Please choose first an image to analyse or insert tags");
 				}
-
 			}
 		});
 
-		// if (searchParameters.length() != 0) {
-		// btnSearchForSimilar.setVisible(true);
-		// }
-		// }
 		btnSearchForSimilar.setBounds(495, 18, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
@@ -332,6 +325,8 @@ public class App {
 		Gson gsonBing = gsonBingBuilder.create();
 		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
+		ArrayList originalUrls = rootBing.getValue();
+
 		int i = 0;
 
 		// clear labels in case there were results of previous search
@@ -340,59 +335,40 @@ public class App {
 		foundImagesLabel3.setIcon(null);
 		foundImagesLabel4.setIcon(null);
 
+		System.out.println("here are 10 urls");
+
+//		checkLinks(originalUrls);
+
 		for (Data currentData : rootBing.getValue()) {
 
-			// TODO or may be better use here switch case thing?
-			// get one element of arrayList
+			// check if link is valid
 
-			// TODO scale images correctly
+			// and then set it as icon
+
 			if (i == 0) {
 				firstImageUrl = currentData.getContentUrl();
-
-				// get information about width and height of this image from
-				// Bing API
-				widthImage = currentData.getWidth();
-				heightImage = currentData.getHeight();
-				labelInfo = " width: " + widthImage + ", height: " + heightImage;
-
 				foundImagesLabel1.setToolTipText("<html><img src=\"" + firstImageUrl + "\">");
 				System.out.println("first url " + firstImageUrl);
-
-				// set this image as icon on a JLabel
 				setImageAsImageIcon(firstImageUrl, foundImagesLabel1);
 
 			} else if (i == 1) {
 
 				secondImageUrl = currentData.getContentUrl();
-
-				widthImage = currentData.getWidth();
-				heightImage = currentData.getHeight();
-				labelInfo = " width: " + widthImage + ", height: " + heightImage;
-
 				foundImagesLabel2.setToolTipText("<html><img src=\"" + secondImageUrl + "\">");
-
 				System.out.println("second url " + secondImageUrl);
 				setImageAsImageIcon(secondImageUrl, foundImagesLabel2);
 
 			} else if (i == 2) {
 
 				thirdImageUrl = currentData.getContentUrl();
-
-				widthImage = currentData.getWidth();
-				heightImage = currentData.getHeight();
-				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
-
 				System.out.println("third url " + thirdImageUrl);
+				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
 
 			} else if (i == 3) {
 
 				fourthImageUrl = currentData.getContentUrl();
-
-				widthImage = currentData.getWidth();
-				heightImage = currentData.getHeight();
 				foundImagesLabel4.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
-
 				System.out.println("fourth url " + fourthImageUrl);
 				setImageAsImageIcon(fourthImageUrl, foundImagesLabel4);
 			}
@@ -400,40 +376,102 @@ public class App {
 		}
 	}
 
+//	private ArrayList checkLinks(ArrayList<Data> originalValue) {
+//
+//		String[] stringArray = null;
+//		
+//		int i = 0;
+//		
+//		for (Data currentData : originalValue) {
+//			stringArray [i] = currentData.getContentUrl();
+//			i++;
+//		}
+//			System.out.println("10 urls as string " + Arrays.toString(stringArray));
+//		
+//		
+//		// print out original array
+//
+//		System.out.println("original array");
+//		for (Data currentData : originalValue) {
+//			System.out.println(currentData.getContentUrl());
+//		}
+//
+//		// for (int i = 0; i < originalValue.size(); i++) {
+//		// System.out.println(Arrays.toString.originalValue.get(i));
+//		// }
+//		//
+//		//
+//		for (Data currentData : originalValue) {
+//			String currentLink = currentData.getContentUrl();
+//
+//			try {
+//				URL linkAsUrl = new URL(currentLink);
+//				// set image as Buffered image
+//				image = ImageIO.read(linkAsUrl);
+//				icon = scaleBufferedImage(image, foundImagesLabel1);
+//				foundImagesLabel1.setIcon(icon);
+//			} catch (IOException e1) {
+//				// remove item from array list
+//				originalValue.remove(currentLink);
+//				System.out.println("removed element: " + currentLink);
+//				// currentData
+//				e1.printStackTrace();
+//			} catch (NullPointerException e) {
+//				// remove item from array list
+//				originalValue.remove(currentLink);
+//				System.out.println("removed element: " + currentLink);
+//				e.printStackTrace();
+//			}
+//
+//		}
+//
+//		// print out final array
+//		System.out.println("final array");
+//
+//		for (Data currentData : originalValue) {
+//			System.out.println(currentData.getContentUrl());
+//		}
+//
+//		// TODO change return
+//		return originalValue;
+//
+//	}
+
 	protected void setImageAsImageIcon(String link, JLabel label) {
 
 		URL linkAsUrl = null;
 		try {
 			linkAsUrl = new URL(link);
 			// set image as Buffered image
-			image = ImageIO.read(linkAsUrl);
-			icon = scaleBufferedImage(image, label);
+			imgLabels = ImageIO.read(linkAsUrl);
+			icon = scaleBufferedImage(imgLabels, label);
 			label.setIcon(icon);
 		} catch (MalformedURLException e2) {
-			tagsField.setText("please enter a valid link or choose an image with button 'Browse' ");
+
+			// TODO new error message as picture - wrong url
 			e2.printStackTrace();
 		} catch (IOException e1) {
 			try {
 				// TODO here is actually IIO exception, may be make new error
 				// message
-				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
 			} catch (IOException e2) {
 				e2.printStackTrace();
 			}
-			icon = scaleBufferedImage(image, label);
+			icon = scaleBufferedImage(imgLabels, label);
 			label.setIcon(icon);
 			e1.printStackTrace();
 			// added catch for null pointer exception, now app finds some more
 			// images
 		} catch (NullPointerException e) {
-			try {
-				// display fake error message
-				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
-			} catch (IOException e2) {
-				e2.printStackTrace();
-			}
-			icon = scaleBufferedImage(image, label);
-			label.setIcon(icon);
+			 try {
+			 // display fake error message
+				 imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			 } catch (IOException e2) {
+			 e2.printStackTrace();
+			 }
+			 icon = scaleBufferedImage(imgLabels, label);
+			 label.setIcon(icon);
 			e.printStackTrace();
 		}
 	}
@@ -475,6 +513,7 @@ public class App {
 
 		return tagsString + textString;
 	}
+	
 
 	protected void takePicture() {
 
@@ -485,11 +524,15 @@ public class App {
 			camera.turnWebcamOn();
 			System.out.println("camera works");
 
+			imgFromCam = camera.getImageWebcam();
+			
 			// here null pointer exception
 
 			// imgFromCam is null, how to pass BufferedImage to it?
 			icon = scaleBufferedImage(imgFromCam, originalImageLabel);
-
+			originalImageLabel.setIcon(icon);
+			
+			System.out.println("width " + imgFromCam.getWidth());
 			// return bufferedImage
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
@@ -500,20 +543,22 @@ public class App {
 
 		fc.setDialogTitle("Specify name of the file to save");
 
-		// get name of file without url things, but with extension
-		String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
+//		// get name of file without url things, but with extension
+//		String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
+//
+//		// some files have name like this: 1581_003.jpg?imgmax=512
+//		// leave just the part up to .jpg
+//		if (fileName.contains("?")) {
+//			fileName = fileName.substring(0, fileName.lastIndexOf('?'));
+//		}
+//
+//		System.out.println("filename " + fileName);
+//
+//		String pathToFile = fc.getCurrentDirectory().toString();
+//		File output = new File(pathToFile + "/" + fileName);
 
-		// some files have name like this: 1581_003.jpg?imgmax=512
-		// leave just the part up to .jpg
-		if (fileName.contains("?")) {
-			fileName = fileName.substring(0, fileName.lastIndexOf('?'));
-		}
-
-		System.out.println("filename " + fileName);
-
-		String pathToFile = fc.getCurrentDirectory().toString();
-		File output = new File(pathToFile + "/" + fileName);
-
+		File output = new File(fc.getSelectedFile().toString());
+		
 		// check if file already exists, ask user if they wish to overwrite it
 		if (output.exists()) {
 			int response = JOptionPane.showConfirmDialog(null, //
@@ -524,7 +569,6 @@ public class App {
 				return;
 			}
 		}
-
 		fc.setSelectedFile(output);
 
 		try {

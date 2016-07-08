@@ -20,6 +20,8 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 public class WebcamAPI {
 
+	BufferedImage image;
+	
 	BufferedImage imageWebcam = null;
 	JButton btn = new JButton("Take a picture");
 	Webcam webcam = Webcam.getDefault();
@@ -70,7 +72,10 @@ public class WebcamAPI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("taking a picture");
+
 				imageWebcam = takePicture();
+				System.out.println("picture taken"); 
+				setImageWebcam(imageWebcam);
 			}
 		});
 		window.add(btn, BorderLayout.SOUTH);
@@ -82,10 +87,16 @@ public class WebcamAPI {
 		window.pack();
 		window.setVisible(true);
 
+		
+		
+		System.out.println("alles gut");
+		
 		if (imageWebcam == null) {
 			System.out.println("image is null, take a picture");
-			wait();
+			// wait();
 		}
+
+		System.out.println("height 2 " + imageWebcam.getHeight());
 
 		return imageWebcam;
 
@@ -95,31 +106,52 @@ public class WebcamAPI {
 
 		// created date stamp to add to every picture taken with a
 		// webcam
-		BufferedImage image;
+		
 
-		Date date = new Date();
-		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
-		String dateTime = dateFormat.format(date);
-
-		// TODO make it more flexible, and not depending on the name of
-		// user, may be create a folder on desktop
-		String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
+//		Date date = new Date();
+//		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
+//		String dateTime = dateFormat.format(date);
+//
+//		// TODO make it more flexible, and not depending on the name of
+//		// user, may be create a folder on desktop
+//		String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
 
 		image = webcam.getImage();
+		setImage(webcam.getImage());
 
-		try {
+//		try {
+//
+//			ImageIO.write(image, "PNG", new File(fileName));
+//			System.out.println("image stored at " + fileName);
+//			// display(image);
+//
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
 
-			ImageIO.write(image, "PNG", new File(fileName));
-			System.out.println("image stored at " + fileName);
-			// display(image);
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		System.out.println("Height " + image.getHeight());
 		return image;
 
 	}
 
+	public BufferedImage getImage() {
+		return image;
+	}
+
+	public void setImage(BufferedImage image) {
+		this.image = image;
+	}
+
+	public BufferedImage getImageWebcam() {
+		return imageWebcam;
+	}
+
+	public void setImageWebcam(BufferedImage imageWebcam) {
+		this.imageWebcam = imageWebcam;
+	}
+
+	
+	
 	// // does not work yet
 	// public void display(BufferedImage img) {
 	// JFrame frame = new JFrame();
