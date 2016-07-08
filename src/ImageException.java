@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,14 +29,14 @@ public class ImageException {
 	// java.lang.NullPointerException
 	String linkNull1 = "http://upload.wikimedia.org/wikipedia/commons/1/13/Green_Grass.JPG";
 	String linkNull2 = "http://upload.wikimedia.org/wikipedia/commons/7/7a/Caribbean_sea_-_Morrocoy_National_Park_-_Playa_escondida.jpg";
-	
+
 	String linkNull3 = "http://lghttp.21049.nexcesscdn.net/809F1B/mage/media/catalog/product/cache/1/image/1500x/9df78eab33525d08d6e5fb8d27136e95/3/1/314740mbb321990-17oz-oil-bottle-bormioli-rocco.jpg";
-	
+
 	String linkNull4 = "http://upload.wikimedia.org/wikipedia/commons/8/8f/2009-03-20_Red_car_NB_on_S_Lasalle_St_in_Durham.jpg";
-	
+
 	String linkNull5 = "http://benjamindeibertphotography.files.wordpress.com/2010/02/wine-glass-1.jpg";
 	String linkNull6 = "http://thenaiveobserver.files.wordpress.com/2011/04/ear.jpg";
-	
+
 	// javax.imageio.IIOException: Can't get input stream from URL!
 	// Caused by: java.net.UnknownHostException: upmcrelocation.co.in
 	String linkIIO1 = "http://upmcrelocation.co.in/superscapes/wp-content/uploads/2014/07/hackberry_tree_20131230_1040936985.png";
@@ -85,22 +86,22 @@ public class ImageException {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lbl1st = new JLabel();
-		lbl1st.setSize(100, 100);
+		lbl1st.setSize(150, 150);
 		frame.getContentPane().add(lbl1st, BorderLayout.NORTH);
 
 		JLabel lbl2nd = new JLabel();
-		lbl2nd.setSize(100, 100);
+		lbl2nd.setSize(150, 150);
 		frame.getContentPane().add(lbl2nd, BorderLayout.CENTER);
 
 		JLabel lbl3rd = new JLabel();
-		lbl3rd.setSize(100, 100);
+		lbl3rd.setSize(150, 150);
 		frame.getContentPane().add(lbl3rd, BorderLayout.SOUTH);
 
 		setImageAsImageIcon(link1, lbl2nd);
 
 		setImageAsImageIcon(link3, lbl1st);
 
-		setImageAsImageIcon(linkNull1, lbl3rd);
+		setImageAsImageIcon(linkNull2, lbl3rd);
 	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {
@@ -124,6 +125,17 @@ public class ImageException {
 			e2.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+		} catch (NullPointerException e) {
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			icon = scaleBufferedImage(image, label);
+			label.setIcon(icon);
+
+			e.printStackTrace();
 		}
 	}
 

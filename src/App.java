@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -104,7 +105,7 @@ public class App {
 
 		// set height of frame to 3/4 of screen height
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
-		frame.setSize(screenSize.width, (3 * screenSize.height / 4));
+		frame.setSize((3 * screenSize.width / 4), (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setLayout(null);
 
@@ -114,23 +115,23 @@ public class App {
 		frame.getContentPane().add(fc);
 
 		originalImageLabel = new JLabel();
-		originalImageLabel.setBounds(22, 107, 300, 300);
+		originalImageLabel.setBounds(23, 93, 300, 300);
 		frame.getContentPane().add(originalImageLabel);
 
 		btnTakePicture = new JButton("Take a picture with webcam");
-		btnTakePicture.setBounds(30, 46, 212, 29);
+		btnTakePicture.setBounds(66, 34, 212, 29);
 		frame.getContentPane().add(btnTakePicture);
 
 		btnBrowse = new JButton("Browse");
-		btnBrowse.setBounds(78, 18, 117, 29);
+		btnBrowse.setBounds(118, 6, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
 		JButton btnAnalyse = new JButton("    Analyse image");
-		btnAnalyse.setBounds(352, 18, 196, 29);
+		btnAnalyse.setBounds(82, 406, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
 		tagsField = new JTextArea();
-		tagsField.setBounds(352, 107, 205, 116);
+		tagsField.setBounds(22, 472, 102, 89);
 		tagsField.setLineWrap(true);
 		tagsField.setWrapStyleWord(true);
 		frame.getContentPane().add(tagsField);
@@ -147,26 +148,26 @@ public class App {
 				HelpFrame help = new HelpFrame();
 			}
 		});
-		btnHelp.setBounds(1197, 0, 77, 59);
+		btnHelp.setBounds(847, 0, 77, 59);
 		frame.getContentPane().add(btnHelp);
 
 		lblTags = new JLabel("Tags:");
-		lblTags.setBounds(352, 79, 61, 16);
+		lblTags.setBounds(45, 444, 61, 16);
 		frame.getContentPane().add(lblTags);
 
 		descriptionField = new JTextArea();
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
-		descriptionField.setBounds(352, 263, 205, 43);
+		descriptionField.setBounds(136, 472, 187, 89);
 		frame.getContentPane().add(descriptionField);
 		descriptionField.setColumns(10);
 
 		lblDescription = new JLabel("Description:");
-		lblDescription.setBounds(352, 235, 77, 16);
+		lblDescription.setBounds(162, 444, 77, 16);
 		frame.getContentPane().add(lblDescription);
 
 		urlField = new JTextField();
-		urlField.setBounds(22, 79, 220, 26);
+		urlField.setBounds(66, 69, 220, 26);
 		frame.getContentPane().add(urlField);
 		urlField.setColumns(10);
 
@@ -176,8 +177,10 @@ public class App {
 		lblImageFromWebcam.setIcon(icon);
 
 		btnSearchForSimilar = new JButton("Search for similar images");
+		btnSearchForSimilar.setVisible(true);
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				System.out.println("==========================================");
 				System.out.println("new search");
 				System.out.println("==========================================");
@@ -186,7 +189,8 @@ public class App {
 				// in case user edited description, update it
 				text = descriptionField.getText();
 
-				// in case user edited tags, we get the new info here and make
+				// in case user edited tags, we get the new info here and
+				// make
 				// it suitable for url, replace new line character with %20
 				String newTags = tagsField.getText().replace("\n", "%20");
 				// and replace spaces with %20
@@ -194,15 +198,31 @@ public class App {
 
 				searchParameters = newTags + text.replace(" ", "%20");
 				System.out.println("search parameters: " + searchParameters);
-				searchForSimilarImages(searchParameters);
+
+				if (searchParameters.length() != 0) {
+					searchForSimilarImages(searchParameters);
+
+				} else {
+					JOptionPane.showConfirmDialog(null, //
+							"Please choose first an image to analyse or insert tags", //
+							"Confirm", JOptionPane.YES_OPTION, //
+							JOptionPane.QUESTION_MESSAGE);
+				}
+
 			}
 		});
-		btnSearchForSimilar.setBounds(726, 18, 189, 29);
+
+		// if (searchParameters.length() != 0) {
+		// btnSearchForSimilar.setVisible(true);
+		// }
+		// }
+		btnSearchForSimilar.setBounds(495, 18, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
 		// place for images from internet
 		foundImagesLabel1 = new JLabel();
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -210,7 +230,7 @@ public class App {
 				}
 			}
 		});
-		foundImagesLabel1.setBounds(600, 50, 250, 250);
+		foundImagesLabel1.setBounds(400, 49, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
 
 		foundImagesLabel2 = new JLabel();
@@ -222,7 +242,7 @@ public class App {
 				}
 			}
 		});
-		foundImagesLabel2.setBounds(600, 310, 250, 250);
+		foundImagesLabel2.setBounds(400, 311, 250, 250);
 		frame.getContentPane().add(foundImagesLabel2);
 
 		foundImagesLabel3 = new JLabel();
@@ -234,7 +254,7 @@ public class App {
 				}
 			}
 		});
-		foundImagesLabel3.setBounds(920, 50, 250, 250);
+		foundImagesLabel3.setBounds(673, 47, 250, 250);
 		frame.getContentPane().add(foundImagesLabel3);
 
 		foundImagesLabel4 = new JLabel();
@@ -246,25 +266,25 @@ public class App {
 				}
 			}
 		});
-		foundImagesLabel4.setBounds(920, 310, 250, 250);
+		foundImagesLabel4.setBounds(673, 313, 250, 250);
 		frame.getContentPane().add(foundImagesLabel4);
 
 		JLabel stepOne = new JLabel("");
 		stepOne.setToolTipText("here comes something");
 		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
-		stepOne.setBounds(22, 5, 67, 49);
+		stepOne.setBounds(23, 0, 67, 49);
 		frame.getContentPane().add(stepOne);
 
 		stepTwo = new JLabel("");
 		stepTwo.setToolTipText("here comes something else");
 		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
-		stepTwo.setBounds(313, 5, 67, 49);
+		stepTwo.setBounds(20, 386, 67, 49);
 		frame.getContentPane().add(stepTwo);
 
 		stepThree = new JLabel("");
 		stepThree.setToolTipText("here comes something different");
 		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
-		stepThree.setBounds(678, 5, 67, 49);
+		stepThree.setBounds(432, 0, 67, 49);
 		frame.getContentPane().add(stepThree);
 
 		btnBrowse.addActionListener(new ActionListener() {
@@ -393,6 +413,15 @@ public class App {
 			tagsField.setText("please enter a valid link or choose an image with button 'Browse' ");
 			e2.printStackTrace();
 		} catch (IOException e1) {
+			try {
+				// TODO here is actually IIO exception, may be make new error
+				// message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			icon = scaleBufferedImage(image, label);
+			label.setIcon(icon);
 			e1.printStackTrace();
 			// added catch for null pointer exception, now app finds some more
 			// images
@@ -400,12 +429,11 @@ public class App {
 			try {
 				// display fake error message
 				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException e2) {
+				e2.printStackTrace();
 			}
 			icon = scaleBufferedImage(image, label);
 			label.setIcon(icon);
-			
 			e.printStackTrace();
 		}
 	}
@@ -423,8 +451,8 @@ public class App {
 		System.out.println("tags " + Arrays.toString(tags));
 
 		// limit number of tags displayed to max first six
-		if (tags.length >= 6) {
-			numberOfTags = 6;
+		if (tags.length >= 5) {
+			numberOfTags = 5;
 		} else {
 			numberOfTags = tags.length;
 		}

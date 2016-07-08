@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-public class Test extends JFrame {
+public class RightClickMenu extends JFrame {
   JPopupMenu menu = new JPopupMenu("Popup");
 
   class MyLabel extends JLabel {
@@ -36,7 +36,7 @@ public class Test extends JFrame {
 
   JLabel label = new MyLabel("right-click");
 
-  public Test() {
+  public RightClickMenu() {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     JMenuItem item = new JMenuItem("Test1");
     item.addActionListener(new ActionListener() {
@@ -60,6 +60,6 @@ public class Test extends JFrame {
   }
 
   public static void main(String[] args) {
-    new Test().setVisible(true);
+    new RightClickMenu().setVisible(true);
   }
 }
