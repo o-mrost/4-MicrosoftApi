@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Image;
@@ -15,8 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,8 +25,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.google.gson.Gson;
@@ -41,7 +44,7 @@ public class App {
 	private JFileChooser fc;
 	private File file;
 	private ImageIcon icon, iconOneFromInternet, iconTwoFromInternet, iconThreeFromInternet, iconFourFromInternet;
-	private JFrame frame, helpFrame;
+	private JFrame frame, helpFrame, progressFrame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
 	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp, btnSearchForSimilar;
@@ -56,6 +59,8 @@ public class App {
 
 	private String analyseImageToken, bingToken;
 
+	private JProgressBar aJProgressBar;
+
 	private Token searchToken = new Token();
 	private Token tokenCache = new Token();
 
@@ -65,7 +70,7 @@ public class App {
 	String secondImageUrl = null;
 	String thirdImageUrl = null;
 	String fourthImageUrl = null;
-	int numberOfTags, widthImage, heightImage;
+	int numberOfTags, widthImage, heightImage, progressValue;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
@@ -108,7 +113,6 @@ public class App {
 		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
 		frame.setSize((3 * screenSize.width / 4), (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
-		frame.getContentPane().setLayout(null);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
 		fc = new JFileChooser();
@@ -116,6 +120,8 @@ public class App {
 		frame.getContentPane().add(fc);
 
 		originalImageLabel = new JLabel();
+		// edit to center the label
+		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		originalImageLabel.setBounds(23, 93, 300, 300);
 		frame.getContentPane().add(originalImageLabel);
 
@@ -127,7 +133,7 @@ public class App {
 		btnBrowse.setBounds(118, 6, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
-		JButton btnAnalyse = new JButton("    Analyse image");
+		JButton btnAnalyse = new JButton("Analyse image");
 		btnAnalyse.setBounds(82, 406, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
@@ -142,13 +148,6 @@ public class App {
 		btnHelp.setBorderPainted(false);
 		ImageIcon btnIcon = new ImageIcon("img/helpRed.png");
 		btnHelp.setIcon(btnIcon);
-
-		btnHelp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// TODO write help
-				HelpFrame help = new HelpFrame();
-			}
-		});
 		btnHelp.setBounds(847, 0, 77, 59);
 		frame.getContentPane().add(btnHelp);
 
@@ -177,88 +176,32 @@ public class App {
 		frame.getContentPane().add(lblImageFromWebcam);
 		lblImageFromWebcam.setIcon(icon);
 
+		progressFrame = new JFrame("We are looking for images... It may take while");
+		progressFrame.setSize(400, 100);
+		progressFrame.setLocationRelativeTo(frame);
+
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.setVisible(true);
-		btnSearchForSimilar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				System.out.println("==========================================");
-				System.out.println("new search");
-				System.out.println("==========================================");
-				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
-
-				// in case user edited description, update it
-				text = descriptionField.getText();
-
-				// in case user edited tags, we get the new info here and
-				// make
-				// it suitable for url, replace new line character with %20
-				String newTags = tagsField.getText().replace("\n", "%20");
-				// and replace spaces with %20
-				newTags = newTags.replace(" ", "%20");
-
-				searchParameters = newTags + text.replace(" ", "%20");
-				System.out.println("search parameters: " + searchParameters);
-
-				if (searchParameters.length() != 0) {
-					searchForSimilarImages(searchParameters);
-
-				} else {
-					JOptionPane.showMessageDialog(null, "Please choose first an image to analyse or insert tags");
-				}
-			}
-		});
-
 		btnSearchForSimilar.setBounds(495, 18, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
-		// place for images from internet
 		foundImagesLabel1 = new JLabel();
-		foundImagesLabel1.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(firstImageUrl);
-				}
-			}
-		});
+		foundImagesLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		foundImagesLabel1.setBounds(400, 49, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
 
 		foundImagesLabel2 = new JLabel();
-		foundImagesLabel2.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(secondImageUrl);
-				}
-			}
-		});
+		foundImagesLabel2.setHorizontalAlignment(SwingConstants.CENTER);
 		foundImagesLabel2.setBounds(400, 311, 250, 250);
 		frame.getContentPane().add(foundImagesLabel2);
 
 		foundImagesLabel3 = new JLabel();
-		foundImagesLabel3.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(thirdImageUrl);
-				}
-			}
-		});
+		foundImagesLabel3.setHorizontalAlignment(SwingConstants.CENTER);
 		foundImagesLabel3.setBounds(673, 47, 250, 250);
 		frame.getContentPane().add(foundImagesLabel3);
 
 		foundImagesLabel4 = new JLabel();
-		foundImagesLabel4.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(fourthImageUrl);
-				}
-			}
-		});
+		foundImagesLabel4.setHorizontalAlignment(SwingConstants.CENTER);
 		foundImagesLabel4.setBounds(673, 313, 250, 250);
 		frame.getContentPane().add(foundImagesLabel4);
 
@@ -280,6 +223,7 @@ public class App {
 		stepThree.setBounds(432, 0, 67, 49);
 		frame.getContentPane().add(stepThree);
 
+		// all action listeners
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -294,18 +238,6 @@ public class App {
 			}
 		});
 
-		btnAnalyse.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					analyseImageToken = searchToken.getApiToken(tagsTokenFileName);
-					analyse();
-				} catch (NullPointerException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-
 		urlField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -315,19 +247,103 @@ public class App {
 				}
 			}
 		});
+		
+		btnAnalyse.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					analyseImageToken = searchToken.getApiToken(tagsTokenFileName);
+					try {
+						analyse();
+					} catch (NullPointerException e1) {
+						// if user clicks on "analyze" button without uploading
+						// image or posts a broken link
+						JOptionPane.showMessageDialog(null, "Please choose an image");
+						e1.printStackTrace();
+					}
+				} catch (NullPointerException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		btnSearchForSimilar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				System.out.println("==========================================");
+				System.out.println("new search");
+				System.out.println("==========================================");
+				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
+
+				// in case user edited description, update it
+				text = descriptionField.getText();
+
+				// in case user edited tags, we get the new info here and
+				// make it suitable for url, replace new line character with %20
+				String newTags = tagsField.getText().replace("\n", "%20");
+				// and replace spaces with %20
+				newTags = newTags.replace(" ", "%20");
+
+				searchParameters = newTags + text.replace(" ", "%20");
+				System.out.println("search parameters: " + searchParameters);
+
+				if (searchParameters.length() != 0) {
+					searchForSimilarImages(searchParameters);
+				} else {
+					JOptionPane.showMessageDialog(null, "Please choose first an image to analyse or insert tags");
+				}
+			}
+		});
+
+		foundImagesLabel1.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(firstImageUrl);
+				}
+			}
+		});
+
+		foundImagesLabel2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(secondImageUrl);
+				}
+			}
+		});
+
+		foundImagesLabel3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(thirdImageUrl);
+				}
+			}
+		});
+
+		foundImagesLabel4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					saveFileChooser(fourthImageUrl);
+				}
+			}
+		});
+		
+		btnHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO write help
+				HelpFrame help = new HelpFrame();
+			}
+		});
 	}
 
 	protected void searchForSimilarImages(String text) {
 
-		String responseBing = httpBingSearch.GetUrlContentAsString(bingToken, text);
-
-		GsonBuilder gsonBingBuilder = new GsonBuilder();
-		Gson gsonBing = gsonBingBuilder.create();
-		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
-
-		ArrayList originalUrls = rootBing.getValue();
-
-		int i = 0;
+		// Add progress bar
+		progressFrame.setVisible(true);
 
 		// clear labels in case there were results of previous search
 		foundImagesLabel1.setIcon(null);
@@ -335,145 +351,159 @@ public class App {
 		foundImagesLabel3.setIcon(null);
 		foundImagesLabel4.setIcon(null);
 
-		System.out.println("here are 10 urls");
+		String responseBing = httpBingSearch.GetUrlContentAsString(bingToken, text);
 
-//		checkLinks(originalUrls);
+		GsonBuilder gsonBingBuilder = new GsonBuilder();
+		Gson gsonBing = gsonBingBuilder.create();
+		RootBing rootBing = gsonBing.fromJson(responseBing, RootBing.class);
 
-		for (Data currentData : rootBing.getValue()) {
+		// created temp array list with all urls and width and height of images
+		ArrayList<Data> originalUrls = rootBing.getValue();
 
-			// check if link is valid
+		// filtered only working links
+		ArrayList<String> checkedUrls = checkLinks(originalUrls);
+		// System.out.println("Links to display: ");
 
-			// and then set it as icon
+		int i = 0;
+
+		for (String temp : checkedUrls) {
 
 			if (i == 0) {
-				firstImageUrl = currentData.getContentUrl();
+
+				firstImageUrl = temp;
 				foundImagesLabel1.setToolTipText("<html><img src=\"" + firstImageUrl + "\">");
-				System.out.println("first url " + firstImageUrl);
+				// System.out.println("first url: " + firstImageUrl);
 				setImageAsImageIcon(firstImageUrl, foundImagesLabel1);
 
 			} else if (i == 1) {
 
-				secondImageUrl = currentData.getContentUrl();
+				secondImageUrl = temp;
 				foundImagesLabel2.setToolTipText("<html><img src=\"" + secondImageUrl + "\">");
-				System.out.println("second url " + secondImageUrl);
+				// System.out.println("second url: " + secondImageUrl);
 				setImageAsImageIcon(secondImageUrl, foundImagesLabel2);
 
 			} else if (i == 2) {
 
-				thirdImageUrl = currentData.getContentUrl();
-				System.out.println("third url " + thirdImageUrl);
+				thirdImageUrl = temp;
+				// System.out.println("third url: " + thirdImageUrl);
 				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
 
 			} else if (i == 3) {
 
-				fourthImageUrl = currentData.getContentUrl();
+				fourthImageUrl = temp;
 				foundImagesLabel4.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
-				System.out.println("fourth url " + fourthImageUrl);
+				// System.out.println("fourth url: " + fourthImageUrl);
 				setImageAsImageIcon(fourthImageUrl, foundImagesLabel4);
 			}
+
 			i++;
+			progressFrame.setVisible(false);
+		}
+
+		// if not enough images were found, display suggestion to edit search
+		if (checkedUrls.size() <= 2) {
+			try {
+				System.out.println("something =============");
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/warning.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			icon = scaleBufferedImage(imgLabels, foundImagesLabel1);
+			foundImagesLabel1.setIcon(icon);
 		}
 	}
 
-//	private ArrayList checkLinks(ArrayList<Data> originalValue) {
-//
-//		String[] stringArray = null;
-//		
-//		int i = 0;
-//		
-//		for (Data currentData : originalValue) {
-//			stringArray [i] = currentData.getContentUrl();
-//			i++;
-//		}
-//			System.out.println("10 urls as string " + Arrays.toString(stringArray));
-//		
-//		
-//		// print out original array
-//
-//		System.out.println("original array");
-//		for (Data currentData : originalValue) {
-//			System.out.println(currentData.getContentUrl());
-//		}
-//
-//		// for (int i = 0; i < originalValue.size(); i++) {
-//		// System.out.println(Arrays.toString.originalValue.get(i));
-//		// }
-//		//
-//		//
-//		for (Data currentData : originalValue) {
-//			String currentLink = currentData.getContentUrl();
-//
-//			try {
-//				URL linkAsUrl = new URL(currentLink);
-//				// set image as Buffered image
-//				image = ImageIO.read(linkAsUrl);
-//				icon = scaleBufferedImage(image, foundImagesLabel1);
-//				foundImagesLabel1.setIcon(icon);
-//			} catch (IOException e1) {
-//				// remove item from array list
-//				originalValue.remove(currentLink);
-//				System.out.println("removed element: " + currentLink);
-//				// currentData
-//				e1.printStackTrace();
-//			} catch (NullPointerException e) {
-//				// remove item from array list
-//				originalValue.remove(currentLink);
-//				System.out.println("removed element: " + currentLink);
-//				e.printStackTrace();
-//			}
-//
-//		}
-//
-//		// print out final array
-//		System.out.println("final array");
-//
-//		for (Data currentData : originalValue) {
-//			System.out.println(currentData.getContentUrl());
-//		}
-//
-//		// TODO change return
-//		return originalValue;
-//
-//	}
+	protected ArrayList<String> checkLinks(ArrayList<Data> originalValue) {
+
+		// here we convert our Data arrayList to a String arrayList
+		ArrayList<String> stringArray = new ArrayList<String>();
+
+		for (Data currentData : originalValue) {
+			stringArray.add(currentData.getContentUrl());
+		}
+
+		System.out.println("Original array with " + stringArray.size() + " elements");
+		System.out.println("============");
+		// stringArray.forEach(System.out::println);
+
+		// get an iterator
+		Iterator iter = stringArray.iterator();
+		String strElement = "";
+		URL linkAsUrl = null;
+
+		// variable to count the number of valid urls
+		int count = 0;
+
+		while (iter.hasNext()) {
+			strElement = (String) iter.next();
+			System.out.println("============");
+			System.out.println("CHECKING: " + strElement);
+
+			try {
+				linkAsUrl = new URL(strElement);
+				imgLabels = ImageIO.read(linkAsUrl);
+				setImageAsImageIcon(strElement, foundImagesLabel4);
+				System.out.println("OK");
+				count++;
+			} catch (MalformedURLException e) {
+				System.out.println("malformed exception with url " + strElement);
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				System.out.println("NullPointerException: element to be removed - " + strElement);
+				iter.remove();
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("IIOException \nLink to be removed: " + strElement);
+				iter.remove();
+				e.printStackTrace();
+			}
+			// stop checking when 4 valid links are found
+			if (count == 4) {
+				break;
+			}
+		}
+
+		// System.out.println("=======================");
+		// System.out.println("Filtered array: ");
+		// stringArray.forEach(System.out::println);
+		// System.out.println("number of elements after the deletion " +
+		// stringArray.size());
+
+		return stringArray;
+	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {
 
 		URL linkAsUrl = null;
 		try {
 			linkAsUrl = new URL(link);
-			// set image as Buffered image
 			imgLabels = ImageIO.read(linkAsUrl);
-			icon = scaleBufferedImage(imgLabels, label);
-			label.setIcon(icon);
+			// icon = scaleBufferedImage(imgLabels, label);
 		} catch (MalformedURLException e2) {
-
-			// TODO new error message as picture - wrong url
 			e2.printStackTrace();
+
 		} catch (IOException e1) {
 			try {
-				// TODO here is actually IIO exception, may be make new error
-				// message
-				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/iioexception.png"));
+				// icon = scaleBufferedImage(imgLabels, label);
 			} catch (IOException e2) {
 				e2.printStackTrace();
 			}
-			icon = scaleBufferedImage(imgLabels, label);
-			label.setIcon(icon);
 			e1.printStackTrace();
-			// added catch for null pointer exception, now app finds some more
-			// images
+
 		} catch (NullPointerException e) {
-			 try {
-			 // display fake error message
-				 imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
-			 } catch (IOException e2) {
-			 e2.printStackTrace();
-			 }
-			 icon = scaleBufferedImage(imgLabels, label);
-			 label.setIcon(icon);
+			try {
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
+				// icon = scaleBufferedImage(imgLabels, label);
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			// icon = scaleBufferedImage(imgLabels, label);
 			e.printStackTrace();
 		}
+		icon = scaleBufferedImage(imgLabels, label);
+		label.setIcon(icon);
 	}
 
 	protected String analyse() {
@@ -513,7 +543,6 @@ public class App {
 
 		return tagsString + textString;
 	}
-	
 
 	protected void takePicture() {
 
@@ -525,13 +554,13 @@ public class App {
 			System.out.println("camera works");
 
 			imgFromCam = camera.getImageWebcam();
-			
+
 			// here null pointer exception
 
 			// imgFromCam is null, how to pass BufferedImage to it?
 			icon = scaleBufferedImage(imgFromCam, originalImageLabel);
 			originalImageLabel.setIcon(icon);
-			
+
 			System.out.println("width " + imgFromCam.getWidth());
 			// return bufferedImage
 		} catch (InterruptedException e1) {
@@ -543,22 +572,23 @@ public class App {
 
 		fc.setDialogTitle("Specify name of the file to save");
 
-//		// get name of file without url things, but with extension
-//		String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1, fileUrl.length());
-//
-//		// some files have name like this: 1581_003.jpg?imgmax=512
-//		// leave just the part up to .jpg
-//		if (fileName.contains("?")) {
-//			fileName = fileName.substring(0, fileName.lastIndexOf('?'));
-//		}
-//
-//		System.out.println("filename " + fileName);
-//
-//		String pathToFile = fc.getCurrentDirectory().toString();
-//		File output = new File(pathToFile + "/" + fileName);
+		// // get name of file without url things, but with extension
+		// String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1,
+		// fileUrl.length());
+		//
+		// // some files have name like this: 1581_003.jpg?imgmax=512
+		// // leave just the part up to .jpg
+		// if (fileName.contains("?")) {
+		// fileName = fileName.substring(0, fileName.lastIndexOf('?'));
+		// }
+		//
+		// System.out.println("filename " + fileName);
+		// //
+		// // String pathToFile = fc.getCurrentDirectory().toString();
+		// // File output = new File(pathToFile + "/" + fileName);
 
 		File output = new File(fc.getSelectedFile().toString());
-		
+
 		// check if file already exists, ask user if they wish to overwrite it
 		if (output.exists()) {
 			int response = JOptionPane.showConfirmDialog(null, //
@@ -621,13 +651,8 @@ public class App {
 
 		double width = icon.getIconWidth();
 		double height = icon.getIconHeight();
-
-		System.out.println("image width = " + width);
-		System.out.println("image height = " + height);
-
 		double labelWidth = label.getWidth();
 		double labelHight = label.getHeight();
-
 		double scaleWidth = width / labelWidth;
 		double scaleHeight = height / labelHight;
 

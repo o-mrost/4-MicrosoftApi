@@ -16,10 +16,9 @@ public class HttpSimilarImagesSearch {
 
 		try {
 
-			// here comes null pointer exception
-			// why the hell?
-
-//			 String license = "&license=share";
+			// String license = "&license=public";
+			// String license = "&license=schare";
+			// String license = "&license=scharecomercially";
 			String license = "";
 
 			// or we can leave the license and use just image size to filter
@@ -42,7 +41,7 @@ public class HttpSimilarImagesSearch {
 				body.append(line);
 			}
 
-			System.out.println(body);
+			// System.out.println(body);
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
