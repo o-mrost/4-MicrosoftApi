@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +27,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -43,15 +49,17 @@ public class App {
 
 	private JFileChooser fc;
 	private File file;
-	private ImageIcon icon, iconOneFromInternet, iconTwoFromInternet, iconThreeFromInternet, iconFourFromInternet;
-	private JFrame frame, helpFrame, progressFrame;
+	private ImageIcon icon;
+	private JFrame frame, progressFrame, webcamWindow;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnTakePicture, btnBrowse, btnSaveFile, btnHelp, btnSearchForSimilar;
+	private JButton btnTakePicture, btnBrowse, btnHelp, btnSearchForSimilar;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
-			foundImagesLabel4, lblImageFromWebcam, helpLabel;
+			foundImagesLabel4, lblImageFromWebcam;
 
-	private BufferedImage imgFromCam = null;
+	// private BufferedImage imgFromCam = null;
+	BufferedImage imageWebcam;
+	// = null;
 	private BufferedImage image = null, imgLabels = null;
 
 	private HttpDescribeImage httpLocal = new HttpDescribeImage();
@@ -63,6 +71,8 @@ public class App {
 
 	private Token searchToken = new Token();
 	private Token tokenCache = new Token();
+
+	private Webcam webcam;
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters, labelInfo, labelTwoInfo;
 	String[] tags;
@@ -234,7 +244,14 @@ public class App {
 
 		btnTakePicture.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				takePicture();
+
+				image = turnCameraOn();
+
+				// TODO doesn't work yet, the image is reflected
+				// image = flip(image);
+
+				icon = scaleBufferedImage(image, originalImageLabel);
+				originalImageLabel.setIcon(icon);
 			}
 		});
 
@@ -247,7 +264,7 @@ public class App {
 				}
 			}
 		});
-		
+
 		btnAnalyse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -331,13 +348,82 @@ public class App {
 				}
 			}
 		});
-		
+
 		btnHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO write help
 				HelpFrame help = new HelpFrame();
 			}
 		});
+	}
+
+	protected BufferedImage turnCameraOn() {
+
+		webcamWindow = new JFrame("Test webcam panel");
+		webcamWindow.setLayout(new BorderLayout());
+
+		// get default webcam and open it
+		webcam = Webcam.getDefault();
+		webcam.setViewSize(WebcamResolution.VGA.getSize());
+		webcam.open();
+
+		WebcamPanel panel = new WebcamPanel(webcam);
+		panel.setMirrored(true);
+		webcamWindow.add(panel, BorderLayout.CENTER);
+
+		JPanel buttonPanel = new JPanel();
+		webcamWindow.add(buttonPanel, BorderLayout.SOUTH);
+
+		JButton okWebcambtn = new JButton("Take a picture");
+		buttonPanel.add(okWebcambtn);
+		
+		okWebcambtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				imageWebcam = webcam.getImage();
+				System.out.println("picture taken");
+			}
+		});
+
+		JButton cancelWebcam = new JButton("Cancel");
+		buttonPanel.add(cancelWebcam);
+		
+		cancelWebcam.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				webcam.close();
+				webcamWindow.setVisible(false);
+			}
+		});
+		
+		webcamWindow.add(panel);
+		webcamWindow.setResizable(true);
+		webcamWindow.pack();
+		webcamWindow.setVisible(true);
+
+		if (imageWebcam == null) {
+			// TODO
+			JOptionPane.showMessageDialog(webcamWindow, "Please take a picture");
+		}
+		return imageWebcam;
+
+	}
+
+	// TODO make it work or delete
+	private BufferedImage flip(BufferedImage image) {
+
+		AffineTransform at = new AffineTransform();
+		at.concatenate(AffineTransform.getScaleInstance(1, -1));
+		at.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
+
+		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = newImage.createGraphics();
+		g.transform(at);
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+
+		return image;
 	}
 
 	protected void searchForSimilarImages(String text) {
@@ -542,30 +628,6 @@ public class App {
 		String textString = text.replace(" ", "%20");
 
 		return tagsString + textString;
-	}
-
-	protected void takePicture() {
-
-		WebcamAPI camera = new WebcamAPI();
-
-		try {
-
-			camera.turnWebcamOn();
-			System.out.println("camera works");
-
-			imgFromCam = camera.getImageWebcam();
-
-			// here null pointer exception
-
-			// imgFromCam is null, how to pass BufferedImage to it?
-			icon = scaleBufferedImage(imgFromCam, originalImageLabel);
-			originalImageLabel.setIcon(icon);
-
-			System.out.println("width " + imgFromCam.getWidth());
-			// return bufferedImage
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 	}
 
 	protected void saveFileChooser(String fileUrl) {
