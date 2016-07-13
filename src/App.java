@@ -376,18 +376,18 @@ public class App {
 
 		JButton okWebcambtn = new JButton("Take a picture");
 		buttonPanel.add(okWebcambtn);
-		
-		okWebcambtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				imageWebcam = webcam.getImage();
-				System.out.println("picture taken");
-			}
-		});
+
+		// okWebcambtn.addActionListener(new ActionListener() {
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		imageWebcam = webcam.getImage();
+		System.out.println("picture taken");
+		// }
+		// });
 
 		JButton cancelWebcam = new JButton("Cancel");
 		buttonPanel.add(cancelWebcam);
-		
+
 		cancelWebcam.addActionListener(new ActionListener() {
 
 			@Override
@@ -396,16 +396,16 @@ public class App {
 				webcamWindow.setVisible(false);
 			}
 		});
-		
+
 		webcamWindow.add(panel);
 		webcamWindow.setResizable(true);
 		webcamWindow.pack();
 		webcamWindow.setVisible(true);
 
-		if (imageWebcam == null) {
-			// TODO
-			JOptionPane.showMessageDialog(webcamWindow, "Please take a picture");
-		}
+		// if (imageWebcam == null) {
+		// // TODO
+		// JOptionPane.showMessageDialog(webcamWindow, "Please take a picture");
+		// }
 		return imageWebcam;
 
 	}
