@@ -1,4 +1,4 @@
-*/APIToken.txt
+
 .metadata
 bin/
 tmp/
@@ -44,3 +44,5 @@ local.properties
 
 # Code Recommenders
 .recommenders/
+
+APIToken.txt
