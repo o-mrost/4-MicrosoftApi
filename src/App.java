@@ -186,7 +186,11 @@ public class App {
 		frame.getContentPane().add(lblImageFromWebcam);
 		lblImageFromWebcam.setIcon(icon);
 
-		progressFrame = new JFrame("We are looking for images... It may take while");
+		progressFrame = new JFrame("We are looking for images... It may take a while");
+
+		JLabel progressLabel = new JLabel("progress");
+		progressFrame.add(progressLabel);
+
 		progressFrame.setSize(400, 100);
 		progressFrame.setLocationRelativeTo(frame);
 
@@ -244,14 +248,11 @@ public class App {
 
 		btnTakePicture.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				image = turnCameraOn();
+				turnCameraOn();
 
 				// TODO doesn't work yet, the image is reflected
 				// image = flip(image);
 
-				icon = scaleBufferedImage(image, originalImageLabel);
-				originalImageLabel.setIcon(icon);
 			}
 		});
 
@@ -357,7 +358,7 @@ public class App {
 		});
 	}
 
-	protected BufferedImage turnCameraOn() {
+	protected void turnCameraOn() {
 
 		webcamWindow = new JFrame("Test webcam panel");
 		webcamWindow.setLayout(new BorderLayout());
@@ -377,15 +378,19 @@ public class App {
 		JButton okWebcambtn = new JButton("Take a picture");
 		buttonPanel.add(okWebcambtn);
 
-		// okWebcambtn.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		imageWebcam = webcam.getImage();
-		System.out.println("picture taken");
-		// }
-		// });
+		okWebcambtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				imageWebcam = webcam.getImage();
+				System.out.println("picture taken");
+				setImageWebcam(imageWebcam);
+				icon = scaleBufferedImage(imageWebcam, originalImageLabel);
+				originalImageLabel.setIcon(icon);
+				image = getImageWebcam();
+			}
+		});
 
-		JButton cancelWebcam = new JButton("Cancel");
+		JButton cancelWebcam = new JButton("Close");
 		buttonPanel.add(cancelWebcam);
 
 		cancelWebcam.addActionListener(new ActionListener() {
@@ -401,13 +406,14 @@ public class App {
 		webcamWindow.setResizable(true);
 		webcamWindow.pack();
 		webcamWindow.setVisible(true);
+	}
 
-		// if (imageWebcam == null) {
-		// // TODO
-		// JOptionPane.showMessageDialog(webcamWindow, "Please take a picture");
-		// }
+	public BufferedImage getImageWebcam() {
 		return imageWebcam;
+	}
 
+	public void setImageWebcam(BufferedImage imageWebcam) {
+		this.imageWebcam = imageWebcam;
 	}
 
 	// TODO make it work or delete
@@ -484,7 +490,7 @@ public class App {
 			}
 
 			i++;
-			progressFrame.setVisible(false);
+			// progressFrame.setVisible(false);
 		}
 
 		// if not enough images were found, display suggestion to edit search
@@ -511,7 +517,7 @@ public class App {
 
 		System.out.println("Original array with " + stringArray.size() + " elements");
 		System.out.println("============");
-		// stringArray.forEach(System.out::println);
+		stringArray.forEach(System.out::println);
 
 		// get an iterator
 		Iterator iter = stringArray.iterator();
