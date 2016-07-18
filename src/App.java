@@ -253,6 +253,10 @@ public class App {
 		btnTakeANew.setBounds(239, 382, 117, 29);
 		frame.getContentPane().add(btnTakeANew);
 
+		originalImageLabel = new JLabel();
+		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		originalImageLabel.setBounds(33, 98, 300, 300);
+		frame.getContentPane().add(originalImageLabel);
 		progressBar.setVisible(false);
 		btnTakeANew.setVisible(false);
 
@@ -307,6 +311,7 @@ public class App {
 				webcam.close();
 				webcamWindow.setVisible(false);
 
+				// image = flip(image);
 			}
 		});
 
@@ -346,6 +351,7 @@ public class App {
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				// add here progress to label
 				progressBar.setVisible(true);
 
 				System.out.println("==========================================");
@@ -362,6 +368,7 @@ public class App {
 				System.out.println("search parameters: " + searchParameters);
 
 				if (searchParameters.length() != 0) {
+
 					// add new thread for searching, so that progress bar and
 					// searching could run simultaneously
 					Thread t1 = new Thread(new Runnable() {
@@ -459,10 +466,13 @@ public class App {
 		// panel.setBounds(34, 110, 305, 229);
 
 		panel.setBounds(434, 110, 305, 229);
+		panel.setBounds(34, 110, 305, 229);
 
 		// webcamWindow.add(panel, BorderLayout.CENTER);
 
 		frame.getContentPane().add(panel);
+
+		// TODO add buttons
 
 		// JPanel buttonPanel = new JPanel();
 		// webcamWindow.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
