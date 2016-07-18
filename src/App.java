@@ -1,9 +1,7 @@
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -11,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -55,19 +53,14 @@ public class App {
 	private JFrame frame, webcamWindow;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnTakePicture, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
+	private JButton btnTurnWebcamOn, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
-			foundImagesLabel4, labelTryLinks;
+			foundImagesLabel4, labelTryLinks, stepTwo, stepThree;
 
-	// private BufferedImage imgFromCam = null;
-	BufferedImage imageWebcam;
-	// = null;
-	private BufferedImage image = null, imgLabels = null;
+	BufferedImage imageWebcam, image = null, imgLabels = null;
 
 	private HttpDescribeImage httpLocal = new HttpDescribeImage();
 	private HttpSimilarImagesSearch httpBingSearch = new HttpSimilarImagesSearch();
-
-	private String analyseImageToken, bingToken;
 
 	private JProgressBar progressBar;
 
@@ -82,13 +75,13 @@ public class App {
 	String secondImageUrl = null;
 	String thirdImageUrl = null;
 	String fourthImageUrl = null;
-	int numberOfTags, widthImage, heightImage, progressValue;
+	String analyseImageToken, bingToken;
+
+	int numberOfTags, widthImage, heightImage;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
 	URL url1 = null, url2 = null, url3 = null, url4 = null;
-	private JLabel stepTwo;
-	private JLabel stepThree;
 
 	/**
 	 * Launch the application.
@@ -138,14 +131,19 @@ public class App {
 		btnBrowse.setBounds(66, 6, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
-		btnTakePicture = new JButton("Take a picture with webcam");
-		btnTakePicture.setBounds(66, 34, 212, 29);
-		frame.getContentPane().add(btnTakePicture);
+		btnTurnWebcamOn = new JButton("Take a picture with webcam");
+		btnTurnWebcamOn.setBounds(66, 34, 212, 29);
+		frame.getContentPane().add(btnTurnWebcamOn);
 
 		urlField = new JTextField();
 		urlField.setBounds(66, 67, 220, 26);
 		frame.getContentPane().add(urlField);
 		urlField.setColumns(10);
+
+		originalImageLabel = new JLabel();
+		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		originalImageLabel.setBounds(33, 98, 300, 300);
+		frame.getContentPane().add(originalImageLabel);
 
 		stepTwo = new JLabel("");
 		stepTwo.setToolTipText("here comes something else");
@@ -224,16 +222,17 @@ public class App {
 		progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(45, 626, 280, 29);
+		progressBar.setBounds(23, 635, 440, 29);
 
-		Border border = BorderFactory.createTitledBorder("Searching for similar images...");
+		Border border = BorderFactory
+				.createTitledBorder("We are checking every image, pixel by pixel, it may take a while...");
 		progressBar.setBorder(border);
 		frame.getContentPane().add(progressBar);
 
-		JButton btnTakeAPicture = new JButton("Take a picture");
-		btnTakeAPicture.setBounds(51, 349, 117, 29);
-		frame.getContentPane().add(btnTakeAPicture);
-		btnTakeAPicture.setVisible(false);
+		JButton btnTakePictureWithWebcam = new JButton("Take a picture");
+		btnTakePictureWithWebcam.setBounds(51, 349, 117, 29);
+		frame.getContentPane().add(btnTakePictureWithWebcam);
+		btnTakePictureWithWebcam.setVisible(false);
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(163, 349, 117, 29);
@@ -254,10 +253,6 @@ public class App {
 		btnTakeANew.setBounds(239, 382, 117, 29);
 		frame.getContentPane().add(btnTakeANew);
 
-		originalImageLabel = new JLabel();
-		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		originalImageLabel.setBounds(33, 98, 300, 300);
-		frame.getContentPane().add(originalImageLabel);
 		progressBar.setVisible(false);
 		btnTakeANew.setVisible(false);
 
@@ -270,14 +265,48 @@ public class App {
 			}
 		});
 
-		btnTakePicture.addActionListener(new ActionListener() {
+		btnTurnWebcamOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnTakeAPicture.setVisible(true);
+				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
 				turnCameraOn();
+			}
+		});
+
+		btnTakePictureWithWebcam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				imageWebcam = webcam.getImage();
+				System.out.println("picture taken");
+				setImageWebcam(imageWebcam);
+				// icon = scaleBufferedImage(imageWebcam, originalImageLabel);
+				// originalImageLabel.setIcon(icon);
+				image = getImageWebcam();
 
 				// TODO doesn't work yet, the image is reflected
-				// image = flip(image);
+				System.out.println("flip image");
+
+				// image = flipWebcamImage(image);
+
+				// Mirror the image
+				// AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+				// tx.translate(-image.getWidth(null), 0);
+				// AffineTransformOp op = new AffineTransformOp(tx,
+				// AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+				// image = op.filter(image, null);
+
+				icon = scaleBufferedImage(image, originalImageLabel);
+				originalImageLabel.setIcon(icon);
+			}
+		});
+
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				btnTakePictureWithWebcam.setVisible(false);
+				btnCancel.setVisible(false);
+				webcam.close();
+				webcamWindow.setVisible(false);
+
 			}
 		});
 
@@ -317,7 +346,6 @@ public class App {
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// add here progress to label
 				progressBar.setVisible(true);
 
 				System.out.println("==========================================");
@@ -328,14 +356,12 @@ public class App {
 				// in case user edited description or tags, update it and
 				// replace new line character, spaces and breaks with %20
 				text = descriptionField.getText().replace(" ", "%20").replace("\r", "%20").replace("\n", "%20");
-
 				String tagsString = tagsField.getText().replace(" ", "%20").replace("\r", "%20").replace("\n", "%20");
 
 				searchParameters = tagsString + text;
 				System.out.println("search parameters: " + searchParameters);
 
 				if (searchParameters.length() != 0) {
-
 					// add new thread for searching, so that progress bar and
 					// searching could run simultaneously
 					Thread t1 = new Thread(new Runnable() {
@@ -397,27 +423,24 @@ public class App {
 			}
 		});
 
-		btnTakeAPicture.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				imageWebcam = webcam.getImage();
-				System.out.println("picture taken");
-				setImageWebcam(imageWebcam);
-				icon = scaleBufferedImage(imageWebcam, originalImageLabel);
-				originalImageLabel.setIcon(icon);
-				image = getImageWebcam();
-			}
-		});
+	}
 
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				btnTakeAPicture.setVisible(false);
-				btnCancel.setVisible(false);
-				webcam.close();
-				webcamWindow.setVisible(false);
+	protected BufferedImage flipWebcamImage(BufferedImage image2) {
 
-			}
-		});
+		// Mirror the image
+
+		AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+		tx.translate(-image2.getWidth(null), 0);
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		image2 = op.filter(image2, null);
+
+		BufferedImage newImage = new BufferedImage(image2.getWidth(), image2.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = newImage.createGraphics();
+		g.transform(tx);
+		g.drawImage(newImage, 0, 0, null);
+		g.dispose();
+
+		return newImage;
 	}
 
 	protected void turnCameraOn() {
@@ -432,13 +455,14 @@ public class App {
 
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setMirrored(true);
-		panel.setBounds(34, 110, 305, 229);
+		// original place for camera
+		// panel.setBounds(34, 110, 305, 229);
+
+		panel.setBounds(434, 110, 305, 229);
 
 		// webcamWindow.add(panel, BorderLayout.CENTER);
 
 		frame.getContentPane().add(panel);
-
-		// TODO add buttons
 
 		// JPanel buttonPanel = new JPanel();
 		// webcamWindow.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
@@ -482,22 +506,6 @@ public class App {
 
 	public void setImageWebcam(BufferedImage imageWebcam) {
 		this.imageWebcam = imageWebcam;
-	}
-
-	// TODO make it work or delete
-	private BufferedImage flip(BufferedImage image) {
-
-		AffineTransform at = new AffineTransform();
-		at.concatenate(AffineTransform.getScaleInstance(1, -1));
-		at.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
-
-		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = newImage.createGraphics();
-		g.transform(at);
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-
-		return image;
 	}
 
 	protected void searchForSimilarImages(String text) {

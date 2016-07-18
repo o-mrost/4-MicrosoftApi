@@ -1,6 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +20,7 @@ public class ImageException {
 	private JFrame frame;
 
 	private ImageIcon icon;
-	BufferedImage image;
+	BufferedImage image, flippedImage;
 
 	// normal links
 	String link1 = "http://www.blirk.net/wallpapers/1920x1080/sea-wallpaper-6.jpg";
@@ -97,14 +100,11 @@ public class ImageException {
 		lbl3rd.setSize(150, 150);
 		frame.getContentPane().add(lbl3rd, BorderLayout.SOUTH);
 
-		setImageAsImageIcon(link3, lbl1st);
-		
-		
-		setImageAsImageIcon(linkIIO4, lbl2nd);
+		setImageAsImageIcon(link1, lbl1st);
 
-		
+		setImageAsImageIconMirrored(link1, lbl2nd);
 
-//		setImageAsImageIcon(linkNull3, lbl3rd);
+		// setImageAsImageIcon(linkNull3, lbl3rd);
 	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {
@@ -119,6 +119,47 @@ public class ImageException {
 
 			// image is null with "link"
 			image = ImageIO.read(linkAsUrl);
+
+			System.out.println("and here comes exception");
+			icon = scaleBufferedImage(image, label);
+			label.setIcon(icon);
+			System.out.println("image set as icon!");
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (NullPointerException e) {
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			icon = scaleBufferedImage(image, label);
+			label.setIcon(icon);
+
+			e.printStackTrace();
+		}
+	}
+
+	protected void setImageAsImageIconMirrored(String link, JLabel label) {
+
+		URL linkAsUrl = null;
+		try {
+
+			// url is null
+			linkAsUrl = new URL(link);
+			System.out.println("===========");
+			System.out.println("link as url " + linkAsUrl);
+
+			// image is null with "link"
+			image = ImageIO.read(linkAsUrl);
+
+			// Mirror the image
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+			tx.translate(-image.getWidth(null), 0);
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
 
 			System.out.println("and here comes exception");
 			icon = scaleBufferedImage(image, label);
