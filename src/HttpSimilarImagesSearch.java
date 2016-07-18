@@ -15,16 +15,19 @@ public class HttpSimilarImagesSearch {
 		StringBuffer body = null;
 
 		try {
-
 			// String license = "&license=public";
 			// String license = "&license=schare";
 			// String license = "&license=scharecomercially";
+			// String safeSearch = "strict";
+			// with any option for search options - founds very few images
+			// String safeSearch = "moderate";
+			// String safeSearch = "off";
+			
 			String license = "";
-
 			// or we can leave the license and use just image size to filter
-
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=10&mkt=en-us"
-					+ license;
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=10&mkt=en-us";
+			
+//					+ "&license=" + license;
 
 			System.out.println("url to search: " + url);
 

@@ -97,11 +97,14 @@ public class ImageException {
 		lbl3rd.setSize(150, 150);
 		frame.getContentPane().add(lbl3rd, BorderLayout.SOUTH);
 
-		setImageAsImageIcon(link1, lbl2nd);
-
 		setImageAsImageIcon(link3, lbl1st);
+		
+		
+		setImageAsImageIcon(linkIIO4, lbl2nd);
 
-		setImageAsImageIcon(linkNull2, lbl3rd);
+		
+
+//		setImageAsImageIcon(linkNull3, lbl3rd);
 	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {

@@ -53,9 +53,9 @@ public class App {
 	private JFrame frame, progressFrame, webcamWindow;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnTakePicture, btnBrowse, btnHelp, btnSearchForSimilar;
+	private JButton btnTakePicture, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
-			foundImagesLabel4, lblImageFromWebcam;
+			foundImagesLabel4;
 
 	// private BufferedImage imgFromCam = null;
 	BufferedImage imageWebcam;
@@ -120,14 +120,38 @@ public class App {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// set height of frame to 3/4 of screen height
-		Dimension screenSize = new Dimension(Toolkit.getDefaultToolkit().getScreenSize());
-		frame.setSize((3 * screenSize.width / 4), (3 * screenSize.height / 4));
+
+		// Dimension screenSize = new
+		// Dimension(Toolkit.getDefaultToolkit().getScreenSize());
+		frame.setSize(1000, 700);
+		// (3 * screenSize.width / 4), (3 * screenSize.height / 4));
 		frame.getContentPane().setLayout(null);
+		// System.out.println("width " + screenSize.width);
+		// System.out.println("height " + screenSize.height);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
 		fc = new JFileChooser();
 		fc.setFileFilter(filter);
 		frame.getContentPane().add(fc);
+
+		JLabel stepOne = new JLabel("");
+		stepOne.setToolTipText("here comes something");
+		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
+		stepOne.setBounds(23, 0, 67, 49);
+		frame.getContentPane().add(stepOne);
+
+		btnBrowse = new JButton("Browse");
+		btnBrowse.setBounds(66, 6, 117, 29);
+		frame.getContentPane().add(btnBrowse);
+
+		btnTakePicture = new JButton("Take a picture with webcam");
+		btnTakePicture.setBounds(66, 34, 212, 29);
+		frame.getContentPane().add(btnTakePicture);
+
+		urlField = new JTextField();
+		urlField.setBounds(66, 67, 220, 26);
+		frame.getContentPane().add(urlField);
+		urlField.setColumns(10);
 
 		originalImageLabel = new JLabel();
 		// edit to center the label
@@ -135,16 +159,14 @@ public class App {
 		originalImageLabel.setBounds(23, 93, 300, 300);
 		frame.getContentPane().add(originalImageLabel);
 
-		btnTakePicture = new JButton("Take a picture with webcam");
-		btnTakePicture.setBounds(66, 34, 212, 29);
-		frame.getContentPane().add(btnTakePicture);
+		stepTwo = new JLabel("");
+		stepTwo.setToolTipText("here comes something else");
+		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
+		stepTwo.setBounds(23, 397, 67, 49);
+		frame.getContentPane().add(stepTwo);
 
-		btnBrowse = new JButton("Browse");
-		btnBrowse.setBounds(118, 6, 117, 29);
-		frame.getContentPane().add(btnBrowse);
-
-		JButton btnAnalyse = new JButton("Analyse image");
-		btnAnalyse.setBounds(82, 406, 196, 29);
+		btnAnalyse = new JButton("Analyse image");
+		btnAnalyse.setBounds(66, 405, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
 		tagsField = new JTextArea();
@@ -153,13 +175,6 @@ public class App {
 		tagsField.setWrapStyleWord(true);
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
-
-		btnHelp = new JButton("");
-		btnHelp.setBorderPainted(false);
-		ImageIcon btnIcon = new ImageIcon("img/helpRed.png");
-		btnHelp.setIcon(btnIcon);
-		btnHelp.setBounds(847, 0, 77, 59);
-		frame.getContentPane().add(btnHelp);
 
 		lblTags = new JLabel("Tags:");
 		lblTags.setBounds(45, 444, 61, 16);
@@ -176,27 +191,15 @@ public class App {
 		lblDescription.setBounds(162, 444, 77, 16);
 		frame.getContentPane().add(lblDescription);
 
-		urlField = new JTextField();
-		urlField.setBounds(66, 69, 220, 26);
-		frame.getContentPane().add(urlField);
-		urlField.setColumns(10);
-
-		lblImageFromWebcam = new JLabel();
-		lblImageFromWebcam.setBounds(297, 79, -286, 384);
-		frame.getContentPane().add(lblImageFromWebcam);
-		lblImageFromWebcam.setIcon(icon);
-
-		progressFrame = new JFrame("We are looking for images... It may take a while");
-
-		JLabel progressLabel = new JLabel("progress");
-		progressFrame.add(progressLabel);
-
-		progressFrame.setSize(400, 100);
-		progressFrame.setLocationRelativeTo(frame);
+		stepThree = new JLabel("");
+		stepThree.setToolTipText("here comes something different");
+		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
+		stepThree.setBounds(23, 579, 67, 49);
+		frame.getContentPane().add(stepThree);
 
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.setVisible(true);
-		btnSearchForSimilar.setBounds(495, 18, 189, 29);
+		btnSearchForSimilar.setBounds(66, 585, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
 		foundImagesLabel1 = new JLabel();
@@ -206,12 +209,12 @@ public class App {
 
 		foundImagesLabel2 = new JLabel();
 		foundImagesLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-		foundImagesLabel2.setBounds(400, 311, 250, 250);
+		foundImagesLabel2.setBounds(400, 313, 250, 250);
 		frame.getContentPane().add(foundImagesLabel2);
 
 		foundImagesLabel3 = new JLabel();
 		foundImagesLabel3.setHorizontalAlignment(SwingConstants.CENTER);
-		foundImagesLabel3.setBounds(673, 47, 250, 250);
+		foundImagesLabel3.setBounds(673, 49, 250, 250);
 		frame.getContentPane().add(foundImagesLabel3);
 
 		foundImagesLabel4 = new JLabel();
@@ -219,23 +222,18 @@ public class App {
 		foundImagesLabel4.setBounds(673, 313, 250, 250);
 		frame.getContentPane().add(foundImagesLabel4);
 
-		JLabel stepOne = new JLabel("");
-		stepOne.setToolTipText("here comes something");
-		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
-		stepOne.setBounds(23, 0, 67, 49);
-		frame.getContentPane().add(stepOne);
+		btnHelp = new JButton("");
+		btnHelp.setBorderPainted(false);
+		ImageIcon btnIcon = new ImageIcon("img/helpRed.png");
+		btnHelp.setIcon(btnIcon);
+		btnHelp.setBounds(847, 0, 77, 59);
+		frame.getContentPane().add(btnHelp);
 
-		stepTwo = new JLabel("");
-		stepTwo.setToolTipText("here comes something else");
-		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
-		stepTwo.setBounds(20, 386, 67, 49);
-		frame.getContentPane().add(stepTwo);
-
-		stepThree = new JLabel("");
-		stepThree.setToolTipText("here comes something different");
-		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
-		stepThree.setBounds(432, 0, 67, 49);
-		frame.getContentPane().add(stepThree);
+		progressFrame = new JFrame("We are looking for images... It may take a while");
+		JLabel progressLabel = new JLabel("progress");
+		progressFrame.getContentPane().add(progressLabel);
+		progressFrame.setSize(400, 100);
+		progressFrame.setLocationRelativeTo(frame);
 
 		// all action listeners
 		btnBrowse.addActionListener(new ActionListener() {
@@ -262,6 +260,10 @@ public class App {
 				if (urlField.getText().length() > 0) {
 					String linkNew = urlField.getText();
 					setImageAsImageIcon(linkNew, originalImageLabel);
+					// added this line to fix the bug When analyse from link,
+					// when click on Analyse image, popup “Please choose an
+					// image” appears
+					image = imgLabels;
 				}
 			}
 		});
@@ -293,16 +295,13 @@ public class App {
 				System.out.println("==========================================");
 				bingToken = tokenCache.getApiToken(imageSearchTokenFileName);
 
-				// in case user edited description, update it
-				text = descriptionField.getText();
+				// in case user edited description or tags, update it and replace new
+				// line character, spaces and breaks with %20
+				text = descriptionField.getText().replace(" ", "%20").replace("\r", "%20").replace("\n", "%20");
 
-				// in case user edited tags, we get the new info here and
-				// make it suitable for url, replace new line character with %20
-				String newTags = tagsField.getText().replace("\n", "%20");
-				// and replace spaces with %20
-				newTags = newTags.replace(" ", "%20");
+				String tagsString = tagsField.getText().replace(" ", "%20").replace("\r", "%20").replace("\n", "%20");
 
-				searchParameters = newTags + text.replace(" ", "%20");
+				searchParameters = tagsString + text;
 				System.out.println("search parameters: " + searchParameters);
 
 				if (searchParameters.length() != 0) {
@@ -317,6 +316,7 @@ public class App {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+
 				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 					saveFileChooser(firstImageUrl);
 				}
@@ -360,8 +360,8 @@ public class App {
 
 	protected void turnCameraOn() {
 
-		webcamWindow = new JFrame("Test webcam panel");
-		webcamWindow.setLayout(new BorderLayout());
+		// webcamWindow = new JFrame("Test webcam panel");
+		// webcamWindow.setLayout(new BorderLayout());
 
 		// get default webcam and open it
 		webcam = Webcam.getDefault();
@@ -370,10 +370,16 @@ public class App {
 
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setMirrored(true);
-		webcamWindow.add(panel, BorderLayout.CENTER);
+		panel.setBounds(23, 130, 300, 210);
+
+		// webcamWindow.add(panel, BorderLayout.CENTER);
+
+		frame.getContentPane().add(panel);
+
+		// TODO add buttons
 
 		JPanel buttonPanel = new JPanel();
-		webcamWindow.add(buttonPanel, BorderLayout.SOUTH);
+		webcamWindow.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
 		JButton okWebcambtn = new JButton("Take a picture");
 		buttonPanel.add(okWebcambtn);
@@ -402,7 +408,7 @@ public class App {
 			}
 		});
 
-		webcamWindow.add(panel);
+		webcamWindow.getContentPane().add(panel);
 		webcamWindow.setResizable(true);
 		webcamWindow.pack();
 		webcamWindow.setVisible(true);
@@ -436,6 +442,13 @@ public class App {
 
 		// Add progress bar
 		progressFrame.setVisible(true);
+
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// clear labels in case there were results of previous search
 		foundImagesLabel1.setIcon(null);
@@ -496,7 +509,7 @@ public class App {
 		// if not enough images were found, display suggestion to edit search
 		if (checkedUrls.size() <= 2) {
 			try {
-				System.out.println("something =============");
+				System.out.println("found less than two images =============");
 				imgLabels = (BufferedImage) ImageIO.read(new File("img/warning.png"));
 			} catch (IOException e2) {
 				e2.printStackTrace();
@@ -515,9 +528,10 @@ public class App {
 			stringArray.add(currentData.getContentUrl());
 		}
 
-		System.out.println("Original array with " + stringArray.size() + " elements");
-		System.out.println("============");
-		stringArray.forEach(System.out::println);
+		// System.out.println("Original array with " + stringArray.size() + "
+		// elements");
+		// System.out.println("============");
+		// stringArray.forEach(System.out::println);
 
 		// get an iterator
 		Iterator iter = stringArray.iterator();
@@ -610,7 +624,7 @@ public class App {
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
 
-		// limit number of tags displayed to max first six
+		// limit number of tags displayed to max first five
 		if (tags.length >= 5) {
 			numberOfTags = 5;
 		} else {
@@ -639,21 +653,20 @@ public class App {
 	protected void saveFileChooser(String fileUrl) {
 
 		fc.setDialogTitle("Specify name of the file to save");
-
-		// // get name of file without url things, but with extension
-		// String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1,
-		// fileUrl.length());
-		//
-		// // some files have name like this: 1581_003.jpg?imgmax=512
-		// // leave just the part up to .jpg
-		// if (fileName.contains("?")) {
-		// fileName = fileName.substring(0, fileName.lastIndexOf('?'));
-		// }
-		//
-		// System.out.println("filename " + fileName);
-		// //
-		// // String pathToFile = fc.getCurrentDirectory().toString();
-		// // File output = new File(pathToFile + "/" + fileName);
+		/*
+		 * // get name of file without url things, but with extension String
+		 * fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1,
+		 * fileUrl.length());
+		 * 
+		 * // some files have name like this: 1581_003.jpg?imgmax=512 // leave
+		 * just the part up to .jpg if (fileName.contains("?")) { fileName =
+		 * fileName.substring(0, fileName.lastIndexOf('?')); }
+		 * 
+		 * System.out.println("filename " + fileName); // String pathToFile =
+		 * fc.getCurrentDirectory().toString(); // File output = new
+		 * File(pathToFile + "/" + fileName);
+		 * 
+		 */
 
 		File output = new File(fc.getSelectedFile().toString());
 
@@ -697,7 +710,6 @@ public class App {
 
 		icon = scaleBufferedImage(image, originalImageLabel);
 		originalImageLabel.setIcon(icon);
-		// }
 	}
 
 	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
