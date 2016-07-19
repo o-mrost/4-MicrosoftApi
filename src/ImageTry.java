@@ -1,18 +1,28 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-public class ImageException {
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+
+public class ImageTry {
 
 	private JFrame frame;
 
@@ -21,8 +31,8 @@ public class ImageException {
 
 	// normal links
 	String link1 = "http://www.blirk.net/wallpapers/1920x1080/sea-wallpaper-6.jpg";
-	String link2 = "https://www.newton.ac.uk/files/covers/968361.jpg";
-	String link3 = " http://ffbirkholtz.co.za/wp-content/uploads/2011/08/ear.jpg";
+	String link2 = "https://upload.wikimedia.org/wikipedia/commons/c/c0/Gingerbread_House_Essex_CT.jpg";
+	String link3 = "http://r.ddmcdn.com/s_f/o_1/cx_633/cy_0/cw_1725/ch_1725/w_720/APL/uploads/2014/11/too-cute-doggone-it-video-playlist.jpg";
 
 	// problem links:
 
@@ -61,7 +71,7 @@ public class ImageException {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ImageException window = new ImageException();
+					ImageTry window = new ImageTry();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -73,7 +83,7 @@ public class ImageException {
 	/**
 	 * Create the application.
 	 */
-	public ImageException() {
+	public ImageTry() {
 		initialize();
 	}
 
@@ -82,7 +92,7 @@ public class ImageException {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 450, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lbl1st = new JLabel();
@@ -98,13 +108,85 @@ public class ImageException {
 		frame.getContentPane().add(lbl3rd, BorderLayout.SOUTH);
 
 		setImageAsImageIcon(link3, lbl1st);
-		
-		
-		setImageAsImageIcon(linkIIO4, lbl2nd);
 
-		
+		setImageAsImageIconMirrored(link3, lbl2nd);
 
-//		setImageAsImageIcon(linkNull3, lbl3rd);
+		getImageHttp(linkIIO4, lbl3rd);
+	}
+
+	private void getImageHttp(String link, JLabel label) {
+
+		HttpResponse response = null;
+		InputStream is = null;
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(link);
+		System.out.println("===========");
+		System.out.println("link: " + link);
+		try {
+			response = client.execute(request);
+			is = response.getEntity().getContent();
+			image = ImageIO.read(is);
+			System.out.println("done using stream");
+		} catch (ClientProtocolException e) {
+
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+
+			e.printStackTrace();
+		} catch (IOException e) {
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			e.printStackTrace();
+		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+
+		icon = scaleBufferedImage(image, label);
+		label.setIcon(icon);
+	}
+
+	private void setImageAsImageIconMirrored(String linkToFlip, JLabel lblFlip) {
+
+		URL linkAsUrl = null;
+		try {
+
+			linkAsUrl = new URL(linkToFlip);
+			System.out.println("===========");
+			System.out.println("link: " + linkAsUrl);
+			image = ImageIO.read(linkAsUrl);
+
+			// Flip the image horizontally
+			AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+			tx.translate(-image.getWidth(null), 0);
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			image = op.filter(image, null);
+
+			icon = scaleBufferedImage(image, lblFlip);
+			lblFlip.setIcon(icon);
+			System.out.println("mirrored image set as icon");
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (NullPointerException e) {
+			try {
+				// display fake error message
+				image = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			icon = scaleBufferedImage(image, lblFlip);
+			lblFlip.setIcon(icon);
+			e.printStackTrace();
+		}
 	}
 
 	protected void setImageAsImageIcon(String link, JLabel label) {
@@ -112,18 +194,14 @@ public class ImageException {
 		URL linkAsUrl = null;
 		try {
 
-			// url is null
 			linkAsUrl = new URL(link);
 			System.out.println("===========");
-			System.out.println("link as url " + linkAsUrl);
+			System.out.println("link: " + linkAsUrl);
 
-			// image is null with "link"
 			image = ImageIO.read(linkAsUrl);
-
-			System.out.println("and here comes exception");
 			icon = scaleBufferedImage(image, label);
 			label.setIcon(icon);
-			System.out.println("image set as icon!");
+			System.out.println("image set as icon");
 		} catch (MalformedURLException e2) {
 			e2.printStackTrace();
 		} catch (IOException e1) {
@@ -137,7 +215,6 @@ public class ImageException {
 			}
 			icon = scaleBufferedImage(image, label);
 			label.setIcon(icon);
-
 			e.printStackTrace();
 		}
 	}
@@ -149,22 +226,16 @@ public class ImageException {
 		double width = icon.getIconWidth();
 		double height = icon.getIconHeight();
 
-		System.out.println("image width = " + width);
-		System.out.println("image height = " + height);
-
 		double labelWidth = label.getWidth();
 		double labelHight = label.getHeight();
 
 		double scaleWidth = width / labelWidth;
-		System.out.println("label width: " + labelWidth);
-		System.out.println("Scale width: " + scaleWidth);
 		double scaleHeight = height / labelHight;
 
 		if (width >= height) {
 			// horisontal image
 			double newWidth = width / scaleWidth;
 			double newHight = height / scaleWidth;
-			System.out.println(newHight + "  " + newWidth);
 			icon = new ImageIcon(icon.getImage().getScaledInstance((int) newWidth, (int) newHight, Image.SCALE_SMOOTH));
 		} else {
 			// vertical image

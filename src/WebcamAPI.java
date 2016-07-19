@@ -21,7 +21,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 public class WebcamAPI {
 
 	BufferedImage image;
-	
+
 	BufferedImage imageWebcam = null;
 	JButton btn = new JButton("Take a picture");
 	Webcam webcam = Webcam.getDefault();
@@ -74,7 +74,7 @@ public class WebcamAPI {
 				System.out.println("taking a picture");
 
 				imageWebcam = takePicture();
-				System.out.println("picture taken"); 
+				System.out.println("picture taken");
 				setImageWebcam(imageWebcam);
 			}
 		});
@@ -87,51 +87,42 @@ public class WebcamAPI {
 		window.pack();
 		window.setVisible(true);
 
-		
-		
 		System.out.println("alles gut");
-		
+
 		if (imageWebcam == null) {
 			System.out.println("image is null, take a picture");
-			// wait();
 		}
 
 		System.out.println("height 2 " + imageWebcam.getHeight());
-
 		return imageWebcam;
-
 	}
 
 	protected BufferedImage takePicture() {
 
-		// created date stamp to add to every picture taken with a
-		// webcam
-		
+		// date stamp to add to every picture taken with a webcam
 
-//		Date date = new Date();
-//		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
-//		String dateTime = dateFormat.format(date);
-//
-//		// TODO make it more flexible, and not depending on the name of
-//		// user, may be create a folder on desktop
-//		String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
+		Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
+		String dateTime = dateFormat.format(date);
+
+		// TODO make it more flexible, and not depending on the name of
+		// user, may be create a folder on desktop
+		String fileName = "/Users/olgamrost/Desktop/WebCam/" + "img-" + dateTime + ".png";
 
 		image = webcam.getImage();
 		setImage(webcam.getImage());
 
-//		try {
-//
-//			ImageIO.write(image, "PNG", new File(fileName));
-//			System.out.println("image stored at " + fileName);
-//			// display(image);
-//
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
+		try {
+
+			ImageIO.write(image, "PNG", new File(fileName));
+			System.out.println("image stored at " + fileName);
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		System.out.println("Height " + image.getHeight());
 		return image;
-
 	}
 
 	public BufferedImage getImage() {
@@ -149,27 +140,4 @@ public class WebcamAPI {
 	public void setImageWebcam(BufferedImage imageWebcam) {
 		this.imageWebcam = imageWebcam;
 	}
-
-	
-	
-	// // does not work yet
-	// public void display(BufferedImage img) {
-	// JFrame frame = new JFrame();
-	// JButton okbtn = new JButton("Use this image?");
-	//
-	// okbtn.addActionListener(new ActionListener() {
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	// webcam.close();
-	// }
-	// });
-	// frame.setLayout(new BorderLayout());
-	//
-	// JLabel label = new JLabel(new ImageIcon(img));
-	// frame.getContentPane().add(label, BorderLayout.CENTER);
-	// frame.add(okbtn, BorderLayout.SOUTH);
-	// frame.pack();
-	// frame.setVisible(true);
-	// }
 }

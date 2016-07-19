@@ -11,9 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,6 +38,12 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import com.github.sarxos.webcam.WebcamResolution;
@@ -55,7 +63,7 @@ public class App {
 	private JFrame frame, webcamWindow;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnTakePicture, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
+	private JButton btnTurnWebcamOn, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
 			foundImagesLabel4, labelTryLinks;
 
@@ -138,9 +146,9 @@ public class App {
 		btnBrowse.setBounds(66, 6, 117, 29);
 		frame.getContentPane().add(btnBrowse);
 
-		btnTakePicture = new JButton("Take a picture with webcam");
-		btnTakePicture.setBounds(66, 34, 212, 29);
-		frame.getContentPane().add(btnTakePicture);
+		btnTurnWebcamOn = new JButton("Take a picture with webcam");
+		btnTurnWebcamOn.setBounds(66, 34, 212, 29);
+		frame.getContentPane().add(btnTurnWebcamOn);
 
 		urlField = new JTextField();
 		urlField.setBounds(66, 67, 220, 26);
@@ -230,10 +238,10 @@ public class App {
 		progressBar.setBorder(border);
 		frame.getContentPane().add(progressBar);
 
-		JButton btnTakeAPicture = new JButton("Take a picture");
-		btnTakeAPicture.setBounds(51, 349, 117, 29);
-		frame.getContentPane().add(btnTakeAPicture);
-		btnTakeAPicture.setVisible(false);
+		JButton btnTakePictureWithWebcam = new JButton("Take a picture");
+		btnTakePictureWithWebcam.setBounds(51, 349, 117, 29);
+		frame.getContentPane().add(btnTakePictureWithWebcam);
+		btnTakePictureWithWebcam.setVisible(false);
 
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(163, 349, 117, 29);
@@ -270,9 +278,9 @@ public class App {
 			}
 		});
 
-		btnTakePicture.addActionListener(new ActionListener() {
+		btnTurnWebcamOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				btnTakeAPicture.setVisible(true);
+				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
 				turnCameraOn();
 
@@ -281,14 +289,46 @@ public class App {
 			}
 		});
 
+		btnTakePictureWithWebcam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				imageWebcam = webcam.getImage();
+				System.out.println("picture taken");
+				setImageWebcam(imageWebcam);
+
+				// TODO here problem
+				System.out.println("mirror image");
+				// imageWebcam = mirrorImage(imageWebcam);
+
+				icon = scaleBufferedImage(imageWebcam, originalImageLabel);
+				originalImageLabel.setIcon(icon);
+				image = getImageWebcam();
+			}
+		});
+
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				btnTakePictureWithWebcam.setVisible(false);
+				btnCancel.setVisible(false);
+				webcam.close();
+				webcamWindow.setVisible(false);
+
+			}
+		});
+
 		urlField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (urlField.getText().length() > 0) {
 					String linkNew = urlField.getText();
-					setImageAsImageIcon(linkNew, originalImageLabel);
+
+					// added new call for method
+					getImageFromHttp(linkNew, originalImageLabel);
+
+					// setImageFromLinkAsImageIcon(linkNew, originalImageLabel);
+
 					// added this line to fix the bug When analyse from link,
-					// when click on Analyse image, popup “Please choose an
+					// when click on Analyse image, pop up “Please choose an
 					// image” appears
 					image = imgLabels;
 				}
@@ -347,11 +387,12 @@ public class App {
 					// start searching for similar images in a separate thread
 					t1.start();
 				} else {
-					JOptionPane.showMessageDialog(null, "Please choose first an image to analyse or insert tags");
+					JOptionPane.showMessageDialog(null,
+							"Please choose first an image to analyse or insert search parameters");
 				}
 			}
 		});
-		;
+
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -396,28 +437,54 @@ public class App {
 				HelpFrame help = new HelpFrame();
 			}
 		});
+	}
 
-		btnTakeAPicture.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				imageWebcam = webcam.getImage();
-				System.out.println("picture taken");
-				setImageWebcam(imageWebcam);
-				icon = scaleBufferedImage(imageWebcam, originalImageLabel);
-				originalImageLabel.setIcon(icon);
-				image = getImageWebcam();
+	protected void getImageFromHttp(String link, JLabel label) {
+
+		HttpResponse response = null;
+		InputStream is = null;
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpGet request = new HttpGet(link);
+		System.out.println("===========");
+		System.out.println("link: " + link);
+		try {
+			response = client.execute(request);
+			is = response.getEntity().getContent();
+			imgLabels = ImageIO.read(is);
+			System.out.println("done using stream");
+		} catch (ClientProtocolException e) {
+			try {
+				// display fake error message
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
 			}
-		});
-
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				btnTakeAPicture.setVisible(false);
-				btnCancel.setVisible(false);
-				webcam.close();
-				webcamWindow.setVisible(false);
-
+			e.printStackTrace();
+		} catch (IOException e) {
+			try {
+				// display fake error message
+				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
 			}
-		});
+			e.printStackTrace();
+		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
+		}
+
+		icon = scaleBufferedImage(imgLabels, label);
+		label.setIcon(icon);
+	}
+
+	protected BufferedImage mirrorImage(BufferedImage imageToFlip) {
+
+		// Flip the image horizontally
+		AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+		tx.translate(-imageToFlip.getWidth(null), 0);
+		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+		imageToFlip = op.filter(imageToFlip, null);
+
+		return imageToFlip;
 	}
 
 	protected void turnCameraOn() {
@@ -432,7 +499,7 @@ public class App {
 
 		WebcamPanel panel = new WebcamPanel(webcam);
 		panel.setMirrored(true);
-		panel.setBounds(34, 110, 305, 229);
+		panel.setBounds(434, 10, 305, 229);
 
 		// webcamWindow.add(panel, BorderLayout.CENTER);
 
@@ -484,22 +551,6 @@ public class App {
 		this.imageWebcam = imageWebcam;
 	}
 
-	// TODO make it work or delete
-	private BufferedImage flip(BufferedImage image) {
-
-		AffineTransform at = new AffineTransform();
-		at.concatenate(AffineTransform.getScaleInstance(1, -1));
-		at.concatenate(AffineTransform.getTranslateInstance(0, -image.getHeight()));
-
-		BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = newImage.createGraphics();
-		g.transform(at);
-		g.drawImage(image, 0, 0, null);
-		g.dispose();
-
-		return image;
-	}
-
 	protected void searchForSimilarImages(String text) {
 
 		// clear labels in case there were results of previous search
@@ -527,25 +578,33 @@ public class App {
 			if (i == 0) {
 				firstImageUrl = temp;
 				foundImagesLabel1.setToolTipText("<html><img src=\"" + firstImageUrl + "\">");
-				setImageAsImageIcon(firstImageUrl, foundImagesLabel1);
+
+				getImageFromHttp(firstImageUrl, foundImagesLabel1);
+
+//				 setImageFromLinkAsImageIcon(firstImageUrl,foundImagesLabel1);
 
 			} else if (i == 1) {
 				secondImageUrl = temp;
 				foundImagesLabel2.setToolTipText("<html><img src=\"" + secondImageUrl + "\">");
-				setImageAsImageIcon(secondImageUrl, foundImagesLabel2);
+				getImageFromHttp(secondImageUrl, foundImagesLabel2);
+
+//				 setImageFromLinkAsImageIcon(secondImageUrl,foundImagesLabel2);
 
 			} else if (i == 2) {
 				thirdImageUrl = temp;
 				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
-				setImageAsImageIcon(thirdImageUrl, foundImagesLabel3);
+				getImageFromHttp(thirdImageUrl, foundImagesLabel3);
+
+//				 setImageFromLinkAsImageIcon(thirdImageUrl,foundImagesLabel3);
 
 			} else if (i == 3) {
 				fourthImageUrl = temp;
 				foundImagesLabel4.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
-				setImageAsImageIcon(fourthImageUrl, foundImagesLabel4);
+				getImageFromHttp(fourthImageUrl, foundImagesLabel4);
+
+//				setImageFromLinkAsImageIcon(fourthImageUrl, foundImagesLabel4);
 				progressBar.setVisible(false);
 			}
-
 			i++;
 		}
 
@@ -592,7 +651,10 @@ public class App {
 			try {
 				linkAsUrl = new URL(strElement);
 				imgLabels = ImageIO.read(linkAsUrl);
-				setImageAsImageIcon(strElement, labelTryLinks);
+				getImageFromHttp(strElement, labelTryLinks);
+
+				setImageFromLinkAsImageIcon(strElement, labelTryLinks);
+
 				System.out.println("OK");
 				count++;
 			} catch (MalformedURLException e) {
@@ -622,7 +684,7 @@ public class App {
 		return stringArray;
 	}
 
-	protected void setImageAsImageIcon(String link, JLabel label) {
+	protected void setImageFromLinkAsImageIcon(String link, JLabel label) {
 
 		URL linkAsUrl = null;
 		try {
@@ -651,6 +713,10 @@ public class App {
 			// icon = scaleBufferedImage(imgLabels, label);
 			e.printStackTrace();
 		}
+
+		// added to check whether it will mirror images
+		// imgLabels = mirrorImage(imgLabels);
+
 		icon = scaleBufferedImage(imgLabels, label);
 		label.setIcon(icon);
 	}
