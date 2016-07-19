@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -27,7 +28,7 @@ public class ImageTry {
 	private JFrame frame;
 
 	private ImageIcon icon;
-	BufferedImage image;
+	BufferedImage image, flippedImage;
 
 	// normal links
 	String link1 = "http://www.blirk.net/wallpapers/1920x1080/sea-wallpaper-6.jpg";
@@ -218,6 +219,7 @@ public class ImageTry {
 			e.printStackTrace();
 		}
 	}
+
 
 	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
 
