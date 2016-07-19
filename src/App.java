@@ -51,6 +51,8 @@ import bing.Data;
 import bing.RootBing;
 import gson.Captions;
 import gson.JsonRoot;
+import javax.swing.JList;
+import javax.swing.JComboBox;
 
 public class App {
 
@@ -75,6 +77,7 @@ public class App {
 	private Token tokenCache = new Token();
 
 	private Webcam webcam;
+	WebcamPanel panel;
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters, labelInfo, labelTwoInfo;
 	String[] tags;
@@ -82,13 +85,14 @@ public class App {
 	String secondImageUrl = null;
 	String thirdImageUrl = null;
 	String fourthImageUrl = null;
-	String analyseImageToken, bingToken;
+	String analyseImageToken, bingToken, imageTypeString, sizeTypeString, licenseTypeString, safeSearchTypeString;
 
 	int numberOfTags, widthImage, heightImage;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
 	URL url1 = null, url2 = null, url3 = null, url4 = null;
+	private JComboBox safeSearchBox;
 
 	/**
 	 * Launch the application.
@@ -120,7 +124,7 @@ public class App {
 
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 700);
+		frame.setSize(1000, 750);
 		frame.getContentPane().setLayout(null);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
@@ -159,40 +163,40 @@ public class App {
 		frame.getContentPane().add(stepTwo);
 
 		btnAnalyse = new JButton("Analyse image");
-		btnAnalyse.setBounds(67, 443, 196, 29);
+		btnAnalyse.setBounds(68, 423, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
 		tagsField = new JTextArea();
-		tagsField.setBounds(22, 499, 102, 89);
+		tagsField.setBounds(23, 479, 102, 89);
 		tagsField.setLineWrap(true);
 		tagsField.setWrapStyleWord(true);
 		frame.getContentPane().add(tagsField);
 		tagsField.setColumns(10);
 
 		lblTags = new JLabel("Tags:");
-		lblTags.setBounds(45, 471, 61, 16);
+		lblTags.setBounds(46, 451, 61, 16);
 		frame.getContentPane().add(lblTags);
 
 		descriptionField = new JTextArea();
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
-		descriptionField.setBounds(136, 499, 187, 89);
+		descriptionField.setBounds(137, 479, 187, 89);
 		frame.getContentPane().add(descriptionField);
 		descriptionField.setColumns(10);
 
 		lblDescription = new JLabel("Description:");
-		lblDescription.setBounds(162, 471, 77, 16);
+		lblDescription.setBounds(163, 451, 77, 16);
 		frame.getContentPane().add(lblDescription);
 
 		stepThree = new JLabel("");
 		stepThree.setToolTipText("here comes something different");
 		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
-		stepThree.setBounds(23, 591, 67, 49);
+		stepThree.setBounds(266, 661, 67, 49);
 		frame.getContentPane().add(stepThree);
 
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.setVisible(true);
-		btnSearchForSimilar.setBounds(73, 597, 189, 29);
+		btnSearchForSimilar.setBounds(66, 693, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
 		// label to try urls to display images, not shown on the main frame
@@ -229,7 +233,7 @@ public class App {
 		progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(23, 635, 440, 29);
+		progressBar.setBounds(467, 602, 440, 29);
 
 		Border border = BorderFactory
 				.createTitledBorder("We are checking every image, pixel by pixel, it may take a while...");
@@ -264,6 +268,42 @@ public class App {
 		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		originalImageLabel.setBounds(33, 98, 300, 300);
 		frame.getContentPane().add(originalImageLabel);
+
+		JLabel lblImageType = new JLabel("Image type");
+		lblImageType.setBounds(23, 580, 102, 16);
+		frame.getContentPane().add(lblImageType);
+
+		JLabel lblNewLabel = new JLabel("Size");
+		lblNewLabel.setBounds(23, 608, 102, 16);
+		frame.getContentPane().add(lblNewLabel);
+
+		JLabel lblNewLabel_1 = new JLabel("License");
+		lblNewLabel_1.setBounds(23, 636, 102, 16);
+		frame.getContentPane().add(lblNewLabel_1);
+
+		JLabel lblNewLabel_2 = new JLabel("Safe search");
+		lblNewLabel_2.setBounds(23, 664, 102, 16);
+		frame.getContentPane().add(lblNewLabel_2);
+
+		String[] imageTypes = { "unspecified", "AnimategGif", "Clipart", "Line", "Photo" };
+		JComboBox imageTypeBox = new JComboBox(imageTypes);
+		imageTypeBox.setBounds(137, 580, 187, 23);
+		frame.getContentPane().add(imageTypeBox);
+
+		String[] sizeTypes = { "unspecified", "Small", "Medium", "Large", "Wallpaper" };
+		JComboBox sizeBox = new JComboBox(sizeTypes);
+		sizeBox.setBounds(137, 608, 187, 23);
+		frame.getContentPane().add(sizeBox);
+
+		String[] licenseTypes = { "unspecified", "Public", "Share", "ShareCommercially", "Modify" };
+		JComboBox licenseBox = new JComboBox(licenseTypes);
+		licenseBox.setBounds(137, 636, 187, 23);
+		frame.getContentPane().add(licenseBox);
+
+		String[] safeSearchTypes = { "Strict", "Moderate", "Off" };
+		JComboBox safeSearchBox = new JComboBox(safeSearchTypes);
+		safeSearchBox.setBounds(137, 664, 187, 23);
+		frame.getContentPane().add(safeSearchBox);
 		progressBar.setVisible(false);
 		btnTakeANew.setVisible(false);
 
@@ -298,6 +338,8 @@ public class App {
 
 				// image = flipWebcamImage(image);
 
+				image = mirrorImage(image);
+
 				// Mirror the image
 				// AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
 				// tx.translate(-image.getWidth(null), 0);
@@ -315,8 +357,10 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 				btnTakePictureWithWebcam.setVisible(false);
 				btnCancel.setVisible(false);
-				webcam.close();
 				webcamWindow.setVisible(false);
+				panel.setVisible(false);
+
+				webcam.close();
 
 				// image = flip(image);
 			}
@@ -390,8 +434,11 @@ public class App {
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// add here progress to label
-				progressBar.setVisible(true);
+				// clear labels in case there were results of previous search
+				foundImagesLabel1.setIcon(null);
+				foundImagesLabel2.setIcon(null);
+				foundImagesLabel3.setIcon(null);
+				foundImagesLabel4.setIcon(null);
 
 				System.out.println("==========================================");
 				System.out.println("new search");
@@ -406,14 +453,23 @@ public class App {
 				searchParameters = tagsString + text;
 				System.out.println("search parameters: " + searchParameters);
 
+				imageTypeString = imageTypeBox.getSelectedItem().toString();
+				sizeTypeString = sizeBox.getSelectedItem().toString();
+				licenseTypeString = licenseBox.getSelectedItem().toString();
+				safeSearchTypeString = safeSearchBox.getSelectedItem().toString();
+
 				if (searchParameters.length() != 0) {
+
+					// add here progress to label
+					progressBar.setVisible(true);
 
 					// add new thread for searching, so that progress bar and
 					// searching could run simultaneously
 					Thread t1 = new Thread(new Runnable() {
 						@Override
 						public void run() {
-							searchForSimilarImages(searchParameters);
+							searchForSimilarImages(searchParameters, imageTypeString, sizeTypeString, licenseTypeString,
+									safeSearchTypeString);
 						}
 					});
 					// start searching for similar images in a separate thread
@@ -430,8 +486,10 @@ public class App {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(firstImageUrl);
+				if (foundImagesLabel1.getIcon() != null) {
+					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						saveFileChooser(firstImageUrl);
+					}
 				}
 			}
 		});
@@ -439,8 +497,10 @@ public class App {
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(secondImageUrl);
+				if (foundImagesLabel2.getIcon() != null) {
+					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						saveFileChooser(secondImageUrl);
+					}
 				}
 			}
 		});
@@ -448,8 +508,10 @@ public class App {
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(thirdImageUrl);
+				if (foundImagesLabel3.getIcon() != null) {
+					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						saveFileChooser(thirdImageUrl);
+					}
 				}
 			}
 		});
@@ -457,8 +519,10 @@ public class App {
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-					saveFileChooser(fourthImageUrl);
+				if (foundImagesLabel4.getIcon() != null) {
+					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						saveFileChooser(fourthImageUrl);
+					}
 				}
 			}
 		});
@@ -519,7 +583,6 @@ public class App {
 		return imageToFlip;
 	}
 
-
 	protected void turnCameraOn() {
 
 		// webcamWindow = new JFrame("Test webcam panel");
@@ -530,10 +593,10 @@ public class App {
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 		webcam.open();
 
-		WebcamPanel panel = new WebcamPanel(webcam);
+		panel = new WebcamPanel(webcam);
 		panel.setMirrored(true);
 		panel.setBounds(434, 10, 305, 229);
-		
+
 		// original place for camera
 		// panel.setBounds(34, 110, 305, 229);
 		// webcamWindow.add(panel, BorderLayout.CENTER);
@@ -586,15 +649,11 @@ public class App {
 		this.imageWebcam = imageWebcam;
 	}
 
-	protected void searchForSimilarImages(String text) {
+	protected void searchForSimilarImages(String text, String imageType, String sizeType, String licenseType,
+			String safeSearchType) {
 
-		// clear labels in case there were results of previous search
-		foundImagesLabel1.setIcon(null);
-		foundImagesLabel2.setIcon(null);
-		foundImagesLabel3.setIcon(null);
-		foundImagesLabel4.setIcon(null);
-
-		String responseBing = httpBingSearch.GetUrlContentAsString(bingToken, text);
+		String responseBing = httpBingSearch.GetUrlContentAsString(bingToken, text, imageType, sizeType, licenseType,
+				safeSearchType);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
@@ -616,43 +675,45 @@ public class App {
 
 				getImageFromHttp(firstImageUrl, foundImagesLabel1);
 
-//				 setImageFromLinkAsImageIcon(firstImageUrl,foundImagesLabel1);
+				// setImageFromLinkAsImageIcon(firstImageUrl,foundImagesLabel1);
 
 			} else if (i == 1) {
 				secondImageUrl = temp;
 				foundImagesLabel2.setToolTipText("<html><img src=\"" + secondImageUrl + "\">");
 				getImageFromHttp(secondImageUrl, foundImagesLabel2);
 
-//				 setImageFromLinkAsImageIcon(secondImageUrl,foundImagesLabel2);
+				// setImageFromLinkAsImageIcon(secondImageUrl,foundImagesLabel2);
 
 			} else if (i == 2) {
 				thirdImageUrl = temp;
 				foundImagesLabel3.setToolTipText("<html><img src=\"" + thirdImageUrl + "\">");
 				getImageFromHttp(thirdImageUrl, foundImagesLabel3);
 
-//				 setImageFromLinkAsImageIcon(thirdImageUrl,foundImagesLabel3);
+				// setImageFromLinkAsImageIcon(thirdImageUrl,foundImagesLabel3);
 
 			} else if (i == 3) {
 				fourthImageUrl = temp;
 				foundImagesLabel4.setToolTipText("<html><img src=\"" + fourthImageUrl + "\">");
 				getImageFromHttp(fourthImageUrl, foundImagesLabel4);
 
-//				setImageFromLinkAsImageIcon(fourthImageUrl, foundImagesLabel4);
+				// setImageFromLinkAsImageIcon(fourthImageUrl,
+				// foundImagesLabel4);
 				progressBar.setVisible(false);
 			}
 			i++;
 		}
 
 		// if not enough images were found, display suggestion to edit search
-		if (checkedUrls.size() <= 2) {
+		if (checkedUrls.size() <= 3) {
 			try {
 				System.out.println("found less than two images =============");
 				imgLabels = (BufferedImage) ImageIO.read(new File("img/warning.png"));
 			} catch (IOException e2) {
 				e2.printStackTrace();
 			}
-			icon = scaleBufferedImage(imgLabels, foundImagesLabel1);
-			foundImagesLabel1.setIcon(icon);
+			icon = scaleBufferedImage(imgLabels, foundImagesLabel4);
+			foundImagesLabel4.setIcon(icon);
+			progressBar.setVisible(false);
 		}
 	}
 

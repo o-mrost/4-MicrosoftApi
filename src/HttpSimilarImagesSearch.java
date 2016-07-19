@@ -10,26 +10,41 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class HttpSimilarImagesSearch {
 
-	public String GetUrlContentAsString(String searchToken, String tagsString) {
+	public String GetUrlContentAsString(String searchToken, String tagsString, String imageTypeAsString,
+			String sizeAsString, String licenseAsString, String safeSearchAsString) {
 
 		StringBuffer body = null;
-
+		String imageType = null, sizeType = null, licenseType = null, safeSearchType = null;
 		try {
-			// String license = "&license=public";
-			// String license = "&license=schare";
-			// String license = "&license=scharecomercially";
-			// String safeSearch = "strict";
-			// with any option for search options - founds very few images
-			// String safeSearch = "moderate";
-			// String safeSearch = "off";
-			
-			String license = "";
-			// or we can leave the license and use just image size to filter
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=10&mkt=en-us";
-			
-//					+ "&license=" + license;
 
-			System.out.println("url to search: " + url);
+			if (!imageTypeAsString.equals("unspecified")) {
+				imageType = "&imagetype=" + imageTypeAsString;
+			} else {
+				imageType = "";
+			}
+
+			if (!sizeAsString.equals("unspecified")) {
+				sizeType = "&size=" + sizeAsString;
+			} else {
+				sizeType = "";
+			}
+
+			if (!licenseAsString.equals("unspecified")) {
+				licenseType = "&license=" + licenseAsString;
+			} else {
+				licenseType = "";
+			}
+
+			if (!safeSearchAsString.equals("unspecified")) {
+				safeSearchType = "&safesearch=" + safeSearchAsString;
+			} else {
+				safeSearchType = "";
+			}
+
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=10&mkt=en-us"
+					+ imageType + sizeType + licenseType + safeSearchType;
+
+			System.out.println("url to search " + url);
 
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(url);
