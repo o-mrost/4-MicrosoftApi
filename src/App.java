@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -65,34 +68,29 @@ public class App {
 	private JButton btnTurnWebcamOn, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
 			foundImagesLabel4, labelTryLinks, stepTwo, stepThree;
+	private JProgressBar progressBar;
 
-	BufferedImage imageWebcam, image = null, imgLabels = null;
+	private BufferedImage imageWebcam, image = null, imgLabels = null, coverUp;
 
 	private HttpDescribeImage httpLocal = new HttpDescribeImage();
 	private HttpSimilarImagesSearch httpBingSearch = new HttpSimilarImagesSearch();
 
-	private JProgressBar progressBar;
-
-	private Token searchToken = new Token();
-	private Token tokenCache = new Token();
+	private Token searchToken = new Token(), tokenCache = new Token();
 
 	private Webcam webcam;
-	WebcamPanel panel;
+	private WebcamPanel panel;
 
 	String link, url, text, contentUrl, tagsString = "", searchParameters, labelInfo, labelTwoInfo;
 	String[] tags;
-	String firstImageUrl = null;
-	String secondImageUrl = null;
-	String thirdImageUrl = null;
-	String fourthImageUrl = null;
-	String analyseImageToken, bingToken, imageTypeString, sizeTypeString, licenseTypeString, safeSearchTypeString;
+	String firstImageUrl = null, secondImageUrl = null, thirdImageUrl = null, fourthImageUrl = null;
+	private String analyseImageToken, bingToken, imageTypeString, sizeTypeString, licenseTypeString,
+			safeSearchTypeString;
 
 	int numberOfTags, widthImage, heightImage;
 
 	String tagsTokenFileName = "APIToken.txt";
 	String imageSearchTokenFileName = "SearchApiToken.txt";
 	URL url1 = null, url2 = null, url3 = null, url4 = null;
-	private JComboBox safeSearchBox;
 
 	/**
 	 * Launch the application.
@@ -128,6 +126,10 @@ public class App {
 		frame.getContentPane().setLayout(null);
 
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png");
+
+		JLabel lblCoverUp = new JLabel();
+		lblCoverUp.setBounds(133, 39, 321, 269);
+		frame.getContentPane().add(lblCoverUp);
 		fc = new JFileChooser();
 		fc.setFileFilter(filter);
 		frame.getContentPane().add(fc);
@@ -135,7 +137,7 @@ public class App {
 		JLabel stepOne = new JLabel("");
 		stepOne.setToolTipText("here comes something");
 		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
-		stepOne.setBounds(23, 0, 67, 49);
+		stepOne.setBounds(266, -4, 67, 49);
 		frame.getContentPane().add(stepOne);
 
 		btnBrowse = new JButton("Browse");
@@ -159,7 +161,7 @@ public class App {
 		stepTwo = new JLabel("");
 		stepTwo.setToolTipText("here comes something else");
 		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
-		stepTwo.setBounds(23, 410, 67, 49);
+		stepTwo.setBounds(266, 413, 67, 49);
 		frame.getContentPane().add(stepTwo);
 
 		btnAnalyse = new JButton("Analyse image");
@@ -191,12 +193,12 @@ public class App {
 		stepThree = new JLabel("");
 		stepThree.setToolTipText("here comes something different");
 		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
-		stepThree.setBounds(266, 661, 67, 49);
+		stepThree.setBounds(266, 685, 67, 49);
 		frame.getContentPane().add(stepThree);
 
 		btnSearchForSimilar = new JButton("Search for similar images");
 		btnSearchForSimilar.setVisible(true);
-		btnSearchForSimilar.setBounds(66, 693, 189, 29);
+		btnSearchForSimilar.setBounds(66, 695, 189, 29);
 		frame.getContentPane().add(btnSearchForSimilar);
 
 		// label to try urls to display images, not shown on the main frame
@@ -207,11 +209,6 @@ public class App {
 		foundImagesLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		foundImagesLabel1.setBounds(400, 49, 250, 250);
 		frame.getContentPane().add(foundImagesLabel1);
-
-		foundImagesLabel2 = new JLabel();
-		foundImagesLabel2.setHorizontalAlignment(SwingConstants.CENTER);
-		foundImagesLabel2.setBounds(400, 313, 250, 250);
-		frame.getContentPane().add(foundImagesLabel2);
 
 		foundImagesLabel3 = new JLabel();
 		foundImagesLabel3.setHorizontalAlignment(SwingConstants.CENTER);
@@ -239,30 +236,22 @@ public class App {
 				.createTitledBorder("We are checking every image, pixel by pixel, it may take a while...");
 		progressBar.setBorder(border);
 		frame.getContentPane().add(progressBar);
+		progressBar.setVisible(false);
 
 		JButton btnTakePictureWithWebcam = new JButton("Take a picture");
-		btnTakePictureWithWebcam.setBounds(51, 349, 117, 29);
+		btnTakePictureWithWebcam.setBounds(430, 324, 117, 29);
 		frame.getContentPane().add(btnTakePictureWithWebcam);
 		btnTakePictureWithWebcam.setVisible(false);
 
 		JButton btnCancel = new JButton("Cancel");
-		btnCancel.setBounds(163, 349, 117, 29);
+		btnCancel.setBounds(542, 324, 117, 29);
 		frame.getContentPane().add(btnCancel);
 		btnCancel.setVisible(false);
 
-		JButton btnUseThisImage = new JButton("Use this image");
-		btnUseThisImage.setBounds(1, 382, 117, 29);
-		frame.getContentPane().add(btnUseThisImage);
-		btnUseThisImage.setVisible(false);
-
 		JButton btnSaveImage = new JButton("Save image");
-		btnSaveImage.setBounds(118, 382, 117, 29);
+		btnSaveImage.setBounds(497, 357, 117, 29);
 		frame.getContentPane().add(btnSaveImage);
 		btnSaveImage.setVisible(false);
-
-		JButton btnTakeANew = new JButton("Take a new picture");
-		btnTakeANew.setBounds(239, 382, 117, 29);
-		frame.getContentPane().add(btnTakeANew);
 
 		originalImageLabel = new JLabel();
 		originalImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -304,8 +293,22 @@ public class App {
 		JComboBox safeSearchBox = new JComboBox(safeSearchTypes);
 		safeSearchBox.setBounds(137, 664, 187, 23);
 		frame.getContentPane().add(safeSearchBox);
-		progressBar.setVisible(false);
-		btnTakeANew.setVisible(false);
+
+		foundImagesLabel2 = new JLabel();
+		foundImagesLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+		foundImagesLabel2.setBounds(400, 313, 250, 250);
+		frame.getContentPane().add(foundImagesLabel2);
+
+		foundImagesLabel2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (foundImagesLabel2.getIcon() != null) {
+					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						saveFileChooser(secondImageUrl);
+					}
+				}
+			}
+		});
 
 		// all action listeners
 		btnBrowse.addActionListener(new ActionListener() {
@@ -320,25 +323,24 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
+
 				turnCameraOn();
 			}
 		});
 
 		btnTakePictureWithWebcam.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
+
 				imageWebcam = webcam.getImage();
 				System.out.println("picture taken");
 				setImageWebcam(imageWebcam);
-				// icon = scaleBufferedImage(imageWebcam, originalImageLabel);
-				// originalImageLabel.setIcon(icon);
 				image = getImageWebcam();
 
 				// TODO doesn't work yet, the image is reflected
 				System.out.println("flip image");
 
-				// image = flipWebcamImage(image);
-
-				image = mirrorImage(image);
+				// image = mirrorImage(image);
 
 				// Mirror the image
 				// AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -348,48 +350,50 @@ public class App {
 				// image = op.filter(image, null);
 
 				icon = scaleBufferedImage(image, originalImageLabel);
+
 				originalImageLabel.setIcon(icon);
+				btnSaveImage.setVisible(true);
+			}
+		});
+
+		btnSaveImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					try {
+
+						file = fc.getSelectedFile();
+						File output = new File(file.toString());
+						// check if image already exists
+						if (output.exists()) {
+							int response = JOptionPane.showConfirmDialog(null, //
+									"Do you want to replace the existing file?", //
+									"Confirm", JOptionPane.YES_NO_OPTION, //
+									JOptionPane.QUESTION_MESSAGE);
+							if (response != JOptionPane.YES_OPTION) {
+								return;
+							}
+						}
+
+						ImageIO.write(toBufferedImage(image), "jpeg", output);
+						System.out.println("Your image has been saved in the folder " + file.getPath());
+
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
 		});
 
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
 				btnTakePictureWithWebcam.setVisible(false);
 				btnCancel.setVisible(false);
-				webcamWindow.setVisible(false);
+				btnSaveImage.setVisible(false);
+				webcam.close();
 				panel.setVisible(false);
-
-				webcam.close();
-
-				// image = flip(image);
-			}
-		});
-
-		btnTakePictureWithWebcam.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				imageWebcam = webcam.getImage();
-				System.out.println("picture taken");
-				setImageWebcam(imageWebcam);
-
-				// TODO here problem
-				System.out.println("mirror image");
-				// imageWebcam = mirrorImage(imageWebcam);
-
-				icon = scaleBufferedImage(imageWebcam, originalImageLabel);
-				originalImageLabel.setIcon(icon);
-				image = getImageWebcam();
-			}
-		});
-
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				btnTakePictureWithWebcam.setVisible(false);
-				btnCancel.setVisible(false);
-				webcam.close();
-				webcamWindow.setVisible(false);
-
 			}
 		});
 
@@ -404,9 +408,6 @@ public class App {
 
 					// setImageFromLinkAsImageIcon(linkNew, originalImageLabel);
 
-					// added this line to fix the bug When analyse from link,
-					// when click on Analyse image, pop up “Please choose an
-					// image” appears
 					image = imgLabels;
 				}
 			}
@@ -489,17 +490,6 @@ public class App {
 				if (foundImagesLabel1.getIcon() != null) {
 					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 						saveFileChooser(firstImageUrl);
-					}
-				}
-			}
-		});
-
-		foundImagesLabel2.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (foundImagesLabel2.getIcon() != null) {
-					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-						saveFileChooser(secondImageUrl);
 					}
 				}
 			}
@@ -595,15 +585,13 @@ public class App {
 
 		panel = new WebcamPanel(webcam);
 		panel.setMirrored(true);
-		panel.setBounds(434, 10, 305, 229);
+		panel.setBounds(400, 50, 305, 229);
 
 		// original place for camera
 		// panel.setBounds(34, 110, 305, 229);
 		// webcamWindow.add(panel, BorderLayout.CENTER);
 
 		frame.getContentPane().add(panel);
-
-		// TODO add buttons
 
 		// JPanel buttonPanel = new JPanel();
 		// webcamWindow.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
@@ -635,10 +623,10 @@ public class App {
 		// }
 		// });
 
-		webcamWindow.getContentPane().add(panel);
-		webcamWindow.setResizable(true);
-		webcamWindow.pack();
-		webcamWindow.setVisible(true);
+////		webcamWindow.getContentPane().add(panel);
+//		webcamWindow.setResizable(true);
+//		webcamWindow.pack();
+//		webcamWindow.setVisible(true);
 	}
 
 	public BufferedImage getImageWebcam() {
@@ -786,30 +774,23 @@ public class App {
 		try {
 			linkAsUrl = new URL(link);
 			imgLabels = ImageIO.read(linkAsUrl);
-			// icon = scaleBufferedImage(imgLabels, label);
 		} catch (MalformedURLException e2) {
 			e2.printStackTrace();
-
 		} catch (IOException e1) {
 			try {
 				imgLabels = (BufferedImage) ImageIO.read(new File("img/iioexception.png"));
-				// icon = scaleBufferedImage(imgLabels, label);
 			} catch (IOException e2) {
 				e2.printStackTrace();
 			}
 			e1.printStackTrace();
-
 		} catch (NullPointerException e) {
 			try {
 				imgLabels = (BufferedImage) ImageIO.read(new File("img/error.png"));
-				// icon = scaleBufferedImage(imgLabels, label);
 			} catch (IOException e2) {
 				e2.printStackTrace();
 			}
-			// icon = scaleBufferedImage(imgLabels, label);
 			e.printStackTrace();
 		}
-
 		// added to check whether it will mirror images
 		// imgLabels = mirrorImage(imgLabels);
 
@@ -829,7 +810,7 @@ public class App {
 		System.out.println("=============");
 		System.out.println("tags " + Arrays.toString(tags));
 
-		// limit number of tags displayed to max first five
+		// limit number of tags displayed to maximum first five
 		if (tags.length >= 5) {
 			numberOfTags = 5;
 		} else {
