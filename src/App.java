@@ -321,6 +321,12 @@ public class App {
 
 		btnTurnWebcamOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				foundImagesLabel1.setIcon(null);
+				foundImagesLabel2.setIcon(null);
+				foundImagesLabel3.setIcon(null);
+				foundImagesLabel4.setIcon(null);
+				
 				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
 
