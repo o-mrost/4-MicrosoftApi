@@ -8,7 +8,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-public class HttpSimilarImagesSearch {
+public class SearchForSimilarImages {
 
 	public String GetUrlContentAsString(String searchToken, String tagsString, String imageTypeAsString,
 			String sizeAsString, String licenseAsString, String safeSearchAsString) {

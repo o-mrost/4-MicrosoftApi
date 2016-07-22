@@ -1,13 +1,13 @@
-package gson;
+package computerVisionApi;
 import java.util.ArrayList;
 
-public class DescriptionText {
+public class FullDescription {
 
 	private String[] tags;
 
 	private ArrayList<Captions> captions;
 
-	public DescriptionText() {
+	public FullDescription() {
 		setCaptions(new ArrayList<Captions>());
 	}
 

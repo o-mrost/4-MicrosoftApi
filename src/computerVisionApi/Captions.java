@@ -1,4 +1,4 @@
-package gson;
+package computerVisionApi;
 
 public class Captions {
 
