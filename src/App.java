@@ -321,12 +321,12 @@ public class App {
 
 		btnTurnWebcamOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				foundImagesLabel1.setIcon(null);
 				foundImagesLabel2.setIcon(null);
 				foundImagesLabel3.setIcon(null);
 				foundImagesLabel4.setIcon(null);
-				
+
 				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
 
@@ -343,6 +343,28 @@ public class App {
 				setImageWebcam(imageWebcam);
 				image = getImageWebcam();
 
+				// date stamp to add to every picture taken with a webcam
+				Date date = new Date();
+				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy--HH-mm-ss");
+				String dateTime = dateFormat.format(date);
+
+				// TODO save image from webcam and try to mirror it
+				// get user name
+				String user = System.getProperty("user.home");
+				// temporary folder
+				
+				String fileName = user + "/Desktop/WebCam/" + "img-" + dateTime + ".png";
+
+				try {
+
+					ImageIO.write(image, "PNG", new File(fileName));
+					System.out.println("image stored at " + fileName);
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
+				
 				// TODO doesn't work yet, the image is reflected
 				System.out.println("flip image");
 
@@ -381,7 +403,7 @@ public class App {
 							}
 						}
 
-						ImageIO.write(toBufferedImage(image), "jpeg", output);
+						ImageIO.write(toBufferedImage(image), "jpg", output);
 						System.out.println("Your image has been saved in the folder " + file.getPath());
 
 					} catch (IOException e1) {
@@ -441,6 +463,13 @@ public class App {
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				// TODO
+//				btnTakePictureWithWebcam.setVisible(false);
+//				btnCancel.setVisible(false);
+//				btnSaveImage.setVisible(false);
+//				webcam.close();
+//				panel.setVisible(false);
+//				
 				// clear labels in case there were results of previous search
 				foundImagesLabel1.setIcon(null);
 				foundImagesLabel2.setIcon(null);
@@ -590,7 +619,7 @@ public class App {
 		webcam.open();
 
 		panel = new WebcamPanel(webcam);
-		panel.setMirrored(true);
+		panel.setMirrored(false);
 		panel.setBounds(400, 50, 305, 229);
 
 		// original place for camera
@@ -629,10 +658,10 @@ public class App {
 		// }
 		// });
 
-////		webcamWindow.getContentPane().add(panel);
-//		webcamWindow.setResizable(true);
-//		webcamWindow.pack();
-//		webcamWindow.setVisible(true);
+		//// webcamWindow.getContentPane().add(panel);
+		// webcamWindow.setResizable(true);
+		// webcamWindow.pack();
+		// webcamWindow.setVisible(true);
 	}
 
 	public BufferedImage getImageWebcam() {
