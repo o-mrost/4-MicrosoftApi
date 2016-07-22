@@ -3,13 +3,13 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="img"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="bridj-0.6.2.jar"/>
-	<classpathentry kind="lib" path="slf4j-api-1.7.2.jar"/>
-	<classpathentry kind="lib" path="webcam-capture-0.3.10.jar"/>
-	<classpathentry kind="lib" path="httpclient-4.5.2.jar"/>
-	<classpathentry kind="lib" path="httpcore-4.4.4.jar"/>
 	<classpathentry kind="lib" path="jars/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="gson-2.6.2.jar"/>
-	<classpathentry kind="lib" path="org.apache.commons.lang-2.6-sources.jar"/>
+	<classpathentry kind="lib" path="jars/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="jars/org.apache.commons.lang-2.6-sources.jar"/>
+	<classpathentry kind="lib" path="jars/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="jars/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="jars/httpcore-4.4.4.jar"/>
+	<classpathentry kind="lib" path="jars/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="jars/webcam-capture-0.3.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
