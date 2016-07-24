@@ -5,8 +5,12 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 
 public class SearchForSimilarImages {
 
@@ -40,8 +44,9 @@ public class SearchForSimilarImages {
 			} else {
 				safeSearchType = "";
 			}
-
-			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + "&count=10&mkt=en-us"
+			 String count = "&count=2";
+//			String count = "";
+			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + count + "&mkt=en-us"
 					+ imageType + sizeType + licenseType + safeSearchType;
 
 			System.out.println("url to search " + url);

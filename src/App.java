@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -28,8 +29,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JComboBox;
 
@@ -49,6 +53,7 @@ import bingImageSearchApi.Urls;
 import bingImageSearchApi.RootBing;
 import computerVisionApi.Captions;
 import computerVisionApi.RootComputerVision;
+import javax.swing.JList;
 
 public class App {
 
@@ -71,6 +76,12 @@ public class App {
 			sizeTypeString, licenseTypeString, safeSearchTypeString;
 	private String firstImageUrl = null, secondImageUrl = null, thirdImageUrl = null, fourthImageUrl = null;
 
+	private ArrayList<String> workingUrls;
+	private String[] linksResponse = null;
+	DefaultListModel listModel = new DefaultListModel();
+
+	private JList list;
+
 	/**
 	 * Launch the application.
 	 */
@@ -89,8 +100,11 @@ public class App {
 
 	/**
 	 * Create the application.
+	 * 
+	 * @param string
 	 */
 	public App() {
+		super();
 		initialize();
 	}
 
@@ -254,7 +268,7 @@ public class App {
 		progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		progressBar.setStringPainted(true);
-		progressBar.setBounds(467, 602, 440, 29);
+		progressBar.setBounds(440, 602, 440, 29);
 
 		Border border = BorderFactory
 				.createTitledBorder("We are checking every image, pixel by pixel, it may take a while...");
@@ -282,10 +296,8 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 
 				setAllFoundImagesLabelsAndPreviewsToNull();
-
 				btnTakePictureWithWebcam.setVisible(true);
 				btnCancel.setVisible(true);
-
 				turnCameraOn();
 			}
 		});
@@ -341,10 +353,8 @@ public class App {
 								return;
 							}
 						}
-
 						ImageIO.write(toBufferedImage(originalImage), "jpg", output);
 						System.out.println("Your image has been saved in the folder " + file.getPath());
-
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -428,16 +438,17 @@ public class App {
 
 				if (searchParameters.length() != 0) {
 
-					progressBar.setVisible(true);
-
 					// add new thread for searching, so that progress bar and
 					// searching could run simultaneously
 					Thread t1 = new Thread(new Runnable() {
 						@Override
 						public void run() {
+
+							progressBar.setVisible(true);
 							searchForSimilarImages(searchParameters, imageTypeString, sizeTypeString, licenseTypeString,
 									safeSearchTypeString);
 						}
+
 					});
 					// start searching for similar images in a separate thread
 					t1.start();
@@ -449,10 +460,8 @@ public class App {
 		});
 
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseReleased(MouseEvent e) {
-
 				if (foundImagesLabel1.getIcon() != null) {
 					if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 						saveFileChooser(firstImageUrl);
@@ -521,8 +530,6 @@ public class App {
 		InputStream is = null;
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpGet request = new HttpGet(link);
-		System.out.println("===========");
-		System.out.println("link: " + link);
 		try {
 			response = client.execute(request);
 			is = response.getEntity().getContent();
@@ -656,19 +663,19 @@ public class App {
 		URL linkAsUrl = null;
 
 		// variable to count the number of valid urls
-		int count = 0;
+		 int count = 0;
 
 		while (iter.hasNext()) {
 			strElement = (String) iter.next();
-			System.out.println("============");
-			System.out.println("CHECKING: " + strElement);
+			// System.out.println("============");
+			// System.out.println("CHECKING: " + strElement);
 
 			try {
 				linkAsUrl = new URL(strElement);
 				imageResponses = ImageIO.read(linkAsUrl);
 				getImageFromHttp(strElement, labelTryLinks);
-				System.out.println("OK");
-				count++;
+				// System.out.println("OK");
+				// count++;
 			} catch (MalformedURLException e) {
 				System.out.println("malformed exception with url " + strElement);
 				e.printStackTrace();
@@ -794,6 +801,39 @@ public class App {
 				BufferedImage.TYPE_INT_ARGB);
 
 		return bimage;
+	}
+
+	protected ImageIcon scaleBufferedImageWithoutLabel(BufferedImage img) {
+
+		ImageIcon icon = null;
+		try {
+			icon = new ImageIcon(img);
+			double width = icon.getIconWidth();
+			double height = icon.getIconHeight();
+			double labelWidth = 150;
+			double labelHight = 150;
+			double scaleWidth = width / labelWidth;
+			double scaleHeight = height / labelHight;
+
+			if (width >= height) {
+				// horizontal image
+				double newWidth = width / scaleWidth;
+				icon = new ImageIcon(icon.getImage().getScaledInstance((int) newWidth, -1, Image.SCALE_SMOOTH));
+			} else {
+				// vertical image
+				double newHeight = height / scaleHeight;
+				icon = new ImageIcon(icon.getImage().getScaledInstance(-1, (int) newHeight, Image.SCALE_SMOOTH));
+			}
+		} catch (NullPointerException e) {
+			try {
+				originalImage = (BufferedImage) ImageIO.read(new File("img/error.png"));
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+
+		return icon;
 	}
 
 	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
