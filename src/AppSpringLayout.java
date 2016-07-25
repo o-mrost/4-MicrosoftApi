@@ -81,6 +81,8 @@ public class AppSpringLayout {
 
 	private String computerVisionImageToken, bingToken, tagsString = "", text, imageTypeString, sizeTypeString,
 			licenseTypeString, safeSearchTypeString, searchParameters;
+	private String[] linksResponse;
+
 	private ArrayList<String> workingUrls;
 
 	private int foundLinks;
@@ -487,37 +489,39 @@ public class AppSpringLayout {
 		list.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				System.out.println("selected item " + list.getSelectedIndex() + "filename");
-				// image icon
-				System.out.println("hopefully file url " + list.getSelectedValue());
-				
-				fc.setDialogTitle("Specify name of the file to save");
-				File output = new File(fc.getSelectedFile().toString());
+				int i = list.getSelectedIndex();
 
-				// check if file already exists, ask user if they wish to overwrite it
-				if (output.exists()) {
-					int response = JOptionPane.showConfirmDialog(null, //
-							"Do you want to replace the existing file?", //
-							"Confirm", JOptionPane.YES_NO_OPTION, //
-							JOptionPane.QUESTION_MESSAGE);
-					if (response != JOptionPane.YES_OPTION) {
-						return;
+				if (fc.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+					try {
+						file = fc.getSelectedFile();
+						File output = new File(file.toString());
+						// check if file already exists, ask user if they
+						// wish
+						// to overwrite it
+						if (output.exists()) {
+							int response = JOptionPane.showConfirmDialog(null, //
+									"Do you want to replace the existing file?", //
+									"Confirm", JOptionPane.YES_NO_OPTION, //
+									JOptionPane.QUESTION_MESSAGE);
+							if (response != JOptionPane.YES_OPTION) {
+								return;
+							}
+						}
+						try {
+
+							URL fileNameAsUrl = new URL(linksResponse[i]);
+							originalImage = ImageIO.read(fileNameAsUrl);
+							ImageIO.write(toBufferedImage(originalImage), "jpeg", output);
+							System.out.println("image saved, in the folder: " + output.getAbsolutePath());
+
+						} catch (MalformedURLException e1) {
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					} catch (NullPointerException e2) {
+						e2.getMessage();
 					}
-				}
-				fc.setSelectedFile(output);
-
-				try {
-
-//					URL fileNameAsUrl = new URL(fileUrl);
-					originalImage = ImageIO.read(fileNameAsUrl);
-					ImageIO.write(toBufferedImage(originalImage), "jpeg", output);
-
-					System.out.println("image saved, in the folder: " + output.getAbsolutePath());
-
-				} catch (MalformedURLException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
 				}
 			}
 		});
@@ -542,19 +546,14 @@ public class AppSpringLayout {
 		// System.out.println("Links to display: ");
 
 		// converted it to a string array
-		String[] linksResponse = new String[checkedUrls.size()];
+		linksResponse = new String[checkedUrls.size()];
 		linksResponse = checkedUrls.toArray(linksResponse);
 
 		listModel.clear();
 
 		for (String item : linksResponse) {
 			String listItemText = item;
-			// System.out.println("current link: " + listItemText);
 			displayImageOnJList(item);
-
-			// get width and height of image
-			int height = imageResponses.getHeight();
-			int width = imageResponses.getWidth();
 
 			// shows only for the last one
 			// TODO modify - may be with ListCellRenderer
@@ -596,7 +595,7 @@ public class AppSpringLayout {
 				displayImage(strElement, labelTryLinks);
 				foundLinks++;
 				// System.out.println("OK");
-				lblFoundLinks.setText(foundLinks + " images found");
+				lblFoundLinks.setText("images found: " + foundLinks);
 			} catch (MalformedURLException e) {
 				System.out.println("malformed exception with url " + strElement);
 				e.printStackTrace();
