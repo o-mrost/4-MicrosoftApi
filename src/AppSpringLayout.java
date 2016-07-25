@@ -87,6 +87,7 @@ public class AppSpringLayout {
 
 	private int foundLinks;
 	DefaultListModel listModel = new DefaultListModel();
+	private JTextField numberOfImagesToSearchFor;
 
 	/**
 	 * Launch the application.
@@ -312,6 +313,20 @@ public class AppSpringLayout {
 		springLayout.putConstraint(SpringLayout.EAST, lblFoundLinks, -10, SpringLayout.EAST, frame.getContentPane());
 		frame.getContentPane().add(lblFoundLinks);
 
+		numberOfImagesToSearchFor = new JTextField();
+		springLayout.putConstraint(SpringLayout.NORTH, numberOfImagesToSearchFor, 0, SpringLayout.NORTH, tagsTextArea);
+		springLayout.putConstraint(SpringLayout.WEST, numberOfImagesToSearchFor, 6, SpringLayout.EAST,
+				descriptionTextArea);
+		springLayout.putConstraint(SpringLayout.EAST, numberOfImagesToSearchFor, -36, SpringLayout.WEST, scroll);
+		frame.getContentPane().add(numberOfImagesToSearchFor);
+		numberOfImagesToSearchFor.setColumns(10);
+
+		JLabel lblNumberOfImages = new JLabel("Number");
+		springLayout.putConstraint(SpringLayout.NORTH, lblNumberOfImages, 0, SpringLayout.NORTH, lblTags);
+		springLayout.putConstraint(SpringLayout.WEST, lblNumberOfImages, 31, SpringLayout.EAST, btnAnalyseImage);
+		springLayout.putConstraint(SpringLayout.EAST, lblNumberOfImages, -6, SpringLayout.WEST, scroll);
+		frame.getContentPane().add(lblNumberOfImages);
+
 		// label to get coordinates for web camera panel
 		// lblNewLabel_1 = new JLabel("New label");
 		// springLayout.putConstraint(SpringLayout.NORTH, lblNewLabel_1, 0,
@@ -447,7 +462,6 @@ public class AppSpringLayout {
 
 				Token bingImageToken = new Token();
 				String bingImageTokenFileName = "SearchApiToken.txt";
-
 				bingToken = bingImageToken.getApiToken(bingImageTokenFileName);
 
 				// in case user edited description or tags, update it and
@@ -456,32 +470,42 @@ public class AppSpringLayout {
 				String tagsString = tagsTextArea.getText().replace(" ", "%20").replace("\r", "%20").replace("\n",
 						"%20");
 
-				imageTypeString = imageTypeBox.getSelectedItem().toString();
-				sizeTypeString = sizeBox.getSelectedItem().toString();
-				licenseTypeString = licenseBox.getSelectedItem().toString();
-				safeSearchTypeString = safeSearchBox.getSelectedItem().toString();
+				String numberOfImages = numberOfImagesToSearchFor.getText();
 
-				searchParameters = tagsString + text;
-				System.out.println("search parameters: " + searchParameters);
+				try {
+					int numberOfImagesTry = Integer.parseInt(numberOfImages);
+					System.out.println(numberOfImagesTry);
 
-				if (searchParameters.length() != 0) {
+					imageTypeString = imageTypeBox.getSelectedItem().toString();
+					sizeTypeString = sizeBox.getSelectedItem().toString();
+					licenseTypeString = licenseBox.getSelectedItem().toString();
+					safeSearchTypeString = safeSearchBox.getSelectedItem().toString();
 
-					// add new thread for searching, so that progress bar and
-					// searching could run simultaneously
-					Thread t1 = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							progressBar.setVisible(true);
-							workingUrls = searchToDisplayOnJList(searchParameters, imageTypeString, sizeTypeString,
-									licenseTypeString, safeSearchTypeString);
-						}
+					searchParameters = tagsString + text;
+					System.out.println("search parameters: " + searchParameters);
 
-					});
-					// start searching for similar images in a separate thread
-					t1.start();
-				} else {
-					JOptionPane.showMessageDialog(null,
-							"Please choose first an image to analyse or insert search parameters");
+					if (searchParameters.length() != 0) {
+
+						// add new thread for searching, so that progress bar
+						// and searching could run simultaneously
+						Thread t1 = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								progressBar.setVisible(true);
+								workingUrls = searchToDisplayOnJList(searchParameters, imageTypeString, sizeTypeString,
+										licenseTypeString, safeSearchTypeString, numberOfImages);
+							}
+						});
+						// start searching in a separate thread
+						t1.start();
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Please choose first an image to analyse or insert search parameters");
+					}
+				} catch (NumberFormatException e1) {
+					JOptionPane.showMessageDialog(null, "Please insert a valid number of images to search for");
+					e1.printStackTrace();
+
 				}
 			}
 		});
@@ -496,8 +520,7 @@ public class AppSpringLayout {
 						file = fc.getSelectedFile();
 						File output = new File(file.toString());
 						// check if file already exists, ask user if they
-						// wish
-						// to overwrite it
+						// wish to overwrite it
 						if (output.exists()) {
 							int response = JOptionPane.showConfirmDialog(null, //
 									"Do you want to replace the existing file?", //
@@ -528,11 +551,14 @@ public class AppSpringLayout {
 	}
 
 	protected ArrayList<String> searchToDisplayOnJList(String text, String imageType, String sizeType,
-			String licenseType, String safeSearchType) {
+			String licenseType, String safeSearchType, String numberOfImg) {
 
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
-		String responseBing = bingSearch.GetUrlContentAsString(bingToken, text, imageType, sizeType, licenseType,
-				safeSearchType);
+		// String responseBing = bingSearch.GetUrlContentAsString(bingToken,
+		// text, imageType, sizeType, licenseType,
+		// safeSearchType);
+		String responseBing = bingSearch.GetUrlContentAsStringWithNumber(bingToken, text, imageType, sizeType,
+				licenseType, safeSearchType, numberOfImg);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
@@ -552,7 +578,7 @@ public class AppSpringLayout {
 		listModel.clear();
 
 		for (String item : linksResponse) {
-			String listItemText = item;
+			// String listItemText = item;
 			displayImageOnJList(item);
 
 			// shows only for the last one
@@ -665,8 +691,8 @@ public class AppSpringLayout {
 		} else {
 			numberOfTags = tags.length;
 		}
-
 		tagsTextArea.setText("");
+		numberOfImagesToSearchFor.setText("");
 
 		for (int i = 0; i < numberOfTags; i++) {
 			tagsTextArea.append(tags[i] + "\n");
