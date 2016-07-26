@@ -339,6 +339,9 @@ public class AppSpringLayout {
 		// SpringLayout.EAST, btnCancel);
 		// frame.getContentPane().add(lblNewLabel_1);
 
+		/**
+		 * Opens filechooser to select an image
+		 */
 		btnBrowse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -347,6 +350,9 @@ public class AppSpringLayout {
 			}
 		});
 
+		/**
+		 * Opens webcam and sets buttons visable
+		 */
 		btnTurnCameraOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				listModel.clear();
@@ -556,10 +562,6 @@ public class AppSpringLayout {
 			}
 		});
 	}
-	
-	/**
-	 * method 
-	 */
 
 	protected ArrayList<String> searchToDisplayOnJList(String text, String imageType, String sizeType,
 			String licenseType, String safeSearchType, String numberOfImg) {
