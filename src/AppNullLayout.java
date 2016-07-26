@@ -430,7 +430,7 @@ public class AppNullLayout {
 			public void actionPerformed(ActionEvent e) {
 
 				Token computerVisionToken = new Token();
-				String computerVisionTokenFileName = "APIToken.txt";
+				String computerVisionTokenFileName = "Tokens/APIToken.txt";
 
 				try {
 					computerVisionImageToken = computerVisionToken.getApiToken(computerVisionTokenFileName);
@@ -465,7 +465,7 @@ public class AppNullLayout {
 				System.out.println("==========================================");
 
 				Token bingImageToken = new Token();
-				String bingImageTokenFileName = "SearchApiToken.txt";
+				String bingImageTokenFileName = "Tokens/SearchApiToken.txt";
 
 				bingToken = bingImageToken.getApiToken(bingImageTokenFileName);
 
