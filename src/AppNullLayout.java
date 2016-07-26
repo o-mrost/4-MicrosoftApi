@@ -557,10 +557,26 @@ public class AppNullLayout {
 		 */
 		btnHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO write help
-				HelpFrame help = new HelpFrame();
+				JOptionPane.showMessageDialog(null,
+						"<html> <br>I guess you need help? Buttons are still to complex to understand? "
+								+ "<br>Here is help. <p>"
+								+ "<p>You better follow these steps in the given order, otherwise you may will have problems in your search."
+								+ "<p><p><br> ONE! Browse button:"
+								+ "<p><br>First of all you need to choose a picture if it is either from your harddrive/webcam or a weblink of a picture."
+								+ "<br>This picture will be shown in a frame under the browse button."
+								+ "<br>Now you have your image. Isn't it wonderful?<p>"
+								+ "<p><br> TWO! Analyse image button:"
+								+ "<p><br>After you choosed your awesome picture you can analyse the image for certain tags and description."
+								+ "<br>Below your analysed tags and description you can choose four specific options for your similiar images that you will search."
+								+ "<br>You can costumize as much as you want here! Tags, Description, the four options! Everything!<p>"
+								+ "<p><br> THREE! Search for similiar images button:"
+								+ "<p><br>Hitting this button you will see a progressbar at the right-bottom of your screen. It takes some time. Relax and get a drink."
+								+ "<br>After the long wait you will now see similiar images specifically choosen from your own image/tags/description and added search values."
+								+ "<br>If you aren't satisfied with your search you can still edit your tags and descriptions in the textbox until you find your perfect picture! "
+								+ "<p><p><p> </html>");
 			}
 		});
+
 	}
 
 	
@@ -675,6 +691,9 @@ public class AppNullLayout {
 			panel.setVisible(false);
 		}
 
+		// TODO 
+		
+		
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
 		String responseBing = bingSearch.getUrlContentNullLayout(bingToken, text, imageType, sizeType, licenseType,
 				safeSearchType);
@@ -766,7 +785,7 @@ public class AppNullLayout {
 		while (iter.hasNext()) {
 			strElement = (String) iter.next();
 			// System.out.println("============");
-			 System.out.println("CHECKING: " + strElement);
+			System.out.println("CHECKING: " + strElement);
 
 			try {
 				linkAsUrl = new URL(strElement);

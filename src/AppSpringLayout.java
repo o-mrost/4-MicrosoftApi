@@ -88,6 +88,7 @@ public class AppSpringLayout {
 	private int foundLinks;
 	DefaultListModel listModel = new DefaultListModel();
 	private JTextField numberOfImagesToSearchFor;
+	private JLabel lblHowMany;
 
 	/**
 	 * Launch the application.
@@ -269,10 +270,6 @@ public class AppSpringLayout {
 		btnTakeAPicture.setVisible(false);
 		frame.getContentPane().add(btnTakeAPicture);
 
-		//// JScrollPane scroll = new JScrollPane(list);
-		// Constraints c = springLayout.getConstraints(list);
-		// frame.getContentPane().add(scroll, c);
-
 		list = new JList();
 		JScrollPane scroll = new JScrollPane(list);
 		springLayout.putConstraint(SpringLayout.EAST, descriptionTextArea, -89, SpringLayout.WEST, list);
@@ -283,8 +280,6 @@ public class AppSpringLayout {
 
 		Constraints c = springLayout.getConstraints(list);
 		frame.getContentPane().add(scroll, c);
-
-		// frame.getContentPane().add(list);
 
 		progressBar = new JProgressBar();
 		springLayout.putConstraint(SpringLayout.NORTH, progressBar, 15, SpringLayout.SOUTH, list);
@@ -321,12 +316,18 @@ public class AppSpringLayout {
 		frame.getContentPane().add(numberOfImagesToSearchFor);
 		numberOfImagesToSearchFor.setColumns(10);
 
-		JLabel lblNumberOfImages = new JLabel("Number");
-		springLayout.putConstraint(SpringLayout.NORTH, lblNumberOfImages, 0, SpringLayout.NORTH, lblTags);
-		springLayout.putConstraint(SpringLayout.WEST, lblNumberOfImages, 31, SpringLayout.EAST, btnAnalyseImage);
+		JLabel lblNumberOfImages = new JLabel("images?");
+		springLayout.putConstraint(SpringLayout.NORTH, lblNumberOfImages, 28, SpringLayout.SOUTH, originalImageLabel);
+		springLayout.putConstraint(SpringLayout.WEST, lblNumberOfImages, 0, SpringLayout.WEST, numberOfImagesToSearchFor);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblNumberOfImages, -13, SpringLayout.SOUTH, lblTags);
 		springLayout.putConstraint(SpringLayout.EAST, lblNumberOfImages, -6, SpringLayout.WEST, scroll);
 		frame.getContentPane().add(lblNumberOfImages);
-
+		
+		lblHowMany = new JLabel("How many");
+		springLayout.putConstraint(SpringLayout.NORTH, lblHowMany, 5, SpringLayout.NORTH, btnAnalyseImage);
+		springLayout.putConstraint(SpringLayout.WEST, lblHowMany, 0, SpringLayout.WEST, numberOfImagesToSearchFor);
+		frame.getContentPane().add(lblHowMany);
+		
 		// label to get coordinates for web camera panel
 		// lblNewLabel_1 = new JLabel("New label");
 		// springLayout.putConstraint(SpringLayout.NORTH, lblNewLabel_1, 0,
