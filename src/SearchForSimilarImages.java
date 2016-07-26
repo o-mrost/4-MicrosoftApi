@@ -14,7 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 
 public class SearchForSimilarImages {
 
-	public String GetUrlContentAsString(String searchToken, String tagsString, String imageTypeAsString,
+	public String getUrlContentNullLayout(String searchToken, String tagsString, String imageTypeAsString,
 			String sizeAsString, String licenseAsString, String safeSearchAsString) {
 
 		StringBuffer body = null;
@@ -44,7 +44,7 @@ public class SearchForSimilarImages {
 			} else {
 				safeSearchType = "";
 			}
-			String count = "&count=2";
+			String count = "&count=10";
 			// String count = "";
 			String url = "https://bingapis.azure-api.net/api/v5/images/search?q=" + tagsString + count + "&mkt=en-us"
 					+ imageType + sizeType + licenseType + safeSearchType;
@@ -75,7 +75,7 @@ public class SearchForSimilarImages {
 
 	}
 
-	public String GetUrlContentAsStringWithNumber(String searchToken, String tagsString, String imageTypeAsString,
+	public String getUrlContentSpringLayout(String searchToken, String tagsString, String imageTypeAsString,
 			String sizeAsString, String licenseAsString, String safeSearchAsString, String count) {
 
 		StringBuffer body = null;
@@ -124,8 +124,6 @@ public class SearchForSimilarImages {
 			while ((line = reader.readLine()) != null) {
 				body.append(line);
 			}
-
-			// System.out.println(body);
 
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();

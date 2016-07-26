@@ -55,7 +55,7 @@ import computerVisionApi.Captions;
 import computerVisionApi.RootComputerVision;
 import javax.swing.JList;
 
-public class App {
+public class AppNullLayout {
 
 	private JFileChooser fc;
 	private File file;
@@ -76,12 +76,6 @@ public class App {
 			sizeTypeString, licenseTypeString, safeSearchTypeString;
 	private String firstImageUrl = null, secondImageUrl = null, thirdImageUrl = null, fourthImageUrl = null;
 
-	private ArrayList<String> workingUrls;
-	private String[] linksResponse = null;
-	DefaultListModel listModel = new DefaultListModel();
-
-	private JList list;
-
 	/**
 	 * Launch the application.
 	 */
@@ -89,7 +83,7 @@ public class App {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					App window = new App();
+					AppNullLayout window = new AppNullLayout();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -103,7 +97,7 @@ public class App {
 	 * 
 	 * @param string
 	 */
-	public App() {
+	public AppNullLayout() {
 		super();
 		initialize();
 	}
@@ -553,7 +547,6 @@ public class App {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-		// TODO check the problem with bad urls to webpages, not images
 		icon = scaleBufferedImage(imageResponses, label);
 		label.setIcon(icon);
 	}
@@ -586,7 +579,7 @@ public class App {
 			String safeSearchType) {
 
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
-		String responseBing = bingSearch.GetUrlContentAsString(bingToken, text, imageType, sizeType, licenseType,
+		String responseBing = bingSearch.getUrlContentNullLayout(bingToken, text, imageType, sizeType, licenseType,
 				safeSearchType);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
@@ -663,19 +656,19 @@ public class App {
 		URL linkAsUrl = null;
 
 		// variable to count the number of valid urls
-		 int count = 0;
+		int count = 0;
 
 		while (iter.hasNext()) {
 			strElement = (String) iter.next();
 			// System.out.println("============");
-			// System.out.println("CHECKING: " + strElement);
+			 System.out.println("CHECKING: " + strElement);
 
 			try {
 				linkAsUrl = new URL(strElement);
 				imageResponses = ImageIO.read(linkAsUrl);
 				getImageFromHttp(strElement, labelTryLinks);
-				// System.out.println("OK");
-				// count++;
+				System.out.println("OK");
+				count++;
 			} catch (MalformedURLException e) {
 				System.out.println("malformed exception with url " + strElement);
 				e.printStackTrace();

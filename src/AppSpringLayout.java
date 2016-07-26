@@ -80,7 +80,7 @@ public class AppSpringLayout {
 	private BufferedImage imageWebcam, originalImage = null, imageResponses = null;
 
 	private String computerVisionImageToken, bingToken, tagsString = "", text, imageTypeString, sizeTypeString,
-			licenseTypeString, safeSearchTypeString, searchParameters;
+			licenseTypeString, safeSearchTypeString, searchParameters, numberOfImages;
 	private String[] linksResponse;
 
 	private ArrayList<String> workingUrls;
@@ -349,6 +349,7 @@ public class AppSpringLayout {
 
 		btnTurnCameraOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				listModel.clear();
 				System.out.println("turn camera on");
 				turnCameraOn();
 				btnCancel.setVisible(true);
@@ -470,9 +471,14 @@ public class AppSpringLayout {
 				String tagsString = tagsTextArea.getText().replace(" ", "%20").replace("\r", "%20").replace("\n",
 						"%20");
 
-				String numberOfImages = numberOfImagesToSearchFor.getText();
+				numberOfImages = numberOfImagesToSearchFor.getText();
+
+				if (numberOfImages.length() == 0) {
+					numberOfImages = "50";
+				}
 
 				try {
+
 					int numberOfImagesTry = Integer.parseInt(numberOfImages);
 					System.out.println(numberOfImagesTry);
 
@@ -503,6 +509,7 @@ public class AppSpringLayout {
 								"Please choose first an image to analyse or insert search parameters");
 					}
 				} catch (NumberFormatException e1) {
+
 					JOptionPane.showMessageDialog(null, "Please insert a valid number of images to search for");
 					e1.printStackTrace();
 
@@ -557,7 +564,7 @@ public class AppSpringLayout {
 		// String responseBing = bingSearch.GetUrlContentAsString(bingToken,
 		// text, imageType, sizeType, licenseType,
 		// safeSearchType);
-		String responseBing = bingSearch.GetUrlContentAsStringWithNumber(bingToken, text, imageType, sizeType,
+		String responseBing = bingSearch.getUrlContentSpringLayout(bingToken, text, imageType, sizeType,
 				licenseType, safeSearchType, numberOfImg);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
@@ -579,7 +586,7 @@ public class AppSpringLayout {
 
 		for (String item : linksResponse) {
 			// String listItemText = item;
-			displayImageOnJList(item);
+			getImageFromHttp(item);
 
 			// shows only for the last one
 			// TODO modify - may be with ListCellRenderer
@@ -638,7 +645,7 @@ public class AppSpringLayout {
 		return stringArray;
 	}
 
-	protected void displayImageOnJList(String link) {
+	protected void getImageFromHttp(String link) {
 
 		HttpResponse response = null;
 		InputStream is = null;
@@ -667,7 +674,6 @@ public class AppSpringLayout {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
-		// TODO check the problem with bad urls to webpages, not images
 		icon = scaleBufferedImageWithoutLabel(imageResponses);
 	}
 
