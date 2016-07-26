@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -29,11 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JComboBox;
 
@@ -53,8 +49,27 @@ import bingImageSearchApi.Urls;
 import bingImageSearchApi.RootBing;
 import computerVisionApi.Captions;
 import computerVisionApi.RootComputerVision;
-import javax.swing.JList;
 
+/**
+ * 
+ * @author Olga Mrost, Max Michalek, Lucas Schulz 
+ * version: 100000000000000 
+ * date 26.07.2016 
+ * 		   The main idea of our app is to give user a possibility to
+ *         upload their own picture, use url of an image or take image with
+ *         webcam, analyse it with the API and based on the results look for
+ *         similar images. The user will have a possibility to fine tune the
+ *         search parameters to include additional keywords or delete
+ *         unnecessary ones. The idea is also to give user option to search for
+ *         image of a certain size, particular license, safe search options and
+ *         image type (for example search with tags “sun” for line art of middle
+ *         size to be used for commercial purposes). 
+ *         Microsoft Computer Vision API analyses image and returns tags and description 
+ *         Bing Image Search searches for an image similar to the initial one based on tags and
+ *         description and additional parameters included by the user
+ *
+ * 
+ */
 public class AppNullLayout {
 
 	private JFileChooser fc;
@@ -63,13 +78,14 @@ public class AppNullLayout {
 	private JFrame frame;
 	private JTextArea tagsField, descriptionField;
 	private JTextField urlField;
-	private JButton btnSaveImage, btnCancel, btnTakePictureWithWebcam, btnTurnWebcamOn, btnBrowse, btnHelp, btnSearchForSimilar, btnAnalyse;
+	private JButton btnSaveImage, btnCancel, btnTakePictureWithWebcam, btnTurnWebcamOn, btnBrowse, btnHelp,
+			btnSearchForSimilar, btnAnalyse;
 	private JLabel originalImageLabel, lblTags, lblDescription, foundImagesLabel1, foundImagesLabel2, foundImagesLabel3,
 			foundImagesLabel4, labelTryLinks, stepOne, stepTwo, stepThree;
 	private JProgressBar progressBar;
 	private BufferedImage imageWebcam, originalImage = null, imageResponses = null;
 	private boolean webcamStatus = false;
-	
+
 	private Webcam webcam;
 	private WebcamPanel panel;
 
@@ -119,7 +135,7 @@ public class AppNullLayout {
 		frame.getContentPane().add(fc);
 
 		stepOne = new JLabel("");
-		stepOne.setToolTipText("here comes something");
+		stepOne.setToolTipText("Step one: choose an image");
 		stepOne.setIcon(new ImageIcon("img/stepOne.png"));
 		stepOne.setBounds(266, -4, 67, 49);
 		frame.getContentPane().add(stepOne);
@@ -131,7 +147,7 @@ public class AppNullLayout {
 		btnTurnWebcamOn = new JButton("Take a picture with webcam");
 		btnTurnWebcamOn.setBounds(66, 34, 212, 29);
 		frame.getContentPane().add(btnTurnWebcamOn);
-		
+
 		btnTakePictureWithWebcam = new JButton("Take a picture");
 		btnTakePictureWithWebcam.setBounds(430, 324, 117, 29);
 		frame.getContentPane().add(btnTakePictureWithWebcam);
@@ -158,12 +174,12 @@ public class AppNullLayout {
 		frame.getContentPane().add(originalImageLabel);
 
 		stepTwo = new JLabel("");
-		stepTwo.setToolTipText("here comes something else");
+		stepTwo.setToolTipText("Analyse image");
 		stepTwo.setIcon(new ImageIcon("img/stepTwo.png"));
 		stepTwo.setBounds(266, 413, 67, 49);
 		frame.getContentPane().add(stepTwo);
 
-		btnAnalyse = new JButton("Analyse image");
+		btnAnalyse = new JButton("Step 2: Analyse image");
 		btnAnalyse.setBounds(68, 423, 196, 29);
 		frame.getContentPane().add(btnAnalyse);
 
@@ -190,7 +206,7 @@ public class AppNullLayout {
 		frame.getContentPane().add(lblDescription);
 
 		stepThree = new JLabel("");
-		stepThree.setToolTipText("here comes something different");
+		stepThree.setToolTipText("Step 3: Search for similar images");
 		stepThree.setIcon(new ImageIcon("img/stepThree.png"));
 		stepThree.setBounds(266, 685, 67, 49);
 		frame.getContentPane().add(stepThree);
@@ -291,8 +307,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * Turns webcam on, sets all found images to null and sets buttons to take a picture 
-		 * and close the webcaom visible.
+		 * Turns webcam on, sets all found images to null and sets buttons to
+		 * take a picture and close the webcaom visible.
 		 */
 		btnTurnWebcamOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -305,9 +321,9 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * Set visible additional button to save the image. 
-		 * To flip the image its temporarily stored in the user homedrive. 
-		 * Finally display captured image as an imageicon
+		 * Set visible additional button to save the image. To flip the image
+		 * its temporarily stored in the user homedrive. Finally display
+		 * captured image as an imageicon
 		 */
 		btnTakePictureWithWebcam.addActionListener(new ActionListener() {
 
@@ -343,8 +359,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 *  Open Filechooser to save the image.
-		 *  If a the image allready exists, the user can override it.
+		 * Open Filechooser to save the image. If a the image allready exists,
+		 * the user can override it.
 		 */
 		btnSaveImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -374,9 +390,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * set Buttons “Take a picture”, “Save” and “Cancel” invisible
-		 * close the web camera 
-		 * set panel where the webcam were shown invisible
+		 * set Buttons “Take a picture”, “Save” and “Cancel” invisible close the
+		 * web camera set panel where the webcam were shown invisible
 		 */
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
@@ -391,9 +406,9 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * if a URL is typed in it gets passed to getImageFromHTTP() 
-		 * if link is valid, it get displayed.
-		 * if link isnt valid, image is shown on the label with information for the user.
+		 * if a URL is typed in it gets passed to getImageFromHTTP() if link is
+		 * valid, it get displayed. if link isnt valid, image is shown on the
+		 * label with information for the user.
 		 */
 		urlField.addKeyListener(new KeyAdapter() {
 			@Override
@@ -407,8 +422,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * get the Token from text file and call analyse() in try-catch block
-		 * in case of NullPointerException, JOptionPane with error message appears
+		 * get the Token from text file and call analyse() in try-catch block in
+		 * case of NullPointerException, JOptionPane with error message appears
 		 */
 		btnAnalyse.addActionListener(new ActionListener() {
 			@Override
@@ -434,12 +449,10 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * set icons from previews found images to null 
-		 * call getApiToken() to get API token from text file 
-		 * set tags and description 
-		 * get additional search criterias added via JComboBoxes (as strings)
-		 * set the progress bar visible 
-		 * start a new thread, call the searchForSimilarImages()
+		 * set icons from previews found images to null call getApiToken() to
+		 * get API token from text file set tags and description get additional
+		 * search criterias added via JComboBoxes (as strings) set the progress
+		 * bar visible start a new thread, call the searchForSimilarImages()
 		 */
 		btnSearchForSimilar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -493,8 +506,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * Opens Filechooser to save image, when clicking on the image
-		 * from foundImagesLabel1
+		 * Opens Filechooser to save image, when clicking on the image from
+		 * foundImagesLabel1
 		 */
 		foundImagesLabel1.addMouseListener(new MouseAdapter() {
 			@Override
@@ -508,8 +521,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * Opens Filechooser to save image, when clicking on the image
-		 * from foundImagesLabel2
+		 * Opens Filechooser to save image, when clicking on the image from
+		 * foundImagesLabel2
 		 */
 		foundImagesLabel2.addMouseListener(new MouseAdapter() {
 			@Override
@@ -521,10 +534,10 @@ public class AppNullLayout {
 				}
 			}
 		});
-		
+
 		/**
-		 * Opens Filechooser to save image, when clicking on the image
-		 * from foundImagesLabel3
+		 * Opens Filechooser to save image, when clicking on the image from
+		 * foundImagesLabel3
 		 */
 		foundImagesLabel3.addMouseListener(new MouseAdapter() {
 			@Override
@@ -538,8 +551,8 @@ public class AppNullLayout {
 		});
 
 		/**
-		 * Opens Filechooser to save image, when clicking on the image
-		 * from foundImagesLabel4
+		 * Opens Filechooser to save image, when clicking on the image from
+		 * foundImagesLabel4
 		 */
 		foundImagesLabel4.addMouseListener(new MouseAdapter() {
 			@Override
@@ -573,13 +586,13 @@ public class AppNullLayout {
 								+ "<p><br>Hitting this button you will see a progressbar at the right-bottom of your screen. It takes some time. Relax and get a drink."
 								+ "<br>After the long wait you will now see similiar images specifically choosen from your own image/tags/description and added search values."
 								+ "<br>If you aren't satisfied with your search you can still edit your tags and descriptions in the textbox until you find your perfect picture! "
-								+ "<p><p><p> </html>", "Help menu", JOptionPane.INFORMATION_MESSAGE);
+								+ "<p><p><p> </html>",
+						"Help menu", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 
 	}
 
-	
 	/**
 	 * set all found imageslabels and previews to null
 	 */
@@ -597,8 +610,9 @@ public class AppNullLayout {
 	}
 
 	/**
-	 * executed HttpGet request with the url passed as parameter
-	 * tried to use ImageIO.read() method with InputStream, which was the response from HTTP request.
+	 * execute HttpGet request with the url passed as parameter tried to use
+	 * ImageIO.read() method with InputStream, which was the response from HTTP
+	 * request.
 	 */
 	private void getImageFromHttp(String link, JLabel label) {
 
@@ -635,6 +649,7 @@ public class AppNullLayout {
 
 	/**
 	 * Flip the image horizontally
+	 * 
 	 * @param imageToFlip
 	 * @return imageToFlip (The fliped image as bufferedImage)
 	 */
@@ -650,8 +665,7 @@ public class AppNullLayout {
 	}
 
 	/**
-	 *  create a new WebcamPanel
-	 *  display it on the main frame. 
+	 * create a new WebcamPanel display it on the main frame.
 	 */
 	private void turnCameraOn() {
 
@@ -665,25 +679,24 @@ public class AppNullLayout {
 		panel.setBounds(400, 50, 305, 229);
 		frame.getContentPane().add(panel);
 	}
-/**
- * set icons and previews for found images to null
- * get API token from the text file (getApiToken()
- * update values in the JTextAreas (tags, description)
- * get additional search criterias added via JComboBoxes (as strings)
- * set the progress bar visible
- * start a new thread to call the searchForSimilarImages() method
- * send a request to Bing Image Search API. 
- * 
- * @param text
- * @param imageType
- * @param sizeType
- * @param licenseType
- * @param safeSearchType
- */
+
+	/**
+	 * set icons and previews for found images to null get API token from the
+	 * text file (getApiToken() update values in the JTextAreas (tags,
+	 * description) get additional search criterias added via JComboBoxes (as
+	 * strings) set the progress bar visible start a new thread to call the
+	 * searchForSimilarImages() method send a request to Bing Image Search API.
+	 * 
+	 * @param text
+	 * @param imageType
+	 * @param sizeType
+	 * @param licenseType
+	 * @param safeSearchType
+	 */
 	private void searchForSimilarImages(String text, String imageType, String sizeType, String licenseType,
 			String safeSearchType) {
-		
-		if(webcamStatus == true){
+
+		if (webcamStatus == true) {
 			btnTakePictureWithWebcam.setVisible(false);
 			btnCancel.setVisible(false);
 			btnSaveImage.setVisible(false);
@@ -691,9 +704,8 @@ public class AppNullLayout {
 			panel.setVisible(false);
 		}
 
-		// TODO 
-		
-		
+		// TODO
+
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
 		String responseBing = bingSearch.getUrlContentNullLayout(bingToken, text, imageType, sizeType, licenseType,
 				safeSearchType);
@@ -753,12 +765,15 @@ public class AppNullLayout {
 	}
 
 	/**
-	 * takes an ArrayList<Urls> as parameter. 
-	 * use try-catch block to check whether the image from the link can be displayed on a special label (labelTryLinks, that exists solely for the purpose of checking links and is not shown on the original frame)
-	 * In case of exception remove the link from the ArrayList with the help of Iterator variable
-	 * The method returns a list of urls “clear” from exceptions and safe to be shown to the user
+	 * takes an ArrayList<Urls> as parameter. use try-catch block to check
+	 * whether the image from the link can be displayed on a special label
+	 * (labelTryLinks, that exists solely for the purpose of checking links and
+	 * is not shown on the original frame) In case of exception remove the link
+	 * from the ArrayList with the help of Iterator variable The method returns
+	 * a list of urls “clear” from exceptions and safe to be shown to the user
+	 * 
 	 * @param originalValue
-	 * @return
+	 * @return ArrayList<String>
 	 */
 	private ArrayList<String> checkLinks(ArrayList<Urls> originalValue) {
 
@@ -821,15 +836,23 @@ public class AppNullLayout {
 	}
 
 	/**
-	 * call method describeImage() on an instance of the class AnalyseImage pass the original image and the API token as parameters
-	 * getting a response as string we deserialise a json object and get in separate variables tags (as a string array) and description (as a string)
-	 * check if number of returned tags is greater or equal 5
-	 * If it is, set numberOfTags to 5
-	 * if result is smaller, display only 0 to 4 tags
-	 * After it we clear JTextArea to delete information from previous searches.  To set tags to the JTextArea and write them to a variable from a string array we loop through the array and process each individual tag. To make string later url-friendly we  replace blank spaces with %20. 
-	 * To display description on the JTextArea we deserealise json oblect and get the corresponding information from the field “caption”. At the end we convert the description to an API friendly version like we did with the tags through replacing blank spaces. Finally the both API friendly strings gets merged to one string without blank spaces and get returned.
-
-	 * @return
+	 * call method describeImage() on an instance of the class AnalyseImage pass
+	 * the original image and the API token as parameters getting a response as
+	 * string we deserialise a json object and get in separate variables tags
+	 * (as a string array) and description (as a string) check if number of
+	 * returned tags is greater or equal 5 If it is, set numberOfTags to 5 if
+	 * result is smaller, display only 0 to 4 tags After it we clear JTextArea
+	 * to delete information from previous searches. To set tags to the
+	 * JTextArea and write them to a variable from a string array we loop
+	 * through the array and process each individual tag. To make string later
+	 * url-friendly we replace blank spaces with %20. To display description on
+	 * the JTextArea we deserealise json oblect and get the corresponding
+	 * information from the field “caption”. At the end we convert the
+	 * description to an API friendly version like we did with the tags through
+	 * replacing blank spaces. Finally the both API friendly strings gets merged
+	 * to one string without blank spaces and get returned.
+	 * 
+	 * @return String
 	 */
 	private String analyse() {
 
@@ -872,8 +895,9 @@ public class AppNullLayout {
 	}
 
 	/**
-	 * call filechooser to save a file
-	 * if allready existing, error message via joptionpane
+	 * call filechooser to save a file if allready existing, error message via
+	 * joptionpane
+	 * 
 	 * @param fileUrl
 	 */
 	private void saveFileChooser(String fileUrl) {
@@ -926,10 +950,11 @@ public class AppNullLayout {
 		originalImageLabel.setIcon(icon);
 	}
 
-	/**Convert image to bufferedImage
+	/**
+	 * Convert image to bufferedImage
 	 * 
 	 * @param imageToGetBuffered
-	 * @return
+	 * @return BufferedImage
 	 */
 	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
 
@@ -946,47 +971,9 @@ public class AppNullLayout {
 
 	/**
 	 * Scale a image down with same aspect ratio and return as imageicon
-	 * @param img
-	 * @return
-	 */
-//	protected ImageIcon scaleBufferedImageWithoutLabel(BufferedImage img) {
-//
-//		ImageIcon icon = null;
-//		try {
-//			icon = new ImageIcon(img);
-//			double width = icon.getIconWidth();
-//			double height = icon.getIconHeight();
-//			double labelWidth = 150;
-//			double labelHight = 150;
-//			double scaleWidth = width / labelWidth;
-//			double scaleHeight = height / labelHight;
-//
-//			if (width >= height) {
-//				// horizontal image
-//				double newWidth = width / scaleWidth;
-//				icon = new ImageIcon(icon.getImage().getScaledInstance((int) newWidth, -1, Image.SCALE_SMOOTH));
-//			} else {
-//				// vertical image
-//				double newHeight = height / scaleHeight;
-//				icon = new ImageIcon(icon.getImage().getScaledInstance(-1, (int) newHeight, Image.SCALE_SMOOTH));
-//			}
-//		} catch (NullPointerException e) {
-//			try {
-//				originalImage = (BufferedImage) ImageIO.read(new File("img/error.png"));
-//			} catch (IOException e2) {
-//				e2.printStackTrace();
-//			}
-//			e.printStackTrace();
-//		}
-//
-//		return icon;
-//	}
-
-	/**
 	 * 
 	 * @param img
-	 * @param label
-	 * @return
+	 * @return ImageIcon
 	 */
 	private ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
 

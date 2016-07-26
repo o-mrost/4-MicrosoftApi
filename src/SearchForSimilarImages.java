@@ -5,13 +5,13 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 
+/**
+ * methods to get content from API request for null layout 
+ *
+ */
 public class SearchForSimilarImages {
 
 	public String getUrlContentNullLayout(String searchToken, String tagsString, String imageTypeAsString,
@@ -75,6 +75,10 @@ public class SearchForSimilarImages {
 
 	}
 
+	/**
+	 * methods to get content from API request for spring layout 
+	 *
+	 */
 	public String getUrlContentSpringLayout(String searchToken, String tagsString, String imageTypeAsString,
 			String sizeAsString, String licenseAsString, String safeSearchAsString, String count) {
 

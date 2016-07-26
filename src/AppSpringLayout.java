@@ -55,6 +55,28 @@ import bingImageSearchApi.Urls;
 import computerVisionApi.Captions;
 import computerVisionApi.RootComputerVision;
 
+/**
+ * 
+ * @author Olga Mrost, Max Michalek, Lucas Schulz 
+ * version: 100000000000000 
+ * date 26.07.2016 
+ * 		   The main idea of our app is to give user a possibility to
+ *         upload their own picture, use url of an image or take image with
+ *         webcam, analyse it with the API and based on the results look for
+ *         similar images. The user will have a possibility to fine tune the
+ *         search parameters to include additional keywords or delete
+ *         unnecessary ones. The idea is also to give user option to search for
+ *         image of a certain size, particular license, safe search options and
+ *         image type (for example search with tags “sun” for line art of middle
+ *         size to be used for commercial purposes). 
+ *         Microsoft Computer Vision API analyses image and returns tags and description 
+ *         Bing Image Search searches for an image similar to the initial one based on tags and
+ *         description and additional parameters included by the user
+ *
+ * 
+ */
+
+
 public class AppSpringLayout {
 
 	private JButton btnTurnCameraOn, btnCancel, btnSearchForSimilar, btnBrowse, btnAnalyseImage, btnTakeAPicture,
@@ -564,6 +586,19 @@ public class AppSpringLayout {
 		});
 	}
 
+	/**
+	 * sets icons and previews for found images to null, gets API token from the
+	 * text file (getApiToken() update values in the JTextAreas (tags,
+	 * description), gets additional search criterias added via JComboBoxes (as
+	 * strings), sets the progress bar visible start a new thread to call the
+	 * searchForSimilarImages() method, sends a request to Bing Image Search API.
+	 * 
+	 * @param text
+	 * @param imageType
+	 * @param sizeType
+	 * @param licenseType
+	 * @param safeSearchType
+	 */
 	protected ArrayList<String> searchToDisplayOnJList(String text, String imageType, String sizeType,
 			String licenseType, String safeSearchType, String numberOfImg) {
 
@@ -610,6 +645,17 @@ public class AppSpringLayout {
 		return checkedUrls;
 	}
 
+	/**
+	 * takes an ArrayList<Urls> as parameter. use try-catch block to check
+	 * whether the image from the link can be displayed on a special label
+	 * (labelTryLinks, that exists solely for the purpose of checking links and
+	 * is not shown on the original frame) In case of exception remove the link
+	 * from the ArrayList with the help of Iterator variable The method returns
+	 * a list of urls “clear” from exceptions and safe to be shown to the user
+	 * 
+	 * @param originalValue
+	 * @return ArrayList<String>
+	 */
 	protected ArrayList<String> checkLinks(ArrayList<Urls> originalValue) {
 
 		// here we convert our Data arrayList to a String arrayList
@@ -652,6 +698,11 @@ public class AppSpringLayout {
 		return stringArray;
 	}
 
+	/**
+	 * execute HttpGet request with the url passed as parameter tried to use
+	 * ImageIO.read() method with InputStream, which was the response from HTTP
+	 * request.
+	 */
 	protected void getImageFromHttp(String link) {
 
 		HttpResponse response = null;
@@ -684,6 +735,25 @@ public class AppSpringLayout {
 		icon = scaleBufferedImageWithoutLabel(imageResponses);
 	}
 
+	/**
+	 * call method describeImage() on an instance of the class AnalyseImage pass
+	 * the original image and the API token as parameters getting a response as
+	 * string we deserialise a json object and get in separate variables tags
+	 * (as a string array) and description (as a string) check if number of
+	 * returned tags is greater or equal 5 If it is, set numberOfTags to 5 if
+	 * result is smaller, display only 0 to 4 tags After it we clear JTextArea
+	 * to delete information from previous searches. To set tags to the
+	 * JTextArea and write them to a variable from a string array we loop
+	 * through the array and process each individual tag. To make string later
+	 * url-friendly we replace blank spaces with %20. To display description on
+	 * the JTextArea we deserealise json oblect and get the corresponding
+	 * information from the field “caption”. At the end we convert the
+	 * description to an API friendly version like we did with the tags through
+	 * replacing blank spaces. Finally the both API friendly strings gets merged
+	 * to one string without blank spaces and get returned.
+	 * 
+	 * @return String
+	 */
 	protected String analyse() {
 
 		AnalyseImage computerVisionSearch = new AnalyseImage();
@@ -724,6 +794,11 @@ public class AppSpringLayout {
 		return tagsString + textString;
 	}
 
+	/**
+	 * execute HttpGet request with the url passed as parameter tried to use
+	 * ImageIO.read() method with InputStream, which was the response from HTTP
+	 * request.
+	 */
 	protected void displayImage(String link, JLabel label) {
 
 		HttpResponse response = null;
@@ -758,6 +833,12 @@ public class AppSpringLayout {
 		label.setIcon(icon);
 	}
 
+	/**
+	 * Flip the image horizontally
+	 * 
+	 * @param imageToFlip
+	 * @return imageToFlip (The fliped image as bufferedImage)
+	 */
 	protected BufferedImage mirrorImage(BufferedImage imageToFlip) {
 
 		// Flip the image horizontally
@@ -769,6 +850,12 @@ public class AppSpringLayout {
 		return imageToFlip;
 	}
 
+	/**
+	 * call filechooser to save a file if allready existing, error message via
+	 * joptionpane
+	 * 
+	 * @param fileUrl
+	 */
 	protected void saveFileChooser(String fileUrl) {
 
 		fc.setDialogTitle("Specify name of the file to save");
@@ -801,6 +888,12 @@ public class AppSpringLayout {
 		}
 	}
 
+	/**
+	 * Convert image to bufferedImage
+	 * 
+	 * @param imageToGetBuffered
+	 * @return BufferedImage
+	 */
 	private BufferedImage toBufferedImage(Image imageToGetBuffered) {
 
 		if (imageToGetBuffered instanceof BufferedImage) {
@@ -814,6 +907,9 @@ public class AppSpringLayout {
 		return bimage;
 	}
 
+	/**
+	 * load image from local disk with filechooser
+	 */
 	protected void openFilechooser() {
 
 		originalImage = null;
@@ -829,6 +925,12 @@ public class AppSpringLayout {
 		originalImageLabel.setIcon(icon);
 	}
 
+	/**
+	 * Scale a image down with same aspect ratio and return as imageicon
+	 * 
+	 * @param img
+	 * @return ImageIcon
+	 */
 	protected ImageIcon scaleBufferedImageWithoutLabel(BufferedImage img) {
 
 		ImageIcon icon = null;
@@ -862,6 +964,12 @@ public class AppSpringLayout {
 		return icon;
 	}
 
+	/**
+	 * Scale a image down with same aspect ratio and return as imageicon to be displayed on a label
+	 * 
+	 * @param img
+	 * @return ImageIcon
+	 */
 	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
 
 		ImageIcon icon = null;
@@ -895,6 +1003,9 @@ public class AppSpringLayout {
 		return icon;
 	}
 
+	/**
+	 * create a new WebcamPanel display it on the main frame.
+	 */
 	protected void turnCameraOn() {
 
 		// get default webcam and open it
