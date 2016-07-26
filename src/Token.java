@@ -4,12 +4,21 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class Token {
-	
+	/**
+	 * No arg Constructor
+	 */
 	public Token(){
 	}
 
 	private String token = null;
 
+	/**
+	 * get filname passed
+	 * if variable where token is stored is null execute loadFromFile() and pass filename
+	 * if not null return token
+	 * @param filename
+	 * @return
+	 */
 	public String getApiToken(String filename) {
 		if (token == null) {
 			token = loadFromFile(filename);
@@ -17,6 +26,11 @@ public class Token {
 		return token;
 	}
 
+	/**get filename passed
+	 * read token from file and return it
+	 * @param nameOfFile
+	 * @return
+	 */
 	private String loadFromFile(String nameOfFile) {
 
 		BufferedReader br = null;

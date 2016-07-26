@@ -17,6 +17,14 @@ import org.apache.http.util.EntityUtils;
 
 public class AnalyseImage {
 
+	/**pass original image and token
+	 * deserialise a json object
+	 * get in separate variables tags (as a string array) and description (as a string)
+	 * 
+	 * @param image
+	 * @param token
+	 * @return
+	 */
 	public String describeImage(BufferedImage image, String token) {
 
 		HttpClient httpclient = HttpClients.createDefault();
