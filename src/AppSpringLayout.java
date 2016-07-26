@@ -556,6 +556,10 @@ public class AppSpringLayout {
 			}
 		});
 	}
+	
+	/**
+	 * method 
+	 */
 
 	protected ArrayList<String> searchToDisplayOnJList(String text, String imageType, String sizeType,
 			String licenseType, String safeSearchType, String numberOfImg) {
