@@ -467,7 +467,7 @@ public class AppSpringLayout {
 		btnAnalyseImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Token computerVisionToken = new Token();
-				String computerVisionTokenFileName = "APIToken.txt";
+				String computerVisionTokenFileName = "Tokens/APIToken.txt";
 
 				try {
 					computerVisionImageToken = computerVisionToken.getApiToken(computerVisionTokenFileName);
@@ -491,7 +491,7 @@ public class AppSpringLayout {
 				listModel.clear();
 
 				Token bingImageToken = new Token();
-				String bingImageTokenFileName = "SearchApiToken.txt";
+				String bingImageTokenFileName = "Tokens/SearchApiToken.txt";
 				bingToken = bingImageToken.getApiToken(bingImageTokenFileName);
 
 				// in case user edited description or tags, update it and
