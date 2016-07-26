@@ -573,7 +573,7 @@ public class AppNullLayout {
 								+ "<p><br>Hitting this button you will see a progressbar at the right-bottom of your screen. It takes some time. Relax and get a drink."
 								+ "<br>After the long wait you will now see similiar images specifically choosen from your own image/tags/description and added search values."
 								+ "<br>If you aren't satisfied with your search you can still edit your tags and descriptions in the textbox until you find your perfect picture! "
-								+ "<p><p><p> </html>");
+								+ "<p><p><p> </html>", "Help menu", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 
