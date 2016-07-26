@@ -583,7 +583,7 @@ public class AppNullLayout {
 	/**
 	 * set all found imageslabels and previews to null
 	 */
-	protected void setAllFoundImagesLabelsAndPreviewsToNull() {
+	private void setAllFoundImagesLabelsAndPreviewsToNull() {
 
 		foundImagesLabel1.setIcon(null);
 		foundImagesLabel2.setIcon(null);
@@ -600,7 +600,7 @@ public class AppNullLayout {
 	 * executed HttpGet request with the url passed as parameter
 	 * tried to use ImageIO.read() method with InputStream, which was the response from HTTP request.
 	 */
-	protected void getImageFromHttp(String link, JLabel label) {
+	private void getImageFromHttp(String link, JLabel label) {
 
 		HttpResponse response = null;
 		InputStream is = null;
@@ -638,7 +638,7 @@ public class AppNullLayout {
 	 * @param imageToFlip
 	 * @return imageToFlip (The fliped image as bufferedImage)
 	 */
-	protected BufferedImage mirrorImage(BufferedImage imageToFlip) {
+	private BufferedImage mirrorImage(BufferedImage imageToFlip) {
 
 		// Flip the image horizontally
 		AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -653,7 +653,7 @@ public class AppNullLayout {
 	 *  create a new WebcamPanel
 	 *  display it on the main frame. 
 	 */
-	protected void turnCameraOn() {
+	private void turnCameraOn() {
 
 		// get default webcam and open it
 		webcam = Webcam.getDefault();
@@ -680,7 +680,7 @@ public class AppNullLayout {
  * @param licenseType
  * @param safeSearchType
  */
-	protected void searchForSimilarImages(String text, String imageType, String sizeType, String licenseType,
+	private void searchForSimilarImages(String text, String imageType, String sizeType, String licenseType,
 			String safeSearchType) {
 		
 		if(webcamStatus == true){
@@ -760,7 +760,7 @@ public class AppNullLayout {
 	 * @param originalValue
 	 * @return
 	 */
-	protected ArrayList<String> checkLinks(ArrayList<Urls> originalValue) {
+	private ArrayList<String> checkLinks(ArrayList<Urls> originalValue) {
 
 		// here we convert our Data arrayList to a String arrayList
 		ArrayList<String> stringArray = new ArrayList<String>();
@@ -831,7 +831,7 @@ public class AppNullLayout {
 
 	 * @return
 	 */
-	protected String analyse() {
+	private String analyse() {
 
 		AnalyseImage computerVisionSearch = new AnalyseImage();
 		String response = computerVisionSearch.describeImage(originalImage, computerVisionImageToken);
@@ -876,7 +876,7 @@ public class AppNullLayout {
 	 * if allready existing, error message via joptionpane
 	 * @param fileUrl
 	 */
-	protected void saveFileChooser(String fileUrl) {
+	private void saveFileChooser(String fileUrl) {
 
 		fc.setDialogTitle("Specify name of the file to save");
 		File output = new File(fc.getSelectedFile().toString());
@@ -911,7 +911,7 @@ public class AppNullLayout {
 	/**
 	 * load image from local disk with filechooser
 	 */
-	protected void openFilechooser() {
+	private void openFilechooser() {
 
 		originalImage = null;
 		file = fc.getSelectedFile();
@@ -988,7 +988,7 @@ public class AppNullLayout {
 	 * @param label
 	 * @return
 	 */
-	protected ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
+	private ImageIcon scaleBufferedImage(BufferedImage img, JLabel label) {
 
 		ImageIcon icon = null;
 		try {
