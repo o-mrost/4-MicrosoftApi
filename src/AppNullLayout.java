@@ -704,8 +704,6 @@ public class AppNullLayout {
 			panel.setVisible(false);
 		}
 
-		// TODO
-
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
 		String responseBing = bingSearch.getUrlContentNullLayout(bingToken, text, imageType, sizeType, licenseType,
 				safeSearchType);

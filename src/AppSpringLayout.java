@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -31,6 +32,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.SpringLayout;
 import javax.swing.SpringLayout.Constraints;
 import javax.swing.border.Border;
@@ -57,10 +59,8 @@ import computerVisionApi.RootComputerVision;
 
 /**
  * 
- * @author Olga Mrost, Max Michalek, Lucas Schulz 
- * version: 100000000000000 
- * date 26.07.2016 
- * 		   The main idea of our app is to give user a possibility to
+ * @author Olga Mrost, Max Michalek, Lucas Schulz version: 100000000000000 date
+ *         26.07.2016 The main idea of our app is to give user a possibility to
  *         upload their own picture, use url of an image or take image with
  *         webcam, analyse it with the API and based on the results look for
  *         similar images. The user will have a possibility to fine tune the
@@ -68,14 +68,13 @@ import computerVisionApi.RootComputerVision;
  *         unnecessary ones. The idea is also to give user option to search for
  *         image of a certain size, particular license, safe search options and
  *         image type (for example search with tags “sun” for line art of middle
- *         size to be used for commercial purposes). 
- *         Microsoft Computer Vision API analyses image and returns tags and description 
- *         Bing Image Search searches for an image similar to the initial one based on tags and
+ *         size to be used for commercial purposes). Microsoft Computer Vision
+ *         API analyses image and returns tags and description Bing Image Search
+ *         searches for an image similar to the initial one based on tags and
  *         description and additional parameters included by the user
  *
  * 
  */
-
 
 public class AppSpringLayout {
 
@@ -111,6 +110,8 @@ public class AppSpringLayout {
 	DefaultListModel listModel = new DefaultListModel();
 	private JTextField numberOfImagesToSearchFor;
 	private JLabel lblHowMany;
+
+	private boolean webcamStatus = false;
 
 	/**
 	 * Launch the application.
@@ -159,8 +160,8 @@ public class AppSpringLayout {
 
 		urlTextField = new JTextField();
 		springLayout.putConstraint(SpringLayout.SOUTH, btnTurnCameraOn, -6, SpringLayout.NORTH, urlTextField);
+		springLayout.putConstraint(SpringLayout.EAST, urlTextField, 218, SpringLayout.WEST, btnTurnCameraOn);
 		springLayout.putConstraint(SpringLayout.WEST, urlTextField, 0, SpringLayout.WEST, btnTurnCameraOn);
-		springLayout.putConstraint(SpringLayout.EAST, urlTextField, 274, SpringLayout.WEST, frame.getContentPane());
 		frame.getContentPane().add(urlTextField);
 		urlTextField.setColumns(10);
 
@@ -292,8 +293,19 @@ public class AppSpringLayout {
 		btnTakeAPicture.setVisible(false);
 		frame.getContentPane().add(btnTakeAPicture);
 
-		list = new JList();
+		list = new JList()  {
+			public String getToolTipText(MouseEvent e) {
+				int row = locationToIndex(e.getPoint());
+				String textToTooltip = "<html><img src=\"" + linksResponse[row] + "\">";
+				return textToTooltip;
+			}
+		};
+		
 		JScrollPane scroll = new JScrollPane(list);
+		springLayout.putConstraint(SpringLayout.NORTH, scroll, 0, SpringLayout.NORTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, scroll, 0, SpringLayout.WEST, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, scroll, 0, SpringLayout.SOUTH, frame.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, scroll, 0, SpringLayout.EAST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, descriptionTextArea, -89, SpringLayout.WEST, list);
 		springLayout.putConstraint(SpringLayout.EAST, list, -128, SpringLayout.EAST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, list, 64, SpringLayout.EAST, licenseBox);
@@ -340,16 +352,17 @@ public class AppSpringLayout {
 
 		JLabel lblNumberOfImages = new JLabel("images?");
 		springLayout.putConstraint(SpringLayout.NORTH, lblNumberOfImages, 28, SpringLayout.SOUTH, originalImageLabel);
-		springLayout.putConstraint(SpringLayout.WEST, lblNumberOfImages, 0, SpringLayout.WEST, numberOfImagesToSearchFor);
+		springLayout.putConstraint(SpringLayout.WEST, lblNumberOfImages, 0, SpringLayout.WEST,
+				numberOfImagesToSearchFor);
 		springLayout.putConstraint(SpringLayout.SOUTH, lblNumberOfImages, -13, SpringLayout.SOUTH, lblTags);
 		springLayout.putConstraint(SpringLayout.EAST, lblNumberOfImages, -6, SpringLayout.WEST, scroll);
 		frame.getContentPane().add(lblNumberOfImages);
-		
+
 		lblHowMany = new JLabel("How many");
 		springLayout.putConstraint(SpringLayout.NORTH, lblHowMany, 5, SpringLayout.NORTH, btnAnalyseImage);
 		springLayout.putConstraint(SpringLayout.WEST, lblHowMany, 0, SpringLayout.WEST, numberOfImagesToSearchFor);
 		frame.getContentPane().add(lblHowMany);
-		
+
 		// label to get coordinates for web camera panel
 		// lblNewLabel_1 = new JLabel("New label");
 		// springLayout.putConstraint(SpringLayout.NORTH, lblNewLabel_1, 0,
@@ -378,6 +391,7 @@ public class AppSpringLayout {
 		 */
 		btnTurnCameraOn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				webcamStatus = true;
 				listModel.clear();
 				System.out.println("turn camera on");
 				turnCameraOn();
@@ -503,7 +517,7 @@ public class AppSpringLayout {
 				numberOfImages = numberOfImagesToSearchFor.getText();
 
 				if (numberOfImages.length() == 0) {
-					numberOfImages = "50";
+					numberOfImages = "25";
 				}
 
 				try {
@@ -526,6 +540,7 @@ public class AppSpringLayout {
 						Thread t1 = new Thread(new Runnable() {
 							@Override
 							public void run() {
+
 								progressBar.setVisible(true);
 								workingUrls = searchToDisplayOnJList(searchParameters, imageTypeString, sizeTypeString,
 										licenseTypeString, safeSearchTypeString, numberOfImages);
@@ -582,6 +597,7 @@ public class AppSpringLayout {
 						e2.getMessage();
 					}
 				}
+
 			}
 		});
 	}
@@ -591,7 +607,8 @@ public class AppSpringLayout {
 	 * text file (getApiToken() update values in the JTextAreas (tags,
 	 * description), gets additional search criterias added via JComboBoxes (as
 	 * strings), sets the progress bar visible start a new thread to call the
-	 * searchForSimilarImages() method, sends a request to Bing Image Search API.
+	 * searchForSimilarImages() method, sends a request to Bing Image Search
+	 * API.
 	 * 
 	 * @param text
 	 * @param imageType
@@ -602,12 +619,17 @@ public class AppSpringLayout {
 	protected ArrayList<String> searchToDisplayOnJList(String text, String imageType, String sizeType,
 			String licenseType, String safeSearchType, String numberOfImg) {
 
+		if (webcamStatus == true) {
+			btnTakeAPicture.setVisible(false);
+			btnCancel.setVisible(false);
+			btnSave.setVisible(false);
+			webcam.close();
+			panel.setVisible(false);
+		}
+
 		SearchForSimilarImages bingSearch = new SearchForSimilarImages();
-		// String responseBing = bingSearch.GetUrlContentAsString(bingToken,
-		// text, imageType, sizeType, licenseType,
-		// safeSearchType);
-		String responseBing = bingSearch.getUrlContentSpringLayout(bingToken, text, imageType, sizeType,
-				licenseType, safeSearchType, numberOfImg);
+		String responseBing = bingSearch.getUrlContentSpringLayout(bingToken, text, imageType, sizeType, licenseType,
+				safeSearchType, numberOfImg);
 
 		GsonBuilder gsonBingBuilder = new GsonBuilder();
 		Gson gsonBing = gsonBingBuilder.create();
@@ -627,14 +649,7 @@ public class AppSpringLayout {
 		listModel.clear();
 
 		for (String item : linksResponse) {
-			// String listItemText = item;
 			getImageFromHttp(item);
-
-			// shows only for the last one
-			// TODO modify - may be with ListCellRenderer
-			// subclass DefaultListCellRenderer and override the
-			// getListCellRendererComponent() method
-			// list.setToolTipText("<html><img src=\"" + item + "\">");
 			listModel.addElement(icon);
 		}
 		list.setModel(listModel);
@@ -943,6 +958,10 @@ public class AppSpringLayout {
 			double scaleWidth = width / labelWidth;
 			double scaleHeight = height / labelHight;
 
+			if (width <= labelWidth || height <= labelHight) {
+				return icon;
+			}
+
 			if (width >= height) {
 				// horizontal image
 				double newWidth = width / scaleWidth;
@@ -965,7 +984,8 @@ public class AppSpringLayout {
 	}
 
 	/**
-	 * Scale a image down with same aspect ratio and return as imageicon to be displayed on a label
+	 * Scale a image down with same aspect ratio and return as imageicon to be
+	 * displayed on a label
 	 * 
 	 * @param img
 	 * @return ImageIcon
