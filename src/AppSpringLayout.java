@@ -362,6 +362,12 @@ public class AppSpringLayout {
 		springLayout.putConstraint(SpringLayout.NORTH, lblHowMany, 5, SpringLayout.NORTH, btnAnalyseImage);
 		springLayout.putConstraint(SpringLayout.WEST, lblHowMany, 0, SpringLayout.WEST, numberOfImagesToSearchFor);
 		frame.getContentPane().add(lblHowMany);
+		
+		JLabel lblUrl = new JLabel("URL:");
+		springLayout.putConstraint(SpringLayout.NORTH, lblUrl, 5, SpringLayout.NORTH, urlTextField);
+		springLayout.putConstraint(SpringLayout.WEST, lblUrl, 0, SpringLayout.WEST, tagsTextArea);
+		springLayout.putConstraint(SpringLayout.SOUTH, lblUrl, -11, SpringLayout.NORTH, originalImageLabel);
+		frame.getContentPane().add(lblUrl);
 
 		// label to get coordinates for web camera panel
 		// lblNewLabel_1 = new JLabel("New label");
